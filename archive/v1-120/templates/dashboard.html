@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI SaaS Opportunities in Iran — 120-Service Catalogue</title>
+<style>
+  :root {
+    --bg: #f6f4ef;
+    --surface: #ffffff;
+    --surface-2: #fbfaf7;
+    --ink: #17201c;
+    --muted: #64706a;
+    --line: #e3ded4;
+    --accent: #0f5c4c;
+    --accent-2: #b7791f;
+    --accent-soft: #e6f0ec;
+    --danger: #a33a2b;
+    --radius: 14px;
+    --shadow: 0 10px 30px rgba(23, 32, 28, 0.07);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+  header.hero {
+    background: radial-gradient(1200px 600px at 15% -10%, #1e6b59 0%, #0f3d34 45%, #0b2a25 100%);
+    color: #f4f1e8;
+    padding: 64px 0 56px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+  .hero-top { display: flex; justify-content: space-between; align-items: start; gap: 20px; }
+  .lang-switch { color: #d8c9a3; text-decoration: none; font-size: 13px; border: 1px solid rgba(216,201,163,0.5); padding: 7px 14px; border-radius: 999px; white-space: nowrap; }
+  .lang-switch:hover { background: rgba(216,201,163,0.12); }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: #d8c9a3; font-weight: 700;
+  }
+  .eyebrow span { width: 26px; height: 1px; background: #d8c9a3; display: inline-block; }
+  h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(34px, 5vw, 60px);
+    line-height: 1.05; margin: 14px 0 16px; font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .lede { font-size: clamp(16px, 2vw, 19px); color: #cfe0da; max-width: 760px; margin: 0 0 26px; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 10px 20px; font-size: 13px; color: #b9cec7; }
+  .hero-meta strong { color: #f4f1e8; font-weight: 600; }
+  .hero-stats {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px; background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.14); border-radius: var(--radius);
+    overflow: hidden; margin-top: 34px;
+  }
+  .hero-stat { background: rgba(255,255,255,0.06); padding: 18px 20px; }
+  .hero-stat .num { font-size: 28px; font-weight: 700; color: #fff; line-height: 1.1; }
+  .hero-stat .label { font-size: 12px; color: #b9cec7; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
+  main { padding: 38px 0 80px; }
+  section { margin-bottom: 44px; }
+  .section-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+  h2 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(24px, 3vw, 34px); margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+  .section-note { color: var(--muted); font-size: 14px; max-width: 640px; margin: 6px 0 0; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .grid-2 { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 22px; }
+  .prose { padding: 26px 28px; }
+  .prose p { margin: 0 0 14px; }
+  .prose p:last-child { margin-bottom: 0; }
+  .prose strong { color: #0d2f28; }
+  .callout { border-left: 3px solid var(--accent-2); background: #fdf7ea; padding: 16px 18px; border-radius: 0 10px 10px 0; color: #5c4a25; font-size: 14px; }
+  .priority-list { padding: 8px 0; }
+  .priority-item { display: grid; grid-template-columns: 44px 1fr auto; gap: 14px; align-items: center; padding: 13px 22px; border-bottom: 1px solid var(--line); }
+  .priority-item:last-child { border-bottom: 0; }
+  .rank { font-family: Georgia, serif; font-size: 20px; color: var(--accent-2); font-weight: 700; }
+  .priority-item .name { font-weight: 650; font-size: 14.5px; }
+  .priority-item .cat { font-size: 12px; color: var(--muted); }
+  .score-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 48px; height: 28px; padding: 0 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 13px; }
+  .score-pill.high { background: #e4efe6; color: #1f6b3c; }
+  .score-pill.mid { background: #f5eddc; color: #8a5a12; }
+  .score-pill.low { background: #f0e6e3; color: #8c4032; }
+  .controls { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; padding: 16px; border-bottom: 1px solid var(--line); background: var(--surface-2); border-radius: var(--radius) var(--radius) 0 0; }
+  .controls label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 5px; font-weight: 700; }
+  .controls input, .controls select { width: 100%; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 9px; padding: 10px 12px; font-size: 14px; font-family: inherit; outline: none; }
+  .controls input:focus, .controls select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15,92,76,0.12); }
+  .table-meta { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; font-size: 12.5px; color: var(--muted); border-bottom: 1px solid var(--line); }
+  .table-scroll { overflow: auto; max-height: 720px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th { position: sticky; top: 0; background: #f1ede4; color: #45514c; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; padding: 11px 12px; border-bottom: 1px solid var(--line); z-index: 2; white-space: nowrap; }
+  tbody td { padding: 11px 12px; border-bottom: 1px solid #eee9df; vertical-align: top; }
+  tbody tr { cursor: pointer; transition: background 0.12s ease; }
+  tbody tr:hover { background: #faf8f2; }
+  tbody tr:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .svc-name { font-weight: 650; color: #122a24; }
+  .svc-cat { display: block; font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+  .tag { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 999px; background: #f1ede4; color: #5d655f; white-space: nowrap; }
+  .tag.low { background: #e4efe6; color: #1f6b3c; }
+  .tag.medium { background: #f5eddc; color: #8a5a12; }
+  .tag.high { background: #f0e6e3; color: #8c4032; }
+  .tag.veryhigh { background: #ead7d3; color: #7a2d21; }
+  .empty { padding: 40px; text-align: center; color: var(--muted); }
+  .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+  .category-card { background: var(--surface); border: 1px solid var(--line); border-radius: 11px; padding: 14px 16px; }
+  .category-card .cname { font-size: 13px; font-weight: 650; margin-bottom: 6px; }
+  .category-card .cmeta { font-size: 11.5px; color: var(--muted); display: flex; justify-content: space-between; }
+  .bar { height: 5px; background: #ece7dc; border-radius: 99px; overflow: hidden; margin-top: 8px; }
+  .bar > i { display: block; height: 100%; background: linear-gradient(90deg, #0f5c4c, #2f8d76); border-radius: 99px; }
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(11, 36, 30, 0.55); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
+  .modal-backdrop.open { display: flex; }
+  .modal { background: var(--surface); width: min(720px, 100%); max-height: 88vh; overflow: auto; border-radius: 16px; box-shadow: 0 30px 80px rgba(0,0,0,0.3); }
+  .modal-head { padding: 24px 26px 18px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 16px; align-items: start; }
+  .modal-head h3 { font-family: Georgia, serif; font-size: 26px; margin: 0 0 4px; line-height: 1.15; }
+  .modal-head .cat { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .close { border: 0; background: #f1ede4; color: #45514c; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 18px; line-height: 1; flex: 0 0 auto; }
+  .close:hover { background: #e6e0d3; }
+  .modal-body { padding: 20px 26px 26px; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; margin-bottom: 20px; }
+  .detail { font-size: 13px; }
+  .detail .k { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; margin-bottom: 3px; }
+  .detail .v { color: #1d2b26; }
+  .score-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 18px 0 8px; }
+  .score-box { background: var(--surface-2); border: 1px solid var(--line); border-radius: 9px; padding: 9px; text-align: center; }
+  .score-box .n { font-size: 18px; font-weight: 700; color: var(--accent); }
+  .score-box .l { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .big-score { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+  .big-score .value { font-family: Georgia, serif; font-size: 38px; color: var(--accent); line-height: 1; }
+  .big-score .label { font-size: 12px; color: var(--muted); max-width: 220px; }
+  footer { border-top: 1px solid var(--line); padding: 28px 0 50px; color: var(--muted); font-size: 12.5px; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  @media (max-width: 900px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .hero-stats { grid-template-columns: repeat(2, 1fr); }
+    .controls { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .wrap { padding: 0 16px; }
+    .hero { padding: 44px 0 36px; }
+    .controls { grid-template-columns: 1fr; }
+    .detail-grid { grid-template-columns: 1fr; }
+    .score-row { grid-template-columns: repeat(3, 1fr); }
+    .priority-item { grid-template-columns: 34px 1fr auto; padding: 11px 14px; }
+    .hero-top { flex-direction: column-reverse; align-items: flex-end; }
+  }
+  @media print {
+    header.hero { background: #0b2a25 !important; -webkit-print-color-adjust: exact; }
+    .controls, .table-scroll { max-height: none; overflow: visible; }
+    .modal-backdrop, .lang-switch { display: none !important; }
+    tbody tr { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-top">
+      <div class="eyebrow"><span></span> Phase 1 market report · 22 October 2026</div>
+      <a class="lang-switch" href="fa.html" lang="fa" dir="rtl">فارسی</a>
+    </div>
+    <h1>AI SaaS opportunities<br>in Iran</h1>
+    <p class="lede">A scored catalogue of {{TOTAL}} AI-enabled software services built for Iran's payment rails, Persian-language workflows, regulatory reality, and business buyers.</p>
+    <div class="hero-meta">
+      <div><strong>92.4M</strong> population</div>
+      <div><strong>85.3%</strong> internet penetration</div>
+      <div><strong>174</strong> mobile subs per 100</div>
+      <div><strong>#103</strong> startup ecosystem rank</div>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">{{TOTAL}}</div><div class="label">Services scored</div></div>
+      <div class="hero-stat"><div class="num">{{CATEGORY_COUNT}}</div><div class="label">Categories</div></div>
+      <div class="hero-stat"><div class="num" id="avgScore">—</div><div class="label">Average score</div></div>
+      <div class="hero-stat"><div class="num" id="topScore">—</div><div class="label">Top score</div></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <div class="grid-2">
+      <div class="panel prose">
+        <h2 style="margin-bottom:14px">The thesis in one page</h2>
+        <p>Iran is a large digital market with low consumer ARPU and a small but fast-growing startup base. The winning AI product is not a translated global SaaS. It is a <strong>Persian-first workflow</strong> wired into local rails: Moadian e-invoicing, Shaparak payments, Shahkar identity, SMS/OTP, Digikala and Basalam seller panels, Divar listings, and Iranian tax and labor rules.</p>
+        <p>Profit concentrates in <strong>boring,高频 back-office and revenue workflows</strong>: tax reconciliation, bookkeeping, contract review, clinic reception, real-estate lead qualification, resume screening, review management, seller operations, tender writing, and document AI. These have measurable ROI, recurring usage, and integrations that global tools cannot easily copy.</p>
+        <p>Avoid generic horizontal chatbots and ad-supported consumer apps. They face global alternatives, high support costs, weak willingness to pay, and constant feature catch-up.</p>
+        <div class="callout"><strong>Phase 2 rule:</strong> pick two services, run 20 customer interviews, sign 5 paid pilots, and require payback under 6 months before adding a third product line.</div>
+      </div>
+      <div class="panel">
+        <div style="padding:20px 22px 8px"><h2 style="font-size:22px">Ten plays to start with</h2><p class="section-note">Highest combination of demand, willingness to pay, feasibility, and defensibility.</p></div>
+        <div class="priority-list" id="priorityList"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <div><h2>Category map</h2><p class="section-note">Average opportunity score by category. Hover or scan for the strongest clusters.</p></div>
+    </div>
+    <div class="category-grid" id="categoryGrid"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <div><h2>Service catalogue</h2><p class="section-note">Search, filter, and sort all {{TOTAL}} services. Click any row for the full brief.</p></div>
+      <a href="data/iran-ai-saas-services.csv" download style="font-size:13px;font-weight:650;text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:9px 14px;border-radius:9px">Download CSV</a>
+    </div>
+    <div class="panel">
+      <div class="controls">
+        <div><label for="search">Search</label><input id="search" type="search" placeholder="Service, buyer, keyword…" autocomplete="off"></div>
+        <div><label for="category">Category</label><select id="category"><option value="">All categories</option></select></div>
+        <div><label for="difficulty">Difficulty</label><select id="difficulty"><option value="">Any</option><option>Low</option><option>Medium</option><option>High</option><option>Very high</option></select></div>
+        <div><label for="sort">Sort</label><select id="sort"><option value="score">Score: high to low</option><option value="scoreAsc">Score: low to high</option><option value="id">Catalogue order</option><option value="demand">Demand</option><option value="price">Price band</option></select></div>
+      </div>
+      <div class="table-meta"><span id="resultCount">—</span><span>Click a row for details</span></div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>#</th><th>Service</th><th>Primary buyer</th><th>Price band</th><th>Model</th><th>Difficulty</th><th>Score</th></tr></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="grid-2">
+      <div class="panel prose">
+        <h2 style="margin-bottom:14px">How the score works</h2>
+        <p>Every service is scored 1-5 on demand (25%), willingness to pay (20%), feasibility (20%), defensibility (20%), and capital efficiency (15%). The weighted average becomes a 0-100 score.</p>
+        <p>The score is deliberately biased toward <strong>execution fit in Iran</strong>, not total addressable market. A large market with a 12-month sales cycle and a foreign API dependency scores lower than a boring workflow with 500 ready buyers and a local integration moat.</p>
+        <p>Price bands are indicative USD equivalents. In practice, local customers pay in IRR, often annually and in advance, with a contractual repricing clause to manage inflation.</p>
+      </div>
+      <div class="panel prose">
+        <h2 style="margin-bottom:14px">Operating constraints</h2>
+        <p><strong>Payments:</strong> local Shaparak rails, weak recurring mandates, wallets and annual prepay.</p>
+        <p><strong>Compute:</strong> constrained GPU access, local-first hosting, small models, caching, on-prem option.</p>
+        <p><strong>Connectivity:</strong> periodic disruption; SMS, offline mode, and local mirrors are required.</p>
+        <p><strong>Currency:</strong> 32-44% inflation; quarterly repricing and USD-linked export tiers.</p>
+        <p><strong>Trust:</strong> pilots, references, Enamad/Samandehi, and private deployment win deals.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>Phase 1 desk research. Macro data: World Bank, WIPO, StartupBlink (via Tehran Times), public Iranian platform pages. Scores and market proxies are analyst estimates.</div>
+    <div>Dataset: <a href="data/iran-ai-saas-services.csv">iran-ai-saas-services.csv</a></div>
+  </div>
+</footer>
+
+<div class="modal-backdrop" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="cat" id="modalCat"></div><h3 id="modalTitle"></h3></div>
+      <button class="close" id="closeModal" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const SERVICES = __SERVICES_JSON__;
+const CATEGORIES = __CATEGORIES_JSON__;
+
+const tableBody = document.getElementById('tableBody');
+const searchInput = document.getElementById('search');
+const categorySelect = document.getElementById('category');
+const difficultySelect = document.getElementById('difficulty');
+const sortSelect = document.getElementById('sort');
+const resultCount = document.getElementById('resultCount');
+const modal = document.getElementById('modal');
+const modalBody = document.getElementById('modalBody');
+
+CATEGORIES.forEach(category => {
+  const option = document.createElement('option');
+  option.value = category;
+  option.textContent = category;
+  categorySelect.appendChild(option);
+});
+
+const avgScoreValue = SERVICES.reduce((sum, item) => sum + item.score, 0) / SERVICES.length;
+const topScoreValue = Math.max(...SERVICES.map(item => item.score));
+document.getElementById('avgScore').textContent = avgScoreValue.toFixed(1);
+document.getElementById('topScore').textContent = topScoreValue.toFixed(1);
+
+const scoreClass = score => score >= 82 ? 'high' : score >= 74 ? 'mid' : 'low';
+const diffClass = difficulty => difficulty.toLowerCase().replace(/\s+/g, '');
+
+function priceValue(price) {
+  const match = price.replace(/,/g, '').match(/(\d+(?:\.\d+)?)/);
+  return match ? parseFloat(match[1]) : 0;
+}
+
+function renderPriority() {
+  const ranked = [...SERVICES].sort((a, b) => b.score - a.score || b.demand - a.demand || a.id - b.id).slice(0, 10);
+  document.getElementById('priorityList').innerHTML = ranked.map((item, index) => `
+    <div class="priority-item" data-id="${item.id}">
+      <div class="rank">${String(index + 1).padStart(2, '0')}</div>
+      <div><div class="name">${item.name}</div><div class="cat">${item.category}</div></div>
+      <div class="score-pill ${scoreClass(item.score)}">${item.score}</div>
+    </div>
+  `).join('');
+  document.querySelectorAll('#priorityList .priority-item').forEach(row => {
+    row.addEventListener('click', () => openModal(Number(row.dataset.id)));
+  });
+}
+
+function renderCategories() {
+  const cards = CATEGORIES.map(category => {
+    const items = SERVICES.filter(item => item.category === category);
+    const average = items.reduce((sum, item) => sum + item.score, 0) / items.length;
+    const best = Math.max(...items.map(item => item.score));
+    return `<div class="category-card">
+      <div class="cname">${category}</div>
+      <div class="cmeta"><span>${items.length} services</span><span>avg ${average.toFixed(1)}</span></div>
+      <div class="bar"><i style="width:${average}%"></i></div>
+      <div class="cmeta" style="margin-top:6px"><span>Top score</span><span>${best}</span></div>
+    </div>`;
+  }).join('');
+  document.getElementById('categoryGrid').innerHTML = cards;
+}
+
+function getFiltered() {
+  const query = searchInput.value.trim().toLowerCase();
+  const category = categorySelect.value;
+  const difficulty = difficultySelect.value;
+  let items = SERVICES.filter(item => {
+    const haystack = [item.name, item.category, item.buyer, item.what, item.wedge, item.model, item.ai].join(' ').toLowerCase();
+    return (!query || haystack.includes(query)) &&
+      (!category || item.category === category) &&
+      (!difficulty || item.difficulty === difficulty);
+  });
+  const sort = sortSelect.value;
+  if (sort === 'score') items.sort((a, b) => b.score - a.score || a.id - b.id);
+  if (sort === 'scoreAsc') items.sort((a, b) => a.score - b.score || a.id - b.id);
+  if (sort === 'id') items.sort((a, b) => a.id - b.id);
+  if (sort === 'demand') items.sort((a, b) => b.demand - a.demand || b.score - a.score);
+  if (sort === 'price') items.sort((a, b) => priceValue(a.price) - priceValue(b.price));
+  return items;
+}
+
+function renderTable() {
+  const items = getFiltered();
+  resultCount.textContent = `${items.length} of ${SERVICES.length} services`;
+  if (!items.length) {
+    tableBody.innerHTML = '<tr><td colspan="7"><div class="empty">No services match these filters.</div></td></tr>';
+    return;
+  }
+  tableBody.innerHTML = items.map(item => `
+    <tr tabindex="0" data-id="${item.id}">
+      <td style="color:var(--muted);font-variant-numeric:tabular-nums">${item.id}</td>
+      <td><span class="svc-name">${item.name}</span><span class="svc-cat">${item.what}</span></td>
+      <td>${item.buyer}</td>
+      <td style="white-space:nowrap">${item.price}</td>
+      <td><span class="tag">${item.model}</span></td>
+      <td><span class="tag ${diffClass(item.difficulty)}">${item.difficulty}</span></td>
+      <td><span class="score-pill ${scoreClass(item.score)}">${item.score}</span></td>
+    </tr>
+  `).join('');
+  tableBody.querySelectorAll('tr[data-id]').forEach(row => {
+    row.addEventListener('click', () => openModal(Number(row.dataset.id)));
+    row.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openModal(Number(row.dataset.id));
+      }
+    });
+  });
+}
+
+function openModal(id) {
+  const item = SERVICES.find(service => service.id === id);
+  if (!item) return;
+  document.getElementById('modalCat').textContent = item.category;
+  document.getElementById('modalTitle').textContent = item.name;
+  const scores = [
+    ['Demand', item.demand], ['WTP', item.wtp], ['Feasibility', item.feasibility],
+    ['Defensibility', item.defensibility], ['Capital eff.', item.capital_efficiency]
+  ];
+  modalBody.innerHTML = `
+    <p style="margin:0 0 18px;font-size:15px;color:#33433d">${item.what}</p>
+    <div class="detail-grid">
+      <div class="detail"><div class="k">Primary buyer</div><div class="v">${item.buyer}</div></div>
+      <div class="detail"><div class="k">Core AI</div><div class="v">${item.ai}</div></div>
+      <div class="detail"><div class="k">Iran-specific wedge</div><div class="v">${item.wedge}</div></div>
+      <div class="detail"><div class="k">Revenue model</div><div class="v">${item.model}</div></div>
+      <div class="detail"><div class="k">Indicative price</div><div class="v">${item.price}</div></div>
+      <div class="detail"><div class="k">Market proxy</div><div class="v">${item.market}</div></div>
+      <div class="detail"><div class="k">Competition</div><div class="v">${item.competition}</div></div>
+      <div class="detail"><div class="k">Difficulty</div><div class="v">${item.difficulty}</div></div>
+      <div class="detail"><div class="k">Capital need</div><div class="v">${item.capital}</div></div>
+      <div class="detail"><div class="k">Time to revenue</div><div class="v">${item.ttr}</div></div>
+    </div>
+    <div class="score-row">
+      ${scores.map(([label, value]) => `<div class="score-box"><div class="n">${value}</div><div class="l">${label}</div></div>`).join('')}
+    </div>
+    <div class="big-score"><div class="value">${item.score}</div><div class="label">Weighted opportunity score out of 100. Analyst estimate, to be validated with customer interviews.</div></div>
+    <a href="service.html?id=${item.id}" style="display:inline-block;margin-top:18px;font-size:13px;font-weight:700;text-decoration:none;background:var(--accent);color:#fff;padding:10px 16px;border-radius:9px">Open Business Model Canvas (Persian) →</a>
+  `;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('closeModal').focus();
+}
+
+function closeModal() {
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('closeModal').addEventListener('click', closeModal);
+modal.addEventListener('click', event => { if (event.target === modal) closeModal(); });
+document.addEventListener('keydown', event => { if (event.key === 'Escape') closeModal(); });
+
+[searchInput, categorySelect, difficultySelect, sortSelect].forEach(element => {
+  element.addEventListener('input', renderTable);
+  element.addEventListener('change', renderTable);
+});
+
+renderPriority();
+renderCategories();
+renderTable();
+</script>
+</body>
+</html>
