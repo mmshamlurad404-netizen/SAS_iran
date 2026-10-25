@@ -220,10 +220,20 @@ def pick_verdict(margin: float) -> str:
     return VERDICTS["shared"]
 
 
+def fa_clean(text: str) -> str:
+    return (
+        str(text)
+        .replace("مارکت‌پلیس‌ها", "بازارگاه‌ها")
+        .replace("مارکت‌پلیس", "بازارگاه")
+        .replace("آنبوردینگ", "راه‌اندازی")
+        .replace("لایسنس", "مجوز")
+    )
+
+
 def fa_join(values, limit=2, sep="، "):
     out = []
     for v in values[:limit]:
-        v = str(v).strip().rstrip(".")
+        v = fa_clean(str(v).strip().rstrip("."))
         if v and v not in out:
             out.append(v)
     return sep.join(out)
@@ -380,18 +390,21 @@ def bmc_en(old: dict, bmc: dict, f: dict, sector: str) -> dict:
 
 def fa_entry(old: dict, bmc: dict, f: dict) -> dict:
     blocks = bmc["blocks"]
-    category_fa = CATEGORY_FA[old["category"]]
     buyer_fa = fa_join(blocks.get("customer_segments", []), 2)
-    value_fa = fa_join(blocks.get("value_propositions", []), 2, " ")
+    value_fa = fa_join(blocks.get("value_propositions", []), 1)
     resources = blocks.get("key_resources", [])
     tech = next((r for r in resources if "فناوری" in r or "مدل" in r), resources[0] if resources else old["ai"])
     channels = fa_join(blocks.get("channels", []), 3)
+    partners = fa_join(blocks.get("key_partners", []), 2)
+    category_fa = CATEGORY_FA[old["category"]]
+    driver = "؛ ".join(x for x in [value_fa, tech] if x)
+    gtm = channels or partners or "فروش مستقیم، معرفی مشتری و شرکای دسته‌بندی"
     return {
-        "title": bmc["name"],
-        "buyer": buyer_fa or old["buyer"],
-        "replaces": f"فرایندهای دستی {category_fa} و ابزارهای نقطه‌ای موجود",
-        "driver": f"{value_fa} {tech}".strip(),
-        "gtm": channels or "فروش مستقیم، معرفی مشتری و شرکای دسته‌بندی",
+        "title": fa_clean(bmc["name"]),
+        "buyer": fa_clean(buyer_fa or old["buyer"]),
+        "replaces": f"نیروی انسانی و ابزارهای دستی {category_fa}",
+        "driver": fa_clean(driver),
+        "gtm": fa_clean(gtm),
     }
 
 

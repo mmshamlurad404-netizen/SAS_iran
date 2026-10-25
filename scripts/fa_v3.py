@@ -20,7 +20,7 @@ SECTORS_FA = {
     "H: Industry, Engineering, Energy & Agriculture": "صنعت، مهندسی، انرژی و کشاورزی",
     "I: Real Estate, Auto, Logistics, Hospitality, Insurance & Trade": "املاک، خودرو، لجستیک، مهمان‌نوازی، بیمه و تجارت",
     "J: Media, Content & Developer Infrastructure": "رسانه، محتوا و زیرساخت توسعه‌دهندگان",
-    "K: Iranian E-Commerce, Marketplaces & Social Commerce": "تجارت الکترونیک، مارکت‌پلیس و تجارت اجتماعی ایران",
+    "K: Iranian E-Commerce, Marketplaces & Social Commerce": "تجارت الکترونیک، بازارگاه و تجارت اجتماعی ایران",
     "L: Mandatory Compliance, Tax (Moadian), Customs & Portals": "انطباق اجباری، مالیات (مودیان)، گمرک و پورتال‌ها",
     "M: Inflation Survival, Bazaar Trading, FX & Treasury": "بقای تورم، تجارت بازار، ارز و خزانه",
     "N: Factory, Manufacturing, Energy & Grid Resilience": "کارخانه، تولید، انرژی و تاب‌آوری شبکه",
@@ -41,9 +41,9 @@ SEGMENTS_FA = {
 TIERS_FA = {"P1": "اولویت ۱", "P2": "اولویت ۲", "P3": "اولویت ۳"}
 
 VERDICTS_FA = {
-    "STRONG STANDALONE WEDGE (High B2B Margin)": "گوه مستقل قوی (حاشیه بالای B2B)",
-    "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON": "مستقل قابل‌دوام / مکمل قوی پورتفولیو",
-    "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)": "فقط مکمل موتور مشترک (سرباز مستقل بالا)",
+    "STRONG STANDALONE WEDGE (High B2B Margin)": "محصول مستقل قوی (حاشیه بالای B2B)",
+    "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON": "مستقل قابل‌دوام / مکمل قوی سبد",
+    "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)": "فقط مکمل موتور مشترک (سربار مستقل بالا)",
 }
 
 ENGINES_FA = {
@@ -71,7 +71,7 @@ BILLING_FA = {
     "Per user": "به‌ازای هر کاربر",
     "Monthly credits": "اعتبار ماهانه",
     "Monthly + credits": "ماهانه + اعتبار",
-    "Per seat": "به‌ازای هر صندلی",
+    "Per seat": "به‌ازای هر کاربر",
     "Per document": "به‌ازای هر سند",
     "Per query": "به‌ازای هر پرس‌وجو",
     "Per employee": "به‌ازای هر کارمند",
@@ -87,7 +87,7 @@ BILLING_FA = {
     "Monthly + savings share": "ماهانه + سهم از صرفه‌جویی",
     "Per shipment": "به‌ازای هر محموله",
     "Monthly per branch": "ماهانه به‌ازای هر شعبه",
-    "Monthly per seat": "ماهانه به‌ازای هر صندلی",
+    "Monthly per seat": "ماهانه به‌ازای هر کاربر",
     "Per image pack": "به‌ازای هر بسته تصویر",
     "Monthly + per message": "ماهانه + به‌ازای هر پیام",
     "Monthly + conversations": "ماهانه + گفتگوها",
@@ -112,10 +112,11 @@ BILLING_FA = {
     "Per RFQ": "به‌ازای هر استعلام",
     "Per 1,000 ads": "به‌ازای هر ۱۰۰۰ آگهی",
     "Per vehicle": "به‌ازای هر خودرو",
+    "Per driver": "به‌ازای هر راننده",
     "Per quote": "به‌ازای هر پیش‌فاکتور",
     "Per page": "به‌ازای هر صفحه",
     "Per token": "به‌ازای هر توکن",
-    "License + support": "لایسنس + پشتیبانی",
+    "License + support": "مجوز + پشتیبانی",
     "Monthly + % of ad spend saved": "ماهانه + درصدی از صرفه‌جویی تبلیغات",
     "Monthly + per listing pack": "ماهانه + بسته آگهی",
     "Low monthly fee + credits": "آبونمان کم + اعتبار",
@@ -129,19 +130,19 @@ BILLING_FA = {
     "Annual retainer + success fee": "حق مشاوره سالانه + کارمزد موفقیت",
     "Per filing": "به‌ازای هر اظهارنامه",
     "Monthly + per cheque check": "ماهانه + به‌ازای هر استعلام چک",
-    "Project + audit license": "پروژه + لایسنس حسابرسی",
+    "Project + audit license": "پروژه + مجوز حسابرسی",
     "Monthly by volume": "ماهانه بر اساس حجم",
     "Monthly + per search": "ماهانه + به‌ازای هر جست‌وجو",
     "Per site monthly": "ماهانه به‌ازای هر سایت",
     "Monthly per depot": "ماهانه به‌ازای هر انبار",
-    "Project setup + monthly license": "راه‌اندازی پروژه + لایسنس ماهانه",
+    "Project setup + monthly license": "راه‌اندازی پروژه + مجوز ماهانه",
     "Monthly per plant": "ماهانه به‌ازای هر کارخانه",
     "Per project / Monthly": "به‌ازای هر پروژه / ماهانه",
     "Per query / Monthly": "به‌ازای هر پرس‌وجو / ماهانه",
     "Monthly per site": "ماهانه به‌ازای هر سایت",
     "Monthly per agency": "ماهانه به‌ازای هر آژانس",
     "Monthly per unit": "ماهانه به‌ازای هر واحد",
-    "Per batch / Monthly": "به‌ازای هر بچ / ماهانه",
+    "Per batch / Monthly": "به‌ازای هر دسته / ماهانه",
     "Monthly per hectare": "ماهانه به‌ازای هر هکتار",
     "Per consultation / Seasonal": "به‌ازای هر مشاوره / فصلی",
     "Seasonal subscription": "اشتراک فصلی",
@@ -153,31 +154,31 @@ BILLING_FA = {
     "Monthly / Exam-season pass": "ماهانه / بلیت فصل آزمون",
     "Per exam cycle": "به‌ازای هر دوره آزمون",
     "Per application package": "به‌ازای هر بسته درخواست",
-    "Per seat monthly": "ماهانه به‌ازای هر صندلی",
+    "Per seat monthly": "ماهانه به‌ازای هر کاربر",
     "Per trainee": "به‌ازای هر کارآموز",
     "Per manuscript": "به‌ازای هر دست‌نوشته",
     "Monthly per truck": "ماهانه به‌ازای هر کامیون",
     "Per container / Monthly": "به‌ازای هر کانتینر / ماهانه",
-    "Per visitor seat": "به‌ازای هر صندلی بازدیدکننده",
+    "Per visitor seat": "به‌ازای هر بازدیدکننده",
     "Monthly per vehicle": "ماهانه به‌ازای هر خودرو",
     "Commission / Monthly": "کمیسیون / ماهانه",
     "Monthly plugin subscription": "اشتراک ماهانه افزونه",
     "Monthly by bandwidth/requests": "ماهانه بر اساس پهنای باند/درخواست",
     "Monthly API subscription": "اشتراک ماهانه API",
-    "On-prem license": "لایسنس نصب داخلی",
-    "Monthly per agent seat": "ماهانه به‌ازای هر صندلی اپراتور",
+    "On-prem license": "مجوز نصب داخلی",
+    "Monthly per agent seat": "ماهانه به‌ازای هر اپراتور",
     "Annual/Monthly plugin": "افزونه سالانه/ماهانه",
     "Per document API": "به‌ازای هر سند API",
-    "Annual enterprise license": "لایسنس سالانه سازمانی",
+    "Annual enterprise license": "مجوز سالانه سازمانی",
 }
 
 PL_LABELS_FA = {
-    "Revenue — Tier 1 (Starter)": "درآمد — سطح ۱ (استارتر)",
-    "Revenue — Tier 2 (Growth)": "درآمد — سطح ۲ (گروث)",
-    "Revenue — Tier 3 (Pro / Ent / B2B2C Pack)": "درآمد — سطح ۳ (پرو/سازمانی/پک B2B2C)",
+    "Revenue — Tier 1 (Starter)": "درآمد — سطح ۱ (پایه)",
+    "Revenue — Tier 2 (Growth)": "درآمد — سطح ۲ (رشد)",
+    "Revenue — Tier 3 (Pro / Ent / B2B2C Pack)": "درآمد — سطح ۳ (حرفه‌ای/سازمانی/بسته B2B2C)",
     "Revenue — Metered Usage & Overage": "درآمد — مصرف اندازه‌گیری‌شده و مازاد",
-    "GROSS BILLED REVENUE (MRR)": "درآمد ناخالص صورت‌سابقه‌شده (MRR)",
-    "Less: Bad Debt & DSO Inflation Lag": "کسر: بدهی بد و تأخیر تورمی DSO",
+    "GROSS BILLED REVENUE (MRR)": "درآمد ناخالص صورتحساب‌شده (MRR)",
+    "Less: Bad Debt & DSO Inflation Lag": "کسر: مطالبات مشکوک و تأخیر تورمی وصول",
     "COGS — Domestic GPU (+25% Buffer)": "بهای تمام‌شده — GPU داخلی (+۲۵٪ بافر)",
     "COGS — NIN CPU, DB & BGP Relay": "بهای تمام‌شده — CPU/DB و رله BGP داخلی",
     "COGS — SMS & Shaparak Gateway": "بهای تمام‌شده — پیامک و درگاه شپارک",
@@ -191,9 +192,9 @@ PL_LABELS_FA = {
 
 FLOW_LABELS_FA = {
     "revenue": "درآمد",
-    "bad_debt": "بدهی بد/DSO",
+    "bad_debt": "مطالبات مشکوک/وصول",
     "gpu": "GPU داخلی",
-    "nin": "زیرساخت NIN",
+    "nin": "زیرساخت شبکه ملی اطلاعات",
     "sms": "پیامک/شپارک",
     "partner": "کمیسیون شرکا",
     "tech": "حقوق فنی",
@@ -233,8 +234,8 @@ def mix_fa(mix: str) -> str:
     def repl(m):
         return f"{fa_digits(m.group(1))} {m.group(2)}"
     out = re.sub(r"(\d+)\s+(Starter|Growth|Pro/Enterprise/Pack)", repl, mix)
-    out = out.replace("Starter", "استارتر").replace("Growth", "گروث").replace("Pro/Enterprise/Pack", "پرو/سازمانی/پک")
-    return out
+    out = out.replace("Starter", "پایه").replace("Growth", "رشد").replace("Pro/Enterprise/Pack", "حرفه‌ای/سازمانی/بسته")
+    return out.replace(", ", "، ")
 
 
 def _tier_numbers(s):
@@ -259,7 +260,7 @@ def bmc_fa(s) -> list[dict]:
                 f"خریدار هدف: {fa['buyer']} ({seg}). "
                 f"جایگزین یا کاهش‌دهنده: {replaces}. "
                 f"پایه فعال حسابرسی‌شده در ماه ۱۲: {fa_int(active['accounts'])} حساب پرداخت‌کننده "
-                f"({mix_fa(active['mix'])})" + "، کالیبره‌شده با مقیاس بخش SaaS ایران (لاتکا) و ریزش ماهانه "
+                f"({mix_fa(active['mix'])})" + "، کالیبره‌شده با مقیاس بخش نرم‌افزار ابری ایران (لاتکا) و ریزش ماهانه "
                 f"{fa_pct(s['churn'] or 0)}."
             ),
         },
@@ -269,7 +270,7 @@ def bmc_fa(s) -> list[dict]:
             "title": "ارزش پیشنهادی",
             "text": (
                 f"جایگزین «{replaces}» با کمتر از {fa_digits(s['eliminated_cost_ratio'].replace('<', '').replace('%', '').strip() or '۱۵')}٪ هزینه دستی/جریمه می‌شود. "
-                f"موتور داده: {driver}؛ با میزبانی ۱۰۰٪ داخل ایران روی دیتاسنترهای NIN، تا وبهوک‌های داخلی "
+                f"موتور داده: {driver}؛ با میزبانی ۱۰۰٪ داخل ایران روی دیتاسنترهای شبکه ملی اطلاعات، تا وبهوک‌های داخلی "
                 f"(بله/ایتا/وب محلی) در قطعی‌های اینترنت بین‌المللی فعال بمانند."
             ),
         },
@@ -278,9 +279,9 @@ def bmc_fa(s) -> list[dict]:
             "num": "۳",
             "title": "کانال‌ها و کمیسیون‌ها",
             "text": (
-                f"ورود به بازار (GTM) عمدتاً از طریق {gtm} به‌همراه {fa_dec(s['sales_fte'] or 0, 2)} FTE کارشناس فروش سازمانی. "
-                f"مدل: کمیسیون {fa_digits(s['partner_pct'])}٪ شرکا/مارکت‌پلیس بر {fa_digits(s['partner_share'])}٪ از درآمد "
-                f"({fa_int(s['partner_cogs'])} تومان در ماه در COGS) برای انگیزه‌دهی به نمایندگان ERP، آژانس‌ها و اپ‌استورها."
+                f"ورود به بازار عمدتاً از طریق {gtm} به‌همراه {fa_dec(s['sales_fte'] or 0, 2)} نفر کارشناس فروش سازمانی. "
+                f"مدل: کمیسیون {fa_digits(s['partner_pct'])}٪ شرکا/بازارگاه بر {fa_digits(s['partner_share'])}٪ از درآمد "
+                f"({fa_int(s['partner_cogs'])} تومان در ماه در بهای تمام‌شده) برای انگیزه‌دهی به نمایندگان ERP، آژانس‌ها و فروشگاه‌های اپ."
             ),
         },
         {
@@ -288,9 +289,9 @@ def bmc_fa(s) -> list[dict]:
             "num": "۴",
             "title": "روابط با مشتری",
             "text": (
-                "آنبوردینگ ترکیبی سلف‌سرویس + تلفنی/رباتی. لینک‌های تمدید خودکار پیامکی کاوه‌نگار؛ "
-                f"{fa_dec(s['support_fte'] or 0, 2)} FTE متخصص پشتیبانی برای موارد نیازمند انسان در حلقه و پیگیری "
-                "صورت‌حساب SAYAD/شپارک."
+                "راه‌اندازی ترکیبی خودخدمت + تلفنی/رباتی. لینک‌های تمدید خودکار پیامکی کاوه‌نگار؛ "
+                f"{fa_dec(s['support_fte'] or 0, 2)} نفر متخصص پشتیبانی برای موارد نیازمند دخالت انسان و پیگیری "
+                "صورت‌حساب صیاد/شپارک."
             ),
         },
         {
@@ -298,11 +299,11 @@ def bmc_fa(s) -> list[dict]:
             "num": "۵",
             "title": "جریان‌های درآمد (حسابرسی‌شده)",
             "text": (
-                f"صورتحساب ماهانه به تومان ({billing_fa(s['billing_model'])}): استارتر {fa_int(s['prices'].get('starter', 0))} تومان/ماه | "
-                f"گروث {fa_int(s['prices'].get('growth', 0))} | پرو/سازمانی {fa_int(s['prices'].get('pro', 0))} + بسته‌های مصرف "
+                f"صورتحساب ماهانه به تومان ({billing_fa(s['billing_model'])}): پایه {fa_int(s['prices'].get('starter', 0))} تومان/ماه | "
+                f"رشد {fa_int(s['prices'].get('growth', 0))} | حرفه‌ای/سازمانی {fa_int(s['prices'].get('pro', 0))} + بسته‌های مصرف "
                 f"({fa_int(s['usage_price'] or 0)} تومان/ماه میانگین). "
-                f"MRR ناخالص صورت‌سابقه‌شده: {fa_int(s['gross_mrr'])} تومان/ماه؛ MRR خالص وصول‌شده پس از "
-                f"{fa_pct(s['dso_pct'])} ذخیره بدهی بد/تأخیر چک: {fa_int(s['net_mrr'])} تومان/ماه."
+                f"MRR ناخالص صورتحساب‌شده: {fa_int(s['gross_mrr'])} تومان/ماه؛ MRR خالص وصول‌شده پس از "
+                f"{fa_pct(s['dso_pct'])} ذخیره مطالبات مشکوک/تأخیر چک: {fa_int(s['net_mrr'])} تومان/ماه."
             ),
         },
         {
@@ -311,7 +312,7 @@ def bmc_fa(s) -> list[dict]:
             "title": "منابع کلیدی",
             "text": (
                 f"GPU داخلی: {fa_dec(s['gpu_nodes'], 2)} گره RTX 6000 Ada 48GB شامل ۲۵٪ بافر پیک "
-                f"({fa_int(s['gpu_cost'])} تومان/ماه) + سرورهای CPU/DB داخلی NIN ({fa_int(s['nin_cost'])} تومان/ماه). "
+                f"({fa_int(s['gpu_cost'])} تومان/ماه) + سرورهای CPU/DB داخلی شبکه ملی اطلاعات ({fa_int(s['nin_cost'])} تومان/ماه). "
                 f"پشته فنی: {stack}. مجموعه داده: {driver}."
             ),
         },
@@ -320,7 +321,7 @@ def bmc_fa(s) -> list[dict]:
             "num": "۷",
             "title": "فعالیت‌های کلیدی",
             "text": (
-                f"حفظ دقت LoRA روی {driver}؛ زنده نگه‌داشتن اتصال‌های {gtm} در برابر تغییرات مسیریابی NIN/BGP؛ "
+                f"حفظ دقت LoRA روی {driver}؛ زنده نگه‌داشتن اتصال‌های {gtm} در برابر تغییرات مسیریابی شبکه ملی اطلاعات/BGP؛ "
                 "اجرای سخت‌گیرانه صورت‌حساب ماهانه و شاخص‌بندی فصلی CPI/ارز برای جلوگیری از فرسایش حاشیه ریالی توسط تورم."
             ),
         },
@@ -329,7 +330,7 @@ def bmc_fa(s) -> list[dict]:
             "num": "۸",
             "title": "شرکای کلیدی",
             "text": (
-                f"شرکای توزیع و API: {gtm}. زیرساخت: Sindad/Afranet (GPU/NIN)، زرین‌پال/پی‌پینگ (درگاه شپارک) "
+                f"شرکای توزیع و API: {gtm}. زیرساخت: سینداد/افرانت (GPU/شبکه ملی اطلاعات)، زرین‌پال/پی‌پینگ (درگاه شپارک) "
                 "و معاونت علمی و فناوری (معافیت مالیاتی دانش‌بنیان نوع ۱/۲)."
             ),
         },
@@ -340,8 +341,8 @@ def bmc_fa(s) -> list[dict]:
             "text": (
                 f"هزینه کامل مستقل: {fa_int(s['standalone_cost'])} تومان/ماه؛ EBITDA مستقل: "
                 f"{fa_int(s['standalone_ebitda'])} تومان/ماه ({fa_pct(s['standalone_margin'])}). "
-                f"هزینه پورتفولیوی موتور مشترک (تقسیم توسعه/دفتر بین ۳ ابزار خواهر): {fa_int(s['portfolio_cost'])} تومان/ماه؛ "
-                f"EBITDA پورتفولیو: {fa_int(s['portfolio_ebitda'])} تومان/ماه ({fa_pct(s['portfolio_margin'])})."
+                f"هزینه سبد موتور مشترک (تقسیم توسعه/دفتر بین ۳ ابزار هم‌خانواده): {fa_int(s['portfolio_cost'])} تومان/ماه؛ "
+                f"EBITDA سبد: {fa_int(s['portfolio_ebitda'])} تومان/ماه ({fa_pct(s['portfolio_margin'])})."
             ),
         },
     ]
@@ -398,7 +399,7 @@ def pl_fa(s) -> list[dict]:
             elif label.startswith("GROSS BILLED"):
                 m = re.search(r"(\d+) Active Accounts \| Blended Billed ARPU: ([\d,]+) T/mo", basis)
                 if m:
-                    fa_basis = f"{fa_int(float(m.group(1)))} حساب فعال | ARPU ترکیبی صورت‌سابقه: {fa_int(float(m.group(2).replace(',', '')))} تومان/ماه"
+                    fa_basis = f"{fa_int(float(m.group(1)))} حساب فعال | ARPU ترکیبی صورتحساب: {fa_int(float(m.group(2).replace(',', '')))} تومان/ماه"
             elif label.startswith("Less:"):
                 fa_basis = f"{fa_pct(s['dso_pct'])} ذخیره برای تأخیر/نکول چک ← خالص وصولی: {fa_int(s['net_mrr'])} تومان"
             elif label.startswith("COGS — Domestic GPU"):
@@ -416,7 +417,7 @@ def pl_fa(s) -> list[dict]:
             elif label.startswith("AUDITED GROSS"):
                 gm = s.get("_gm", 0)
                 cogs = s.get("_cogs", 0)
-                fa_basis = f"MRR خالص منهای COGS مستقیم ({fa_int(cogs)} تومان) ← حاشیه ناخالص {fa_pct(gm)}"
+                fa_basis = f"MRR خالص منهای بهای تمام‌شده مستقیم ({fa_int(cogs)} تومان) ← حاشیه ناخالص {fa_pct(gm)}"
             elif label.startswith("OPEX — Tech"):
                 m = re.search(r"([\d.]+) AI Eng \(([\d,]+)T\) \+ ([\d.]+) FullStack \(([\d,]+)T\)", basis)
                 if m:

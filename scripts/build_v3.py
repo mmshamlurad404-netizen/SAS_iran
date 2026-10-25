@@ -233,15 +233,15 @@ def dashboard_html(fa: bool) -> str:
     data = [dash_row(s, fa) for s in SERVICES]
     aggs = SECTOR_AGGS
     top = [dash_row(s, fa) for s in TOP25]
-    title = "شاهکار SaaS هوش مصنوعی ایران — ۳۱۰ سرویس" if fa else "Iran AI SaaS Masterbook — 310 Services"
+    title = "مستربوک SaaS هوش مصنوعی ایران — ۳۱۰ سرویس" if fa else "Iran AI SaaS Masterbook — 310 Services"
     lede = (
-        "کاتالوگ ترکیبی ۳۱۰ سرویس در ۲۰ بخش: ۲۰۰ سرویس حسابرسی‌شده v3 به‌همراه ۱۱۰ سرویس کاتالوگ قدیمی که با همان مدل مالی و بوم نه‌بلوکی بازنویسی شده‌اند. همه مبالغ به تومان و بر پایه فرض‌های ۱۴۰۵ است."
+        "کاتالوگ ترکیبی ۳۱۰ سرویس در ۲۰ بخش: ۲۰۰ سرویس حسابرسی‌شده v3 به‌همراه ۱۱۰ سرویس کاتالوگ قدیمی که با همان مدل مالی و بوم ۹بخشی بازنویسی شده‌اند. همه مبالغ به تومان و بر پایه فرض‌های ۱۴۰۵ است."
         if fa else
         "A combined 310-service catalogue across 20 Iranian sectors: 200 audited v3 services plus 110 legacy v1 services re-underwritten into the same nine-block canvas and Month-12 P&L model. Toman figures follow the 1405 audit assumptions; every service links to its full cost, revenue and engine detail."
     )
     t = TOTALS
     stats = [
-        (f"{fa_digits(len(SERVICES))}" if fa else str(len(SERVICES)), "سرویس حسابرسی‌شده" if fa else "audited services"),
+        (f"{fa_digits(len(SERVICES))}" if fa else str(len(SERVICES)), "سرویس ترکیبی" if fa else "combined services"),
         (f"{fa_digits(len(SECTORS))}" if fa else str(len(SECTORS)), "بخش بازار" if fa else "market sectors"),
         (f"{fa_dec(t['mrr']/1e9,1)} میلیارد" if fa else f"{t['mrr']/1e9:.1f}B", "MRR ناخالص ماه ۱۲ (تومان)" if fa else "M12 gross MRR (Toman)"),
         (f"{fa_dec(t['ebitda']/1e9,1)} میلیارد" if fa else f"{t['ebitda']/1e9:.1f}B", "EBITDA مستقل (تومان)" if fa else "standalone EBITDA (Toman)"),
@@ -274,7 +274,7 @@ def dashboard_html(fa: bool) -> str:
         "sort_id": "مرتب‌سازی: شماره" if fa else "Sort: number",
         "shown": "سرویس نمایش‌داده‌شده" if fa else "services shown",
         "top": "۲۵ سرویس برتر بر اساس EBITDA مستقل" if fa else "Top 25 by standalone EBITDA",
-        "sectors": "تصویر بخش‌ها" if fa else "Sector picture",
+        "sectors": "نمای بخش‌ها" if fa else "Sector picture",
         "catalogue": "کاتالوگ کامل" if fa else "Full catalogue",
         "click": "برای بوم مدل کسب‌وکار و صورت سود و زیان، روی هر ردیف کلیک کنید." if fa else "Click any row for its Business Model Canvas and audited P&L.",
         "report": "گزارش کامل" if fa else "Full report",
@@ -290,7 +290,7 @@ def dashboard_html(fa: bool) -> str:
 <header class="hero">
   <div class="wrap">
     <div class="hero-top">
-      <div class="eyebrow"><span></span> {'نسخه حسابرسی‌شده v3 · ۱۴۰۵' if fa else 'AUDITED EDITION v3 · 1405'}</div>
+      <div class="eyebrow"><span></span> {'نسخه ترکیبی v3.1 · ۱۴۰۵' if fa else 'COMBINED EDITION v3.1 · 1405'}</div>
       <a class="lang-switch" href="{'index.html' if fa else 'fa.html'}" lang="{'en' if fa else 'fa'}" dir="{'ltr' if fa else 'rtl'}">{'English' if fa else 'فارسی'}</a>
     </div>
     <h1>{esc(title)}</h1>
@@ -308,8 +308,8 @@ def dashboard_html(fa: bool) -> str:
   <section class="grid-2">
     <div class="panel prose">
       <h2>{'خلاصه اجرایی' if fa else 'Executive read'}</h2>
-      <p>{'این نسخه، ۳۱۰ مدل کسب‌وکار (۲۰۰ حسابرسی‌شده + ۱۱۰ بازنویسی‌شده) را با معیارهای Latka Iran، حقوق کامل ۱۴۰۵ (تأمین، عیدی، سنوات)، کمیسیون کانال، ریسک چک صیادی و تورم ۷ تا ۹ درصد ماهانه بازمحاسبه می‌کند. میانگین حاشیه EBITDA مستقل ' + fa_pct(t['avg_margin']) + ' و EBITDA پورتفولیوی موتور مشترک ' + fa_dec(t['portfolio']/1e9,1) + ' میلیارد تومان در ماه است.' if fa else f"This edition combines 200 audited services with 110 legacy services re-underwritten against Latka Iran benchmarks, fully loaded 1405 payroll (Tamin, Eidi, Sanavat), channel commissions, SAYAD cheque risk and 7-9% monthly inflation. Average standalone EBITDA margin is {t['avg_margin']:.1f}%; shared-engine portfolio EBITDA reaches {t['portfolio']/1e9:.1f}B Toman per month."}</p>
-      <p>{'۱۱۲ سرویس در اولویت ۱، ۱۵۵ در اولویت ۲ و ۴۳ در اولویت ۳ قرار دارند. از نظر حکم، ۱۵۷ سرویس گوه مستقل قوی، ۱۲۷ سرویس مستقل قابل‌دوام/مکمل پورتفولیو و ۲۶ سرویس فقط به‌صورت مکمل موتور مشترک توجیه اقتصادی دارند. ده سرویس EBITDA مستقل منفی دارند (دو سرویس حسابرسی‌شده و هشت سرویس بازنویسی‌شده) و باید صرفاً از طریق فروش پورتفولیویی اداره شوند؛ سایر حاشیه‌های نزدیک به صفر نیز همین رویکرد را می‌طلبند.' if fa else 'Tier distribution is 112 P1, 155 P2 and 43 P3. By verdict, 157 services are strong standalone wedges, 127 are viable standalone or strong portfolio add-ons, and 26 only work as shared-engine add-ons. Ten services post negative standalone EBITDA (two audited and eight re-underwritten) and must be managed through portfolio sales; thin-margin tools follow the same route.'}</p>
+      <p>{'این نسخه، ۳۱۰ مدل کسب‌وکار (۲۰۰ حسابرسی‌شده + ۱۱۰ بازنویسی‌شده) را با معیارهای Latka Iran، حقوق کامل ۱۴۰۵ (تأمین، عیدی، سنوات)، کمیسیون کانال، ریسک چک صیادی و تورم ۷ تا ۹ درصد ماهانه بازمحاسبه می‌کند. میانگین حاشیه EBITDA مستقل ' + fa_pct(t['avg_margin']) + ' و EBITDA سبد موتور مشترک ' + fa_dec(t['portfolio']/1e9,1) + ' میلیارد تومان در ماه است.' if fa else f"This edition combines 200 audited services with 110 legacy services re-underwritten against Latka Iran benchmarks, fully loaded 1405 payroll (Tamin, Eidi, Sanavat), channel commissions, SAYAD cheque risk and 7-9% monthly inflation. Average standalone EBITDA margin is {t['avg_margin']:.1f}%; shared-engine portfolio EBITDA reaches {t['portfolio']/1e9:.1f}B Toman per month."}</p>
+      <p>{'۱۱۲ سرویس در اولویت ۱، ۱۵۵ در اولویت ۲ و ۴۳ در اولویت ۳ قرار دارند. از نظر حکم، ۱۵۷ سرویس محصول مستقل قوی، ۱۲۷ سرویس مستقل قابل‌دوام/مکمل سبد و ۲۶ سرویس فقط به‌صورت مکمل موتور مشترک توجیه اقتصادی دارند. ده سرویس EBITDA مستقل منفی دارند (دو سرویس حسابرسی‌شده و هشت سرویس بازنویسی‌شده) و باید صرفاً از طریق فروش سبدی اداره شوند؛ سایر حاشیه‌های نزدیک به صفر نیز همین رویکرد را می‌طلبند.' if fa else 'Tier distribution is 112 P1, 155 P2 and 43 P3. By verdict, 157 services are strong standalone wedges, 127 are viable standalone or strong portfolio add-ons, and 26 only work as shared-engine add-ons. Ten services post negative standalone EBITDA (two audited and eight re-underwritten) and must be managed through portfolio sales; thin-margin tools follow the same route.'}</p>
       <div class="callout">{'نرخ دلار در ستون‌های انگلیسی ۲۷۰٬۰۰۰ تومان است؛ گزارش اصلی حسابرسی از نرخ ۲۰۳٬۱۰۰ تومان استفاده کرده بود. همه محاسبات مالی این پروژه بر پایه تومان است.' if fa else 'English USD columns use the project rate of 270,000 Toman; the source audit used 203,100. Toman remains the authoritative currency throughout this project.'}</div>
       <p style="margin-top:14px"><a href="{'iran-ai-saas-report-v3.1-fa.md' if fa else 'iran-ai-saas-report-v3.1.md'}">{labels['report']}</a> · <a href="{'data/iran-ai-saas-masterbook-310-fa.csv' if fa else 'data/iran-ai-saas-masterbook-310.csv'}">{labels['csv']}</a></p>
     </div>
@@ -346,10 +346,10 @@ def dashboard_html(fa: bool) -> str:
 
   <section class="panel prose">
     <h2>{labels['method']}</h2>
-    <p>{'مدل‌ها بر پایه ۱۲ ماه فعالیت، با تعداد مشتری کالیبره‌شده Latka (۲۲ تا ۴۰ سازمانی، ۱۱۵ تا ۲۰۵ SME و ۳۴۰ تا ۴۸۰ حرفه‌ای/خرد)، ARPU ترکیبی و ریزش ماهانه ۴ تا ۱۱ درصد ساخته شده‌اند. هزینه‌ها شامل GPU داخلی با ۲۵ درصد بافر، NIN، پیامک/شپارک، کمیسیون ۱۲ تا ۱۸ درصدی شرکا، حقوق کامل فنی/فروش/پشتیبانی، دفتر تهران و بازاریابی است.' if fa else 'Models use a 12-month ramp with Latka-calibrated customer counts (22-40 enterprise, 115-205 SME, 340-480 prosumer/micro), blended ARPU and 4-11% monthly churn. Costs include domestic GPU with a 25% buffer, NIN, SMS/Shaparak, 12-18% partner commissions, fully loaded tech/sales/support payroll, Tehran office and marketing.'}</p>
+    <p>{'مدل‌ها بر پایه ۱۲ ماه فعالیت، با تعداد مشتری کالیبره‌شده Latka (۲۲ تا ۴۰ سازمانی، ۱۱۵ تا ۲۰۵ کسب‌وکار کوچک و متوسط و ۳۴۰ تا ۴۸۰ حرفه‌ای/خرد)، ARPU ترکیبی و ریزش ماهانه ۴ تا ۱۱ درصد ساخته شده‌اند. هزینه‌ها شامل GPU داخلی با ۲۵ درصد بافر، شبکه ملی اطلاعات، پیامک/شپارک، کمیسیون ۱۲ تا ۱۸ درصدی شرکا، حقوق کامل فنی/فروش/پشتیبانی، دفتر تهران و بازاریابی است.' if fa else 'Models use a 12-month ramp with Latka-calibrated customer counts (22-40 enterprise, 115-205 SME, 340-480 prosumer/micro), blended ARPU and 4-11% monthly churn. Costs include domestic GPU with a 25% buffer, NIN, SMS/Shaparak, 12-18% partner commissions, fully loaded tech/sales/support payroll, Tehran office and marketing.'}</p>
   </section>
 </main>
-<footer><div class="wrap"><div>{'مستر‌بوک ترکیبی v3.1 · ۳۱۰ سرویس (۲۰۰ حسابرسی‌شده + ۱۱۰ بازنویسی‌شده) · قیمت‌ها به تومان' if fa else 'Combined Masterbook v3.1 · 310 services (200 audited + 110 re-underwritten) · prices in Toman'}</div><div><a href="{'index.html' if fa else 'fa.html'}">{'English edition' if fa else 'Persian edition'}</a></div></div></footer>
+<footer><div class="wrap"><div>{'مستربوک ترکیبی v3.1 · ۳۱۰ سرویس (۲۰۰ حسابرسی‌شده + ۱۱۰ بازنویسی‌شده) · قیمت‌ها به تومان' if fa else 'Combined Masterbook v3.1 · 310 services (200 audited + 110 re-underwritten) · prices in Toman'}</div><div><a href="{'index.html' if fa else 'fa.html'}">{'English edition' if fa else 'Persian edition'}</a></div></div></footer>
 """
 
     script = """
@@ -385,7 +385,7 @@ function renderTop() {
   el.innerHTML = TOP.map((s, i) => `<div class="priority-item" data-id="${s.id}" tabindex="0">
     <div class="rank">${num(i + 1)}</div>
     <div><div class="name">${s.title}</div><div class="cat">${s.sector} · ${s.buyer}</div></div>
-    <div class="score-pill ${s.tier === 'P1' ? 'high' : s.tier === 'P2' ? 'mid' : 'low'}">${m(s.ebitda)} M</div>
+    <div class="score-pill ${s.tier === 'P1' ? 'high' : s.tier === 'P2' ? 'mid' : 'low'}">${m(s.ebitda)}${LANG === 'fa' ? ' م' : ' M'}</div>
   </div>`).join('');
   el.querySelectorAll('.priority-item').forEach(x => {
     x.addEventListener('click', () => go(x.dataset.id));
@@ -465,7 +465,7 @@ def service_page_html(fa: bool) -> str:
     lang = "fa" if fa else "en"
     direction = "rtl" if fa else "ltr"
     codes = [service_row(s, fa) for s in SERVICES]
-    title = "جزئیات سرویس — مستر‌بوک ۳۱۰ سرویس" if fa else "Service detail — 310-service masterbook"
+    title = "جزئیات سرویس — مستربوک ۳۱۰ سرویس" if fa else "Service detail — 310-service masterbook"
     back = "fa.html" if fa else "index.html"
     labels = {
         "back": "بازگشت به داشبورد" if fa else "Back to dashboard",
@@ -498,13 +498,13 @@ function render() {
   const s = DATA.find(x => String(x.id) === String(id)) || DATA[0];
   const otherPage = PAGE === 'service_fa.html' ? 'service.html' : 'service_fa.html';
   document.getElementById('langSwitch').href = otherPage + '?id=' + s.id;
-  document.title = s.title + ' — ' + (LANG === 'fa' ? 'مستر‌بوک' : 'Masterbook');
+  document.title = s.title + ' — ' + (LANG === 'fa' ? 'مستربوک' : 'Masterbook');
   const kpis = [
-    [million(s.mrr) + ' M', LANG === 'fa' ? 'MRR ناخالص (تومان)' : 'Gross MRR (Toman)'],
-    [million(s.net) + ' M', LANG === 'fa' ? 'MRR خالص وصول‌شده' : 'Net collected MRR'],
+    [million(s.mrr) + (LANG === 'fa' ? ' م' : ' M'), LANG === 'fa' ? 'MRR ناخالص (تومان)' : 'Gross MRR (Toman)'],
+    [million(s.net) + (LANG === 'fa' ? ' م' : ' M'), LANG === 'fa' ? 'MRR خالص وصول‌شده' : 'Net collected MRR'],
     [pct(s.gm), LANG === 'fa' ? 'حاشیه ناخالص' : 'Gross margin'],
-    [million(s.ebitda) + ' M', LANG === 'fa' ? 'EBITDA مستقل' : 'Standalone EBITDA'],
-    [million(s.portfolio) + ' M', LANG === 'fa' ? 'EBITDA پورتفولیو' : 'Portfolio EBITDA'],
+    [million(s.ebitda) + (LANG === 'fa' ? ' م' : ' M'), LANG === 'fa' ? 'EBITDA مستقل' : 'Standalone EBITDA'],
+    [million(s.portfolio) + (LANG === 'fa' ? ' م' : ' M'), LANG === 'fa' ? 'EBITDA سبد' : 'Portfolio EBITDA'],
     [millions(s.cac), LANG === 'fa' ? 'CAC' : 'CAC'],
     [dec(s.payback) + (LANG === 'fa' ? ' ماه' : ' mo'), LANG === 'fa' ? 'بازگشت CAC' : 'CAC payback'],
     [dec(s.ltv) + 'x', 'LTV:CAC'],
@@ -523,7 +523,7 @@ function render() {
       <div><strong>${LANG === 'fa' ? 'خریدار:' : 'Buyer:'}</strong> ${s.buyer}</div>
       <div><strong>${LANG === 'fa' ? 'حکم:' : 'Verdict:'}</strong> ${s.verdict}</div>
     </div>
-    ${s.origin === 'legacy' ? `<div class="provenance-note">${LANG === 'fa' ? 'این سرویس از کاتالوگ قدیمی v1 آمده و با همان موتور مالی، بوم نه‌بلوکی و فرض‌های ۱۴۰۵ به مدل v3 بازنویسی شده است؛ بخشی از ۲۰۰ سرویس حسابرسی‌شده نیست.' : 'This service comes from the legacy v1 catalogue and has been re-underwritten into the v3 model with the same financial engine, nine-block canvas and 1405 assumptions. It is not part of the audited 200-service docx.'}</div>` : ''}`;
+    ${s.origin === 'legacy' ? `<div class="provenance-note">${LANG === 'fa' ? 'این سرویس از کاتالوگ قدیمی v1 آمده و با همان موتور مالی، بوم ۹بخشی و فرض‌های ۱۴۰۵ به مدل v3 بازنویسی شده است؛ بخشی از ۲۰۰ سرویس حسابرسی‌شده نیست.' : 'This service comes from the legacy v1 catalogue and has been re-underwritten into the v3 model with the same financial engine, nine-block canvas and 1405 assumptions. It is not part of the audited 200-service docx.'}</div>` : ''}`;
 
   document.getElementById('canvas').innerHTML = s.bmc.map(b => `<div class="bmc-card ${b.key}">
     <h3><span class="n">${b.num}</span>${b.title}</h3>
@@ -548,16 +548,16 @@ function render() {
     ...s.cost_rows.map(p => ({ label: p.label, v: Math.abs(p.toman), total: costTotal, cost: true }))
   ];
   document.getElementById('flows').innerHTML = s.revenue_streams.map(p => `<div class="flow-row">
-      <div>${p.label}</div><div class="bar"><i style="width:${p.toman / revTotal * 100}%"></i></div><div class="val">${million(p.toman)} M</div>
+      <div>${p.label}</div><div class="bar"><i style="width:${p.toman / revTotal * 100}%"></i></div>      <div class="val">${million(p.toman)}${LANG === 'fa' ? ' م' : ' M'}</div>
     </div>`).join('') + `<div style="height:10px"></div>` + s.cost_rows.map(p => `<div class="flow-row cost">
-      <div>${p.label}</div><div class="bar"><i style="width:${Math.abs(p.toman) / costTotal * 100}%"></i></div><div class="val">${million(Math.abs(p.toman))} M</div>
+      <div>${p.label}</div><div class="bar"><i style="width:${Math.abs(p.toman) / costTotal * 100}%"></i></div><div class="val">${million(Math.abs(p.toman))}${LANG === 'fa' ? ' م' : ' M'}</div>
     </div>`).join('');
 
   const prev = DATA.find(x => x.id === s.id - 1) || DATA[DATA.length - 1];
   const next = DATA.find(x => x.id === s.id + 1) || DATA[0];
   document.getElementById('pager').innerHTML = `<a href="${PAGE}?id=${prev.id}">← ${LABELS.prev}: ${prev.title}</a><a href="${PAGE}?id=${next.id}">${LABELS.next}: ${next.title} →</a>`;
 }
-function millions(v) { return million(v) + ' M'; }
+function millions(v) { return million(v) + (LANG === 'fa' ? ' م' : ' M'); }
 render();
 """
     script = (
@@ -593,11 +593,11 @@ render();
   </section>
   <section class="panel prose">
     <h2>{labels['method']}</h2>
-    <p>{'اعداد این صفحه از نسخه حسابرسی‌شده v3 است: ماه ۱۲، فعال‌سازی کالیبره‌شده با Latka Iran، حقوق کامل ۱۴۰۵، کمیسیون کانال، ریسک چک صیادی و تورم ماهانه ۷ تا ۹ درصد. ستون‌های دلاری انگلیسی با نرخ ۲۷۰٬۰۰۰ تومان محاسبه شده‌اند؛ نرخ گزارش اصلی ۲۰۳٬۱۰۰ تومان بود.' if fa else 'Figures come from the audited v3 Month-12 run rate: Latka-calibrated activation, fully loaded 1405 payroll, channel commissions, SAYAD cheque risk and 7-9% monthly inflation. English USD columns use 270,000 Toman; the source audit used 203,100.'}</p>
+    <p>{'اعداد این صفحه از مدل ماه ۱۲ نسخه v3.1 است: فعال‌سازی کالیبره‌شده با Latka Iran، حقوق کامل ۱۴۰۵، کمیسیون کانال، ریسک چک صیادی و تورم ماهانه ۷ تا ۹ درصد. ستون‌های دلاری انگلیسی با نرخ ۲۷۰٬۰۰۰ تومان محاسبه شده‌اند؛ نرخ گزارش اصلی ۲۰۳٬۱۰۰ تومان بود.' if fa else 'Figures come from the v3.1 Month-12 run rate: Latka-calibrated activation, fully loaded 1405 payroll, channel commissions, SAYAD cheque risk and 7-9% monthly inflation. English USD columns use 270,000 Toman; the source audit used 203,100.'}</p>
     <div class="nav-pager" id="pager"></div>
   </section>
 </main>
-<footer><div class="wrap"><div>{'مستر‌بوک حسابرسی‌شده v3' if fa else 'Audited Masterbook v3'}</div><div><a href="{back}">{'داشبورد' if fa else 'Dashboard'}</a></div></div></footer>
+<footer><div class="wrap"><div>{'مستربوک ترکیبی v3.1' if fa else 'Combined Masterbook v3.1'}</div><div><a href="{back}">{'داشبورد' if fa else 'Dashboard'}</a></div></div></footer>
 """
     return page(title, lang, direction, body, script)
 
@@ -716,23 +716,23 @@ def report_fa() -> str:
         for s in SERVICES
     ]
     p1 = [s for s in SERVICES if s["tier"] == "P1"]
-    return f"""# مستر‌بوک SaaS هوش مصنوعی ایران — نسخه ترکیبی v3.1
+    return f"""# مستربوک SaaS هوش مصنوعی ایران — نسخه ترکیبی v3.1
 
 **۳۱۰ مدل کسب‌وکار آزمون‌شده در ۲۰ بخش بازار ایران: ۲۰۰ حسابرسی‌شده + ۱۱۰ بازنویسی‌شده**  
 نرخ اجرایی ماه ۱۲ · فرض‌های سال ۱۴۰۵ · همه مبالغ به تومان · دلار با نرخ ۲۷۰٬۰۰۰ تومان
 
 ## ۱. خلاصه مدیریتی
 
-این نسخه ترکیبی، ۲۰۰ سرویس حسابرسی‌شده v3 را در کنار ۱۱۰ سرویس یکتای کاتالوگ ۱۲۰ سرویسی v1 نگه می‌دارد که با همان بوم نه‌بلوکی و مدل مالی ماه ۱۲ بازنویسی شده‌اند. در نرخ اجرایی ماه ۱۲، پورتفولیو **{fa_dec(t['mrr']/1e9,1)} میلیارد تومان** MRR ناخالص صورت‌سابقه می‌کند، **{fa_dec(t['net']/1e9,1)} میلیارد تومان** خالص پس از بدهی بد و تأخیر DSO وصول می‌کند و **{fa_dec(t['ebitda']/1e9,1)} میلیارد تومان** EBITDA مستقل می‌سازد (میانگین حاشیه {fa_pct(t['avg_margin'])}). EBITDA پورتفولیوی موتور مشترک به **{fa_dec(t['portfolio']/1e9,1)} میلیارد تومان** در ماه می‌رسد.
+این نسخه ترکیبی، ۲۰۰ سرویس حسابرسی‌شده v3 را در کنار ۱۱۰ سرویس یکتای کاتالوگ ۱۲۰ سرویسی v1 نگه می‌دارد که با همان بوم ۹بخشی و مدل مالی ماه ۱۲ بازنویسی شده‌اند. در نرخ اجرایی ماه ۱۲، سبد **{fa_dec(t['mrr']/1e9,1)} میلیارد تومان** MRR ناخالص صورتحساب می‌کند، **{fa_dec(t['net']/1e9,1)} میلیارد تومان** خالص پس از مطالبات مشکوک و تأخیر وصول دریافت می‌کند و **{fa_dec(t['ebitda']/1e9,1)} میلیارد تومان** EBITDA مستقل می‌سازد (میانگین حاشیه {fa_pct(t['avg_margin'])}). EBITDA سبد موتور مشترک به **{fa_dec(t['portfolio']/1e9,1)} میلیارد تومان** در ماه می‌رسد.
 
-۱۱۲ سرویس در اولویت ۱، ۱۵۵ سرویس در اولویت ۲ و ۴۳ سرویس در اولویت ۳ قرار دارند. به‌دلیل حکم، ۱۵۷ مدل «گوه مستقل قوی»، ۱۲۷ مدل «مستقل قابل‌دوام/مکمل قوی پورتفولیو» و ۲۶ مدل فقط «مکمل موتور مشترک» هستند، چون سرباز مستقل آن‌ها در قیمت فروش پوشش داده نمی‌شود. ده سرویس EBITDA مستقل منفی دارند: دو استثنای حسابرسی‌شده (#۱۰۴ و #۱۴۰) و هشت سرویس بازنویسی‌شده با حاشیه نازک.
+۱۱۲ سرویس در اولویت ۱، ۱۵۵ سرویس در اولویت ۲ و ۴۳ سرویس در اولویت ۳ قرار دارند. بر اساس حکم، ۱۵۷ مدل «محصول مستقل قوی»، ۱۲۷ مدل «مستقل قابل‌دوام/مکمل قوی سبد» و ۲۶ مدل فقط «مکمل موتور مشترک» هستند، چون سربار مستقل آن‌ها در قیمت فروش پوشش داده نمی‌شود. ده سرویس EBITDA مستقل منفی دارند: دو استثنای حسابرسی‌شده (#۱۰۴ و #۱۴۰) و هشت سرویس بازنویسی‌شده با حاشیه نازک.
 
 ## ۲. منشأ داده و مهاجرت نسخه قدیمی
 
 | گروه | تعداد | منبع | نحوه رفتار |
 |---|---|---|---|
-| حسابرسی‌شده v3 | ۲۰۰ | سند مستر‌بوک v3 (پایان ۲۰۲۶/۱۴۰۵) | بوم و صورت سود و زیان حسابرسی‌شده |
-| قدیمی v1 → v3 | ۱۱۰ | کاتالوگ ۱۲۰ سرویسی قبلی | بازنویسی با موتور مالی v3، هزینه‌های واحد ۱۴۰۵ و همان بوم نه‌بلوکی |
+| حسابرسی‌شده v3 | ۲۰۰ | سند مستربوک v3 (پایان ۲۰۲۶/۱۴۰۵) | بوم و صورت سود و زیان حسابرسی‌شده |
+| قدیمی v1 → v3 | ۱۱۰ | کاتالوگ ۱۲۰ سرویسی قبلی | بازنویسی با موتور مالی v3، هزینه‌های واحد ۱۴۰۵ و همان بوم ۹بخشی |
 
 کاتالوگ قدیمی ۱۲۰ سرویس داشت. ده سرویس هم‌پوشانی کامل محصولی با نسخه حسابرسی‌شده داشتند و به نفع نسخه حسابرسی‌شده حذف شدند: #۲۷→#۲۶ (اعتبارسنجی SME)، #۵۰→#۴۶ (توضیح آزمایش)، #۵۹→#۵۷ (تشخیص سرقت علمی)، #۶۳→#۸۲ (ارزش‌گذاری ملک)، #۷۱→#۸۴ (مسیریابی)، #۸۱→#۷۱ (نگهداری پیش‌بین)، #۸۲→#۷۲ (بازرسی بصری)، #۸۶→#۷۷ (تشخیص بیماری گیاه)، #۹۴→#۶۷ (نظرسنجی کارکنان) و #۱۱۶→#۱۰۰ (برچسب‌گذاری داده). ۱۱۰ سرویس باقی‌مانده مفهوم، خریدار و بوم فارسی اصلی خود را حفظ کرده‌اند، اما قیمت، پایه فعال، ریزش، هزینه GPU/NIN، حقوق، کمیسیون شریک، بدهی بد و اقتصاد موتور مشترک آن‌ها با مدل v3 بازسازی شده است. این سرویس‌ها در داشبورد، صفحه جزئیات و CSV با برچسب «بازنویسی‌شده» مشخص می‌شوند و بخشی از سند حسابرسی‌شده نیستند.
 
@@ -741,11 +741,11 @@ def report_fa() -> str:
 | ایراد نسخه v2 | واقعیت بازار ایران | اصلاح در v3 |
 |---|---|---|
 | خوش‌بینی درآمدی | نمونه SaaS ایران در Latka پس از ۵ تا ۸ سال حدود ۴۸۰ هزار دلار ARR دارد | تعداد مشتری ماه ۱۲ به ۲۲ تا ۴۰ سازمانی، ۱۱۵ تا ۲۰۵ SME و ۳۴۰ تا ۴۸۰ حرفه‌ای/خرد کالیبره شد |
-| نبود تعهدات قانون کار | قانون کار ۱۴۰۵ تأمین، عیدی (۱۶٫۷٪) و سنوات (۸٫۳۳٪) را الزامی می‌کند | هزینه کامل FTE: مهندس AI ۹۶ میلیون، فول‌استک ۶۰ میلیون، فروش ۴۰ میلیون و پشتیبانی ۲۸٫۵ میلیون تومان |
+| نبود تعهدات قانون کار | قانون کار ۱۴۰۵ تأمین، عیدی (۱۶٫۷٪) و سنوات (۸٫۳۳٪) را الزامی می‌کند | هزینه کامل هر نفر: مهندس AI ۹۶ میلیون، فول‌استک ۶۰ میلیون، فروش ۴۰ میلیون و پشتیبانی ۲۸٫۵ میلیون تومان |
 | صفر بودن کمیسیون کانال | بازار/مایکت ۱۵ تا ۲۰ درصد + مالیات و نمایندگان ERP ۱۵ تا ۲۵ درصد می‌گیرند | کمیسیون صریح ۱۲ تا ۱۸ درصد روی ۶۵ درصد درآمد شریک‌محور |
 | نبود بدهی بد و DSO | چک ۶۰ روزه صیادی با تورم ماهانه ۷ تا ۹ درصد، ۱۴ تا ۱۸ درصد قدرت خرید را از بین می‌برد | ذخیره ۲٫۵ درصد حرفه‌ای، ۴٫۵ درصد SME و ۶٫۵ درصد سازمانی |
 | EBITDA و LTV:CAC غیرواقعی | SaaS سالم ایران حاشیه ۲۰ تا ۳۸ درصد و LTV:CAC ۶ تا ۱۴ برابر دارد | CAC، بازگشت، سربه‌سر و اقتصاد موتور مشترک بازمحاسبه شد |
-| سرباز مستقل برای همه ابزارها | ابزارهای کم‌قیمت مصرفی نمی‌توانند دفتر مستقل را بپوشانند | هر سرویس هم EBITDA مستقل و هم موتور مشترک را گزارش می‌کند |
+| سربار مستقل برای همه ابزارها | ابزارهای کم‌قیمت مصرفی نمی‌توانند دفتر مستقل را بپوشانند | هر سرویس هم EBITDA مستقل و هم موتور مشترک را گزارش می‌کند |
 
 ## ۴. مرجع هزینه واحد ۱۴۰۵
 
@@ -754,7 +754,7 @@ def report_fa() -> str:
 | نرخ ارز آزاد | ۲۰۳٬۱۰۰ تومان به ازای هر دلار (گزارش مبنا) | قرارداد پروژه: ۲۷۰٬۰۰۰ تومان |
 | گره GPU داخلی ۴۸ گیگابایت | ۱۵۰٬۰۰۰٬۰۰۰ در ماه | شامل ۲۵٪ بافر پیک |
 | CPU/DB/رله NIN | ۲۴٬۵۰۰٬۰۰۰ تا ۴۲٬۰۰۰٬۰۰۰ در ماه | سرور داخلی + رله |
-| کمیسیون شریک | ۱۲ تا ۱۸ درصد روی ۶۵٪ درآمد | COGS متغیر |
+| کمیسیون شریک | ۱۲ تا ۱۸ درصد روی ۶۵٪ درآمد | بهای تمام‌شده متغیر |
 | بدهی بد و DSO | ۲٫۵٪ / ۴٫۵٪ / ۶٫۵٪ | حرفه‌ای / SME / سازمانی |
 | مهندس ارشد AI | ۹۶٬۰۰۰٬۰۰۰ در ماه | هزینه کامل |
 | توسعه‌دهنده فول‌استک | ۶۰٬۰۰۰٬۰۰۰ در ماه | هزینه کامل |
@@ -783,7 +783,7 @@ def report_fa() -> str:
 - همه ارقام تومانی اسمی و در سطح قیمت ۱۴۰۵ هستند. شاخص‌بندی فصلی CPI/ارز یک اقدام مدیریتی است، نه خروجی خودکار مدل.
 - ستون‌های دلاری داشبورد انگلیسی با نرخ قرارداد پروژه ۲۷۰٬۰۰۰ تومان ساخته شده‌اند. گزارش مبنا از ۲۰۳٬۱۰۰ استفاده کرده بود؛ این دو نرخ را با هم مخلوط نکنید.
 - تعداد مشتری و ریزش از معیارهای Latka Iran و مصاحبه‌های بخشی کالیبره شده‌اند، نه از قیف فروش پایین‌به‌بالا.
-- سناریوی پورتفولیو فرض می‌کند هزینه مهندسی، دفتر و انطباق بین سه ابزار خواهر تقسیم شود. این عدد برای ۳۱۰ سرویس جمع‌شدنی نیست.
+- سناریوی سبد فرض می‌کند هزینه مهندسی، دفتر و انطباق بین سه ابزار هم‌خانواده تقسیم شود. این عدد برای ۳۱۰ سرویس جمع‌شدنی نیست.
 - ۱۱۰ سرویس بازنویسی‌شده برآورد مدل‌محور هستند، نه خروجی سند حسابرسی‌شده. برچسب منشأ آن‌ها در داشبورد، صفحه جزئیات و CSV حفظ می‌شود.
 
 منبع: `data/masterbook.json` + `data/legacy_services.json` · نسخه انگلیسی: `index.html` · جزئیات سرویس: `service_fa.html?id=N`
@@ -817,7 +817,7 @@ def write_csvs():
         "شماره", "منشأ", "بخش", "سرویس", "سطح", "حکم", "خریدار", "بخش مشتری", "موتور",
         "حساب فعال", "ریزش ماهانه ٪", "MRR ناخالص (تومان)", "MRR خالص (تومان)",
         "حاشیه ناخالص ٪", "EBITDA مستقل (تومان)", "حاشیه مستقل ٪",
-        "EBITDA پورتفولیو (تومان)", "حاشیه پورتفولیو ٪", "CAC (تومان)", "بازگشت CAC (ماه)",
+        "EBITDA سبد (تومان)", "حاشیه سبد ٪", "CAC (تومان)", "بازگشت CAC (ماه)",
         "LTV:CAC", "مشتری سربه‌سر", "ARPU (تومان)", "نرخ دلار (تومان)",
     ]
     with (DATA / "iran-ai-saas-masterbook-310-fa.csv").open("w", newline="", encoding="utf-8-sig") as f:
