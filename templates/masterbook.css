@@ -201,3 +201,11 @@
 .tier-pill.p1 { background: #e4efe6; color: #1f6b3c; } .tier-pill.p2 { background: #f5eddc; color: #8a5a12; } .tier-pill.p3 { background: #f0e6e3; color: #8c4032; }
 @media (max-width: 1080px) { .bmc-grid { grid-template-columns: repeat(3, minmax(0,1fr)); grid-template-areas: "partners activities value" "partners resources value" "relationships channels segments" "costs revenue revenue"; } .hero-stats.five { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 760px) { .bmc-grid { grid-template-columns: 1fr; grid-template-areas: "segments" "value" "channels" "relationships" "revenue" "resources" "activities" "partners" "costs"; } .hero-stats.five { grid-template-columns: repeat(2, 1fr); } .flow-row { grid-template-columns: 100px 1fr 70px; } }
+
+/* provenance */
+.origin-pill { display: inline-block; margin-left: 6px; vertical-align: 1px; font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 999px; background: #e8eef5; color: #2f5d8a; white-space: nowrap; }
+.origin-pill.legacy { background: #f7eee2; color: #8a5a12; }
+[dir="rtl"] .origin-pill { margin-left: 0; margin-right: 6px; }
+.badge.origin-audited { background: #e4efe6; color: #1f6b3c; }
+.badge.origin-legacy { background: #f7eee2; color: #8a5a12; }
+.provenance-note { margin-top: 14px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); font-size: 12.5px; color: var(--muted); }

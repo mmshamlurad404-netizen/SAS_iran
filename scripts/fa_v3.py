@@ -70,6 +70,7 @@ BILLING_FA = {
     "Monthly": "ماهانه",
     "Per user": "به‌ازای هر کاربر",
     "Monthly credits": "اعتبار ماهانه",
+    "Monthly + credits": "ماهانه + اعتبار",
     "Per seat": "به‌ازای هر صندلی",
     "Per document": "به‌ازای هر سند",
     "Per query": "به‌ازای هر پرس‌وجو",
@@ -381,23 +382,23 @@ def pl_fa(s) -> list[dict]:
             if label.startswith("Revenue — Tier 1"):
                 m = re.search(r"(\d+) paying accounts × ([\d,]+) T/mo", basis)
                 if m:
-                    fa_basis = f"{fa_int(m.group(1))} حساب × {fa_int(float(m.group(2).replace(',', '')))} تومان/ماه"
+                    fa_basis = f"{fa_int(float(m.group(1)))} حساب × {fa_int(float(m.group(2).replace(',', '')))} تومان/ماه"
             elif label.startswith("Revenue — Tier 2"):
                 m = re.search(r"(\d+) paying accounts × ([\d,]+) T/mo", basis)
                 if m:
-                    fa_basis = f"{fa_int(m.group(1))} حساب × {fa_int(float(m.group(2).replace(',', '')))} تومان/ماه"
+                    fa_basis = f"{fa_int(float(m.group(1)))} حساب × {fa_int(float(m.group(2).replace(',', '')))} تومان/ماه"
             elif label.startswith("Revenue — Tier 3"):
                 m = re.search(r"(\d+) paying accounts × ([\d,]+) T/mo", basis)
                 if m:
-                    fa_basis = f"{fa_int(m.group(1))} حساب × {fa_int(float(m.group(2).replace(',', '')))} تومان/ماه"
+                    fa_basis = f"{fa_int(float(m.group(1)))} حساب × {fa_int(float(m.group(2).replace(',', '')))} تومان/ماه"
             elif label.startswith("Revenue — Metered"):
                 m = re.search(r"(\d+) accounts × avg ([\d,]+) T/mo", basis)
                 if m:
-                    fa_basis = f"{fa_int(m.group(1))} حساب × میانگین {fa_int(float(m.group(2).replace(',', '')))} تومان/ماه مصرف"
+                    fa_basis = f"{fa_int(float(m.group(1)))} حساب × میانگین {fa_int(float(m.group(2).replace(',', '')))} تومان/ماه مصرف"
             elif label.startswith("GROSS BILLED"):
                 m = re.search(r"(\d+) Active Accounts \| Blended Billed ARPU: ([\d,]+) T/mo", basis)
                 if m:
-                    fa_basis = f"{fa_int(m.group(1))} حساب فعال | ARPU ترکیبی صورت‌سابقه: {fa_int(float(m.group(2).replace(',', '')))} تومان/ماه"
+                    fa_basis = f"{fa_int(float(m.group(1)))} حساب فعال | ARPU ترکیبی صورت‌سابقه: {fa_int(float(m.group(2).replace(',', '')))} تومان/ماه"
             elif label.startswith("Less:"):
                 fa_basis = f"{fa_pct(s['dso_pct'])} ذخیره برای تأخیر/نکول چک ← خالص وصولی: {fa_int(s['net_mrr'])} تومان"
             elif label.startswith("COGS — Domestic GPU"):

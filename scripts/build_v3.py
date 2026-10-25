@@ -35,7 +35,15 @@ TEMPLATES = ROOT / "templates"
 CSS = (TEMPLATES / "masterbook.css").read_text(encoding="utf-8")
 USD_TOMAN = 270_000
 USD_SOURCE = 203_100
-SERVICES = MASTERBOOK["services"]
+LEGACY = json.loads((DATA / "legacy_services.json").read_text(encoding="utf-8"))
+LEGACY_FA = json.loads((DATA / "fa_legacy.json").read_text(encoding="utf-8"))
+SERVICES = MASTERBOOK["services"] + LEGACY["services"]
+N_AUDITED = len(MASTERBOOK["services"])
+N_LEGACY = len(LEGACY["services"])
+N_TOTAL = len(SERVICES)
+import fa_v3 as _fa_v3
+_fa_v3.FA_SERVICES.update(LEGACY_FA)
+FA_SERVICES = _fa_v3.FA_SERVICES
 SECTORS = list(MASTERBOOK["sectors"].keys())
 SERVICE_PAGE_FA = "service_fa.html"
 
@@ -119,6 +127,7 @@ def dash_row(s: dict, fa: bool) -> dict:
         "payback": s["payback"],
         "ltv": s["ltv_cac"],
         "arpu": s["_arpu"],
+        "origin": s.get("origin", "audited"),
     }
 
 
@@ -184,6 +193,9 @@ def service_row(s: dict, fa: bool) -> dict:
         "pl": pl,
         "revenue_streams": revenue_streams,
         "cost_rows": cost_rows,
+        "origin": s.get("origin", "audited"),
+        "origin_note": s.get("origin_note", ""),
+        "legacy_id": s.get("legacy_id"),
     }
 
 
@@ -221,11 +233,11 @@ def dashboard_html(fa: bool) -> str:
     data = [dash_row(s, fa) for s in SERVICES]
     aggs = SECTOR_AGGS
     top = [dash_row(s, fa) for s in TOP25]
-    title = "شاهکار SaaS هوش مصنوعی ایران — ۲۰۰ سرویس حسابرسی‌شده" if fa else "Iran AI SaaS Masterbook — 200 Audited Services"
+    title = "شاهکار SaaS هوش مصنوعی ایران — ۳۱۰ سرویس" if fa else "Iran AI SaaS Masterbook — 310 Services"
     lede = (
-        "کاتالوگ ۲۰۰ سرویس نرم‌افزاری مبتنی بر هوش مصنوعی در ۲۰ بخش، با بوم مدل کسب‌وکار و صورت سود و زیان حسابرسی‌شده در ماه ۱۲. همه مبالغ به تومان و بر پایه فرض‌های ۱۴۰۵ است؛ نسخه انگلیسی برای مقایسه بین‌المللی در دسترس است."
+        "کاتالوگ ترکیبی ۳۱۰ سرویس در ۲۰ بخش: ۲۰۰ سرویس حسابرسی‌شده v3 به‌همراه ۱۱۰ سرویس کاتالوگ قدیمی که با همان مدل مالی و بوم نه‌بلوکی بازنویسی شده‌اند. همه مبالغ به تومان و بر پایه فرض‌های ۱۴۰۵ است."
         if fa else
-        "A 200-service catalogue across 20 Iranian sectors, each with an audited Month-12 Business Model Canvas and P&L. Toman figures follow the 1405 audit assumptions; every service links to its full cost, revenue and engine detail."
+        "A combined 310-service catalogue across 20 Iranian sectors: 200 audited v3 services plus 110 legacy v1 services re-underwritten into the same nine-block canvas and Month-12 P&L model. Toman figures follow the 1405 audit assumptions; every service links to its full cost, revenue and engine detail."
     )
     t = TOTALS
     stats = [
@@ -285,7 +297,7 @@ def dashboard_html(fa: bool) -> str:
     <p class="lede">{lede}</p>
     <div class="hero-meta">
       <div><strong>{'۲۰' if fa else '20'}</strong> {'بخش' if fa else 'sectors'}</div>
-      <div><strong>{'۲۰۰' if fa else '200'}</strong> {'سرویس' if fa else 'services'}</div>
+      <div><strong>{'۳۱۰' if fa else '310'}</strong> {'سرویس (۲۰۰ حسابرسی‌شده + ۱۱۰ بازنویسی‌شده)' if fa else 'services (200 audited + 110 re-underwritten)'}</div>
       <div><strong>{'۱۴۰۵' if fa else '1405'}</strong> {'سال مالی' if fa else 'fiscal year'}</div>
       <div><strong>{'۲۷۰٬۰۰۰' if fa else '270,000'}</strong> {'تومان به ازای هر دلار (قرارداد پروژه)' if fa else 'Toman per USD (project convention)'}</div>
     </div>
@@ -296,15 +308,15 @@ def dashboard_html(fa: bool) -> str:
   <section class="grid-2">
     <div class="panel prose">
       <h2>{'خلاصه اجرایی' if fa else 'Executive read'}</h2>
-      <p>{'این نسخه، ۲۰۰ مدل کسب‌وکار را با معیارهای Latka Iran، حقوق کامل ۱۴۰۵ (تأمین، عیدی، سنوات)، کمیسیون کانال، ریسک چک صیادی و تورم ۷ تا ۹ درصد ماهانه بازمحاسبه می‌کند. میانگین حاشیه EBITDA مستقل ' + fa_pct(t['avg_margin']) + ' و EBITDA پورتفولیوی موتور مشترک ' + fa_dec(t['portfolio']/1e9,1) + ' میلیارد تومان در ماه است.' if fa else f"This edition re-underwrites every model against Latka Iran benchmarks, fully loaded 1405 payroll (Tamin, Eidi, Sanavat), channel commissions, SAYAD cheque risk and 7-9% monthly inflation. Average standalone EBITDA margin is {t['avg_margin']:.1f}%; shared-engine portfolio EBITDA reaches {t['portfolio']/1e9:.1f}B Toman per month."}</p>
-      <p>{'۷۳ سرویس در اولویت ۱ قرار دارند؛ ۱۰۶ سرویس گوه مستقل قوی، ۸۴ سرویس مستقل قابل‌دوام/مکمل پورتفولیو و ۱۰ سرویس فقط به‌صورت مکمل موتور مشترک توجیه اقتصادی دارند. تنها دو سرویس (#۱۰۴ و #۱۴۰) در سناریوی مستقل EBITDA منفی دارند و باید صرفاً از طریق فروش پورتفولیویی اداره شوند؛ سایر حاشیه‌های نزدیک به صفر نیز همین رویکرد را می‌طلبند.' if fa else 'Seventy-three services sit in Tier P1: 106 are strong standalone wedges, 84 are viable standalone or strong portfolio add-ons, and 10 only work as shared-engine add-ons. Only two services (#104, #140) show negative standalone EBITDA and must be managed through portfolio sales; thin-margin tools follow the same route.'}</p>
+      <p>{'این نسخه، ۳۱۰ مدل کسب‌وکار (۲۰۰ حسابرسی‌شده + ۱۱۰ بازنویسی‌شده) را با معیارهای Latka Iran، حقوق کامل ۱۴۰۵ (تأمین، عیدی، سنوات)، کمیسیون کانال، ریسک چک صیادی و تورم ۷ تا ۹ درصد ماهانه بازمحاسبه می‌کند. میانگین حاشیه EBITDA مستقل ' + fa_pct(t['avg_margin']) + ' و EBITDA پورتفولیوی موتور مشترک ' + fa_dec(t['portfolio']/1e9,1) + ' میلیارد تومان در ماه است.' if fa else f"This edition combines 200 audited services with 110 legacy services re-underwritten against Latka Iran benchmarks, fully loaded 1405 payroll (Tamin, Eidi, Sanavat), channel commissions, SAYAD cheque risk and 7-9% monthly inflation. Average standalone EBITDA margin is {t['avg_margin']:.1f}%; shared-engine portfolio EBITDA reaches {t['portfolio']/1e9:.1f}B Toman per month."}</p>
+      <p>{'۱۱۲ سرویس در اولویت ۱، ۱۵۵ در اولویت ۲ و ۴۳ در اولویت ۳ قرار دارند. از نظر حکم، ۱۵۷ سرویس گوه مستقل قوی، ۱۲۷ سرویس مستقل قابل‌دوام/مکمل پورتفولیو و ۲۶ سرویس فقط به‌صورت مکمل موتور مشترک توجیه اقتصادی دارند. ده سرویس EBITDA مستقل منفی دارند (دو سرویس حسابرسی‌شده و هشت سرویس بازنویسی‌شده) و باید صرفاً از طریق فروش پورتفولیویی اداره شوند؛ سایر حاشیه‌های نزدیک به صفر نیز همین رویکرد را می‌طلبند.' if fa else 'Tier distribution is 112 P1, 155 P2 and 43 P3. By verdict, 157 services are strong standalone wedges, 127 are viable standalone or strong portfolio add-ons, and 26 only work as shared-engine add-ons. Ten services post negative standalone EBITDA (two audited and eight re-underwritten) and must be managed through portfolio sales; thin-margin tools follow the same route.'}</p>
       <div class="callout">{'نرخ دلار در ستون‌های انگلیسی ۲۷۰٬۰۰۰ تومان است؛ گزارش اصلی حسابرسی از نرخ ۲۰۳٬۱۰۰ تومان استفاده کرده بود. همه محاسبات مالی این پروژه بر پایه تومان است.' if fa else 'English USD columns use the project rate of 270,000 Toman; the source audit used 203,100. Toman remains the authoritative currency throughout this project.'}</div>
-      <p style="margin-top:14px"><a href="{'iran-ai-saas-report-v3-fa.md' if fa else 'iran-ai-saas-report-v3.md'}">{labels['report']}</a> · <a href="{'data/iran-ai-saas-masterbook-200-fa.csv' if fa else 'data/iran-ai-saas-masterbook-200.csv'}">{labels['csv']}</a></p>
+      <p style="margin-top:14px"><a href="{'iran-ai-saas-report-v3.1-fa.md' if fa else 'iran-ai-saas-report-v3.1.md'}">{labels['report']}</a> · <a href="{'data/iran-ai-saas-masterbook-310-fa.csv' if fa else 'data/iran-ai-saas-masterbook-310.csv'}">{labels['csv']}</a></p>
     </div>
     <div class="panel">
       <div style="padding:18px 20px 0"><h2 style="font-size:20px">{labels['sectors']}</h2></div>
       <div class="tier-bars" id="tierBars"></div>
-      <div style="padding:0 20px 18px"><div class="details-note">{'توزیع ۲۰۰ سرویس در سه سطح سرمایه‌گذاری.' if fa else 'Distribution of the 200 services across three investment tiers.'}</div></div>
+      <div style="padding:0 20px 18px"><div class="details-note">{'توزیع ۳۱۰ سرویس در سه سطح سرمایه‌گذاری (۲۰۰ حسابرسی‌شده + ۱۱۰ بازنویسی‌شده).' if fa else 'Distribution of the 310 services across three investment tiers (200 audited + 110 re-underwritten).'}</div></div>
     </div>
   </section>
 
@@ -337,7 +349,7 @@ def dashboard_html(fa: bool) -> str:
     <p>{'مدل‌ها بر پایه ۱۲ ماه فعالیت، با تعداد مشتری کالیبره‌شده Latka (۲۲ تا ۴۰ سازمانی، ۱۱۵ تا ۲۰۵ SME و ۳۴۰ تا ۴۸۰ حرفه‌ای/خرد)، ARPU ترکیبی و ریزش ماهانه ۴ تا ۱۱ درصد ساخته شده‌اند. هزینه‌ها شامل GPU داخلی با ۲۵ درصد بافر، NIN، پیامک/شپارک، کمیسیون ۱۲ تا ۱۸ درصدی شرکا، حقوق کامل فنی/فروش/پشتیبانی، دفتر تهران و بازاریابی است.' if fa else 'Models use a 12-month ramp with Latka-calibrated customer counts (22-40 enterprise, 115-205 SME, 340-480 prosumer/micro), blended ARPU and 4-11% monthly churn. Costs include domestic GPU with a 25% buffer, NIN, SMS/Shaparak, 12-18% partner commissions, fully loaded tech/sales/support payroll, Tehran office and marketing.'}</p>
   </section>
 </main>
-<footer><div class="wrap"><div>{'بر پایه مستربوک حسابرسی‌شده v3 (۲۰۰ سرویس) · قیمت‌ها به تومان' if fa else 'Based on the Audited Masterbook v3 (200 services) · prices in Toman'}</div><div><a href="{'index.html' if fa else 'fa.html'}">{'English edition' if fa else 'Persian edition'}</a></div></div></footer>
+<footer><div class="wrap"><div>{'مستر‌بوک ترکیبی v3.1 · ۳۱۰ سرویس (۲۰۰ حسابرسی‌شده + ۱۱۰ بازنویسی‌شده) · قیمت‌ها به تومان' if fa else 'Combined Masterbook v3.1 · 310 services (200 audited + 110 re-underwritten) · prices in Toman'}</div><div><a href="{'index.html' if fa else 'fa.html'}">{'English edition' if fa else 'Persian edition'}</a></div></div></footer>
 """
 
     script = """
@@ -356,7 +368,7 @@ function tierClass(t) { return t === 'P1' ? 'p1' : t === 'P2' ? 'p2' : 'p3'; }
 function row(s) {
   return `<tr tabindex="0" data-id="${s.id}">
     <td>${s.id}</td>
-    <td><span class="svc-name">${s.title}</span><span class="svc-cat">${s.buyer}</span></td>
+    <td><span class="svc-name">${s.title}</span>${s.origin === 'legacy' ? `<span class="origin-pill legacy">${LANG === 'fa' ? 'بازنویسی v1→v3' : 'v1 → v3'}</span>` : ''}<span class="svc-cat">${s.buyer}</span></td>
     <td>${s.sector}</td>
     <td><span class="tier-pill ${tierClass(s.tier)}">${s.tier}</span></td>
     <td>${s.buyer}</td>
@@ -453,7 +465,7 @@ def service_page_html(fa: bool) -> str:
     lang = "fa" if fa else "en"
     direction = "rtl" if fa else "ltr"
     codes = [service_row(s, fa) for s in SERVICES]
-    title = "جزئیات سرویس — مستر‌بوک ۲۰۰ سرویس" if fa else "Service detail — 200-service masterbook"
+    title = "جزئیات سرویس — مستر‌بوک ۳۱۰ سرویس" if fa else "Service detail — 310-service masterbook"
     back = "fa.html" if fa else "index.html"
     labels = {
         "back": "بازگشت به داشبورد" if fa else "Back to dashboard",
@@ -505,12 +517,13 @@ function render() {
 
   document.getElementById('serviceHead').innerHTML = `
     <div class="breadcrumbs"><a href="${PAGE === 'service_fa.html' ? 'fa.html' : 'index.html'}">${LABELS.back}</a> · ${s.sector}</div>
-    <div style="margin-top:14px"><span class="badge ${tierClass(s.tier)}">${s.tier}</span> <span class="badge">${s.engine}</span></div>
+    <div style="margin-top:14px"><span class="badge ${tierClass(s.tier)}">${s.tier}</span> <span class="badge">${s.engine}</span> ${s.origin === 'legacy' ? `<span class="badge origin-legacy">${LANG === 'fa' ? 'بازنویسی‌شده v1→v3' : 'Legacy v1 → v3'}</span>` : `<span class="badge origin-audited">${LANG === 'fa' ? 'حسابرسی‌شده v3' : 'Audited v3'}</span>`}</div>
     <h1>${s.title}</h1>
     <div class="hero-meta">
       <div><strong>${LANG === 'fa' ? 'خریدار:' : 'Buyer:'}</strong> ${s.buyer}</div>
       <div><strong>${LANG === 'fa' ? 'حکم:' : 'Verdict:'}</strong> ${s.verdict}</div>
-    </div>`;
+    </div>
+    ${s.origin === 'legacy' ? `<div class="provenance-note">${LANG === 'fa' ? 'این سرویس از کاتالوگ قدیمی v1 آمده و با همان موتور مالی، بوم نه‌بلوکی و فرض‌های ۱۴۰۵ به مدل v3 بازنویسی شده است؛ بخشی از ۲۰۰ سرویس حسابرسی‌شده نیست.' : 'This service comes from the legacy v1 catalogue and has been re-underwritten into the v3 model with the same financial engine, nine-block canvas and 1405 assumptions. It is not part of the audited 200-service docx.'}</div>` : ''}`;
 
   document.getElementById('canvas').innerHTML = s.bmc.map(b => `<div class="bmc-card ${b.key}">
     <h3><span class="n">${b.num}</span>${b.title}</h3>
@@ -610,22 +623,31 @@ def report_en() -> str:
         for s in TOP25
     ]
     cat_rows = [
-        [s["id"], s["title"], s["sector"].split(":")[0], s["tier"], s["buyer"], f"{s['_mrr']/1e6:,.0f}", f"{s['_ebitda']/1e6:,.0f}", f"{s['standalone_margin']:.1f}%"]
+        [s["id"], s["title"], s["sector"].split(":")[0], s["tier"], s["buyer"], "Legacy" if s.get("origin") == "legacy" else "Audited", f"{s['_mrr']/1e6:,.0f}", f"{s['_ebitda']/1e6:,.0f}", f"{s['standalone_margin']:.1f}%"]
         for s in SERVICES
     ]
     p1 = [s for s in SERVICES if s["tier"] == "P1"]
-    return f"""# Iran AI SaaS Masterbook — Audited Edition v3
+    return f"""# Iran AI SaaS Masterbook — Combined Edition v3.1
 
-**200 stress-tested business models across 20 Iranian sectors**  
+**310 stress-tested business models across 20 Iranian sectors: 200 audited + 110 legacy re-underwritten**  
 Month-12 run rate · 1405 SH assumptions · all financials in Toman · USD at 270,000 T/USD
 
 ## 1. Executive summary
 
-The audited masterbook replaces the earlier 120-service phase-1 catalogue with 200 services, each carrying a complete nine-block Business Model Canvas and a line-by-line Month-12 P&L. At the Month-12 run rate the portfolio bills **{t['mrr']/1e9:.1f}B Toman** gross MRR, collects **{t['net']/1e9:.1f}B Toman** net of bad debt and DSO lag, and produces **{t['ebitda']/1e9:.1f}B Toman** of standalone EBITDA ({t['avg_margin']:.1f}% average margin). Shared-engine portfolio EBITDA rises to **{t['portfolio']/1e9:.1f}B Toman** per month.
+This combined edition carries the 200 audited v3 services alongside 110 unique services from the earlier 120-service v1 catalogue, re-underwritten into the same nine-block Business Model Canvas and Month-12 P&L model. At the Month-12 run rate the portfolio bills **{t['mrr']/1e9:.1f}B Toman** gross MRR, collects **{t['net']/1e9:.1f}B Toman** net of bad debt and DSO lag, and produces **{t['ebitda']/1e9:.1f}B Toman** of standalone EBITDA ({t['avg_margin']:.1f}% average margin). Shared-engine portfolio EBITDA rises to **{t['portfolio']/1e9:.1f}B Toman** per month.
 
-Seventy-three services are Tier P1, 105 are P2 and 22 are P3. By verdict, 106 models are strong standalone wedges, 84 are viable standalone or strong portfolio add-ons, and 10 are explicitly shared-engine add-ons because their standalone overhead cannot be recovered at their price point. Only #104 and #140 post negative standalone EBITDA (-5.9% and -9.4%).
+Tier distribution is 112 P1, 155 P2 and 43 P3. By verdict, 157 models are strong standalone wedges, 127 are viable standalone or strong portfolio add-ons, and 26 are shared-engine add-ons because their standalone overhead cannot be recovered at their price point. Ten services post negative standalone EBITDA: the two audited exceptions (#104, #140) and eight thin-margin legacy migrations.
 
-## 2. What the audit corrected
+## 2. Provenance and legacy migration
+
+| Cohort | Services | Source | Treatment |
+|---|---|---|---|
+| Audited v3 | 200 | IRAN AI SaaS MASTERBOOK v3 docx (late 2026/1405) | Verbatim audited BMC and Month-12 P&L |
+| Legacy v1 → v3 | 110 | Earlier 120-service catalogue | Re-underwritten with the v3 financial engine, 1405 unit costs and same 9-block canvas |
+
+The legacy cohort started at 120 services. Ten were exact product overlaps with audited services and were removed in favour of the audited version: old #27→#26 (SME credit scoring), #50→#46 (lab-report explainer), #59→#57 (plagiarism detection), #63→#82 (property valuation), #71→#84 (route optimisation), #81→#71 (predictive maintenance), #82→#72 (visual quality inspection), #86→#77 (crop disease detection), #94→#67 (employee surveys) and #116→#100 (data labelling). The remaining 110 retain their original concept, buyer and Persian source canvas, but their prices, active base, churn, GPU/NIN cost, payroll, partner commission, bad debt and shared-engine economics are rebuilt with the v3 model. They are labelled "Legacy" in the dashboard, service pages and CSV; they are not part of the audited docx.
+
+## 3. What the audit corrected
 
 | Flaw in v2 | Iranian market reality | v3 correction |
 |---|---|---|
@@ -636,7 +658,7 @@ Seventy-three services are Tier P1, 105 are P2 and 22 are P3. By verdict, 106 mo
 | Unrealistic EBITDA and LTV:CAC | Healthy Iranian B2B SaaS runs 20-38% EBITDA and 6-14x LTV:CAC | Recomputed CAC, payback, break-even and shared-engine economics |
 | Standalone overhead for every tool | Low-ticket consumer tools cannot carry a standalone office | Every service reports standalone and shared-engine EBITDA |
 
-## 3. Audited 1405 unit-cost reference
+## 4. Audited 1405 unit-cost reference
 
 | Parameter | 1405 figure (Toman) | Treatment |
 |---|---|---|
@@ -650,31 +672,32 @@ Seventy-three services are Tier P1, 105 are P2 and 22 are P3. By verdict, 106 mo
 | B2B sales closer | 40,000,000 / month | Fully loaded |
 | Support specialist | 28,500,000 / month | Fully loaded |
 
-## 4. Sector economics
+## 5. Sector economics
 
 {md_table(["Sector", "Services", "MRR (B T)", "EBITDA (B T)", "Avg margin", "P1"], sector_rows)}
 
-## 5. Top 25 by standalone EBITDA
+## 6. Top 25 by standalone EBITDA
 
 {md_table(["#", "Service", "Tier", "MRR (M T)", "EBITDA (M T)", "Margin", "LTV:CAC"], top_rows)}
 
-## 6. Tier P1 shortlist
+## 7. Tier P1 shortlist
 
 {md_table(["#", "Service", "Sector"], [[s["id"], s["title"], s["sector"]] for s in p1])}
 
-## 7. Full 200-service catalogue
+## 8. Full 310-service catalogue
 
-{md_table(["#", "Service", "Sector", "Tier", "Buyer", "MRR (M T)", "EBITDA (M T)", "Margin"], cat_rows)}
+{md_table(["#", "Service", "Sector", "Tier", "Buyer", "Origin", "MRR (M T)", "EBITDA (M T)", "Margin"], cat_rows)}
 
-## 8. Method and caveats
+## 9. Method and caveats
 
 - Revenue is a Month-12 run rate, not a first-month forecast. Ramp curves are not included in the source audit.
 - All Toman figures are nominal at the 1405 price level. Quarterly CPI/FX indexation is a management action, not an automatic model output.
 - USD columns in the HTML dashboards are derived at the project rate of 270,000 T/USD. The source audit used 203,100; do not mix the two.
 - Customer counts and churn are calibrated from Latka Iran benchmarks and sector interviews, not from a bottom-up sales pipeline.
-- The portfolio case assumes shared engineering, office and compliance costs across three sibling tools. It is not additive across all 200 services.
+- The portfolio case assumes shared engineering, office and compliance costs across three sibling tools. It is not additive across all 310 services.
+- The 110 legacy services are re-underwritten estimates, not audited docx outputs. Their provenance flag is carried through the dashboard, service pages and CSV.
 
-Source: `data/masterbook.json` · Persian edition: `fa.html` · Service detail: `service.html?id=N`
+Source: `data/masterbook.json` + `data/legacy_services.json` · Persian edition: `fa.html` · Service detail: `service.html?id=N`
 """
 
 
@@ -689,22 +712,31 @@ def report_fa() -> str:
         for s in TOP25
     ]
     cat_rows = [
-        [fa_digits(s["id"]), FA_SERVICES[str(s["id"])]["title"], SECTORS_FA.get(s["sector"], s["sector"]), TIERS_FA.get(s["tier"], s["tier"]), FA_SERVICES[str(s["id"])]["buyer"], fa_dec(s["_mrr"] / 1e6), fa_dec(s["_ebitda"] / 1e6), fa_pct(s["standalone_margin"])]
+        [fa_digits(s["id"]), FA_SERVICES[str(s["id"])]["title"], SECTORS_FA.get(s["sector"], s["sector"]), TIERS_FA.get(s["tier"], s["tier"]), FA_SERVICES[str(s["id"])]["buyer"], "بازنویسی‌شده" if s.get("origin") == "legacy" else "حسابرسی‌شده", fa_dec(s["_mrr"] / 1e6), fa_dec(s["_ebitda"] / 1e6), fa_pct(s["standalone_margin"])]
         for s in SERVICES
     ]
     p1 = [s for s in SERVICES if s["tier"] == "P1"]
-    return f"""# مستر‌بوک SaaS هوش مصنوعی ایران — نسخه حسابرسی‌شده v3
+    return f"""# مستر‌بوک SaaS هوش مصنوعی ایران — نسخه ترکیبی v3.1
 
-**۲۰۰ مدل کسب‌وکار آزمون‌شده در ۲۰ بخش بازار ایران**  
+**۳۱۰ مدل کسب‌وکار آزمون‌شده در ۲۰ بخش بازار ایران: ۲۰۰ حسابرسی‌شده + ۱۱۰ بازنویسی‌شده**  
 نرخ اجرایی ماه ۱۲ · فرض‌های سال ۱۴۰۵ · همه مبالغ به تومان · دلار با نرخ ۲۷۰٬۰۰۰ تومان
 
 ## ۱. خلاصه مدیریتی
 
-نسخه حسابرسی‌شده، کاتالوگ ۱۲۰ سرویسی فاز ۱ را با ۲۰۰ سرویس جایگزین می‌کند. هر سرویس یک بوم مدل کسب‌وکار نه‌بلوکی کامل و صورت سود و زیان خط‌به‌خط ماه ۱۲ دارد. در نرخ اجرایی ماه ۱۲، پورتفولیو **{fa_dec(t['mrr']/1e9,1)} میلیارد تومان** MRR ناخالص صورت‌سابقه می‌کند، **{fa_dec(t['net']/1e9,1)} میلیارد تومان** خالص پس از بدهی بد و تأخیر DSO وصول می‌کند و **{fa_dec(t['ebitda']/1e9,1)} میلیارد تومان** EBITDA مستقل می‌سازد (میانگین حاشیه {fa_pct(t['avg_margin'])}). EBITDA پورتفولیوی موتور مشترک به **{fa_dec(t['portfolio']/1e9,1)} میلیارد تومان** در ماه می‌رسد.
+این نسخه ترکیبی، ۲۰۰ سرویس حسابرسی‌شده v3 را در کنار ۱۱۰ سرویس یکتای کاتالوگ ۱۲۰ سرویسی v1 نگه می‌دارد که با همان بوم نه‌بلوکی و مدل مالی ماه ۱۲ بازنویسی شده‌اند. در نرخ اجرایی ماه ۱۲، پورتفولیو **{fa_dec(t['mrr']/1e9,1)} میلیارد تومان** MRR ناخالص صورت‌سابقه می‌کند، **{fa_dec(t['net']/1e9,1)} میلیارد تومان** خالص پس از بدهی بد و تأخیر DSO وصول می‌کند و **{fa_dec(t['ebitda']/1e9,1)} میلیارد تومان** EBITDA مستقل می‌سازد (میانگین حاشیه {fa_pct(t['avg_margin'])}). EBITDA پورتفولیوی موتور مشترک به **{fa_dec(t['portfolio']/1e9,1)} میلیارد تومان** در ماه می‌رسد.
 
-۷۳ سرویس در اولویت ۱، ۱۰۵ سرویس در اولویت ۲ و ۲۲ سرویس در اولویت ۳ قرار دارند. بر اساس حکم، ۱۰۶ مدل «گوه مستقل قوی»، ۸۴ مدل «مستقل قابل‌دوام/مکمل قوی پورتفولیو» و ۱۰ مدل فقط «مکمل موتور مشترک» هستند، چون سرباز مستقل آن‌ها در قیمت فروش پوشش داده نمی‌شود. تنها سرویس‌های #۱۰۴ و #۱۴۰ EBITDA مستقل منفی دارند (منفی ۵٫۹٪ و منفی ۹٫۴٪).
+۱۱۲ سرویس در اولویت ۱، ۱۵۵ سرویس در اولویت ۲ و ۴۳ سرویس در اولویت ۳ قرار دارند. به‌دلیل حکم، ۱۵۷ مدل «گوه مستقل قوی»، ۱۲۷ مدل «مستقل قابل‌دوام/مکمل قوی پورتفولیو» و ۲۶ مدل فقط «مکمل موتور مشترک» هستند، چون سرباز مستقل آن‌ها در قیمت فروش پوشش داده نمی‌شود. ده سرویس EBITDA مستقل منفی دارند: دو استثنای حسابرسی‌شده (#۱۰۴ و #۱۴۰) و هشت سرویس بازنویسی‌شده با حاشیه نازک.
 
-## ۲. اصلاح‌های حسابرسی
+## ۲. منشأ داده و مهاجرت نسخه قدیمی
+
+| گروه | تعداد | منبع | نحوه رفتار |
+|---|---|---|---|
+| حسابرسی‌شده v3 | ۲۰۰ | سند مستر‌بوک v3 (پایان ۲۰۲۶/۱۴۰۵) | بوم و صورت سود و زیان حسابرسی‌شده |
+| قدیمی v1 → v3 | ۱۱۰ | کاتالوگ ۱۲۰ سرویسی قبلی | بازنویسی با موتور مالی v3، هزینه‌های واحد ۱۴۰۵ و همان بوم نه‌بلوکی |
+
+کاتالوگ قدیمی ۱۲۰ سرویس داشت. ده سرویس هم‌پوشانی کامل محصولی با نسخه حسابرسی‌شده داشتند و به نفع نسخه حسابرسی‌شده حذف شدند: #۲۷→#۲۶ (اعتبارسنجی SME)، #۵۰→#۴۶ (توضیح آزمایش)، #۵۹→#۵۷ (تشخیص سرقت علمی)، #۶۳→#۸۲ (ارزش‌گذاری ملک)، #۷۱→#۸۴ (مسیریابی)، #۸۱→#۷۱ (نگهداری پیش‌بین)، #۸۲→#۷۲ (بازرسی بصری)، #۸۶→#۷۷ (تشخیص بیماری گیاه)، #۹۴→#۶۷ (نظرسنجی کارکنان) و #۱۱۶→#۱۰۰ (برچسب‌گذاری داده). ۱۱۰ سرویس باقی‌مانده مفهوم، خریدار و بوم فارسی اصلی خود را حفظ کرده‌اند، اما قیمت، پایه فعال، ریزش، هزینه GPU/NIN، حقوق، کمیسیون شریک، بدهی بد و اقتصاد موتور مشترک آن‌ها با مدل v3 بازسازی شده است. این سرویس‌ها در داشبورد، صفحه جزئیات و CSV با برچسب «بازنویسی‌شده» مشخص می‌شوند و بخشی از سند حسابرسی‌شده نیستند.
+
+## ۳. اصلاح‌های حسابرسی
 
 | ایراد نسخه v2 | واقعیت بازار ایران | اصلاح در v3 |
 |---|---|---|
@@ -715,7 +747,7 @@ def report_fa() -> str:
 | EBITDA و LTV:CAC غیرواقعی | SaaS سالم ایران حاشیه ۲۰ تا ۳۸ درصد و LTV:CAC ۶ تا ۱۴ برابر دارد | CAC، بازگشت، سربه‌سر و اقتصاد موتور مشترک بازمحاسبه شد |
 | سرباز مستقل برای همه ابزارها | ابزارهای کم‌قیمت مصرفی نمی‌توانند دفتر مستقل را بپوشانند | هر سرویس هم EBITDA مستقل و هم موتور مشترک را گزارش می‌کند |
 
-## ۳. مرجع هزینه واحد ۱۴۰۵
+## ۴. مرجع هزینه واحد ۱۴۰۵
 
 | پارامتر | رقم ۱۴۰۵ (تومان) | نحوه اعمال |
 |---|---|---|
@@ -729,31 +761,32 @@ def report_fa() -> str:
 | کارشناس فروش B2B | ۴۰٬۰۰۰٬۰۰۰ در ماه | هزینه کامل |
 | متخصص پشتیبانی | ۲۸٬۵۰۰٬۰۰۰ در ماه | هزینه کامل |
 
-## ۴. اقتصاد بخش‌ها
+## ۵. اقتصاد بخش‌ها
 
 {md_table(["بخش", "تعداد", "MRR (میلیارد ت)", "EBITDA (میلیارد ت)", "میانگین حاشیه", "اولویت ۱"], sector_rows)}
 
-## ۵. ۲۵ سرویس برتر بر اساس EBITDA مستقل
+## ۶. ۲۵ سرویس برتر بر اساس EBITDA مستقل
 
 {md_table(["#", "سرویس", "سطح", "MRR (میلیون ت)", "EBITDA (میلیون ت)", "حاشیه", "LTV:CAC"], top_rows)}
 
-## ۶. فهرست اولویت ۱
+## ۷. فهرست اولویت ۱
 
 {md_table(["#", "سرویس", "بخش"], [[fa_digits(s["id"]), FA_SERVICES[str(s["id"])]["title"], SECTORS_FA.get(s["sector"], s["sector"])] for s in p1])}
 
-## ۷. کاتالوگ کامل ۲۰۰ سرویس
+## ۸. کاتالوگ کامل ۳۱۰ سرویس
 
-{md_table(["#", "سرویس", "بخش", "سطح", "خریدار", "MRR (میلیون ت)", "EBITDA (میلیون ت)", "حاشیه"], cat_rows)}
+{md_table(["#", "سرویس", "بخش", "سطح", "خریدار", "منشأ", "MRR (میلیون ت)", "EBITDA (میلیون ت)", "حاشیه"], cat_rows)}
 
-## ۸. روش و محدودیت‌ها
+## ۹. روش و محدودیت‌ها
 
 - درآمد، نرخ اجرایی ماه ۱۲ است، نه پیش‌بینی ماه اول. منحنی رشد در گزارش مبنا ارائه نشده است.
 - همه ارقام تومانی اسمی و در سطح قیمت ۱۴۰۵ هستند. شاخص‌بندی فصلی CPI/ارز یک اقدام مدیریتی است، نه خروجی خودکار مدل.
 - ستون‌های دلاری داشبورد انگلیسی با نرخ قرارداد پروژه ۲۷۰٬۰۰۰ تومان ساخته شده‌اند. گزارش مبنا از ۲۰۳٬۱۰۰ استفاده کرده بود؛ این دو نرخ را با هم مخلوط نکنید.
 - تعداد مشتری و ریزش از معیارهای Latka Iran و مصاحبه‌های بخشی کالیبره شده‌اند، نه از قیف فروش پایین‌به‌بالا.
-- سناریوی پورتفولیو فرض می‌کند هزینه مهندسی، دفتر و انطباق بین سه ابزار خواهر تقسیم شود. این عدد برای ۲۰۰ سرویس جمع‌شدنی نیست.
+- سناریوی پورتفولیو فرض می‌کند هزینه مهندسی، دفتر و انطباق بین سه ابزار خواهر تقسیم شود. این عدد برای ۳۱۰ سرویس جمع‌شدنی نیست.
+- ۱۱۰ سرویس بازنویسی‌شده برآورد مدل‌محور هستند، نه خروجی سند حسابرسی‌شده. برچسب منشأ آن‌ها در داشبورد، صفحه جزئیات و CSV حفظ می‌شود.
 
-منبع: `data/masterbook.json` · نسخه انگلیسی: `index.html` · جزئیات سرویس: `service_fa.html?id=N`
+منبع: `data/masterbook.json` + `data/legacy_services.json` · نسخه انگلیسی: `index.html` · جزئیات سرویس: `service_fa.html?id=N`
 """
 
 
@@ -762,18 +795,18 @@ def report_fa() -> str:
 
 def write_csvs():
     headers_en = [
-        "id", "sector", "service", "tier", "verdict", "buyer", "segment", "engine",
+        "id", "origin", "sector", "service", "tier", "verdict", "buyer", "segment", "engine",
         "active_accounts", "monthly_churn_pct", "gross_mrr_toman", "net_collected_mrr_toman",
         "gross_margin_pct", "standalone_ebitda_toman", "standalone_margin_pct",
         "portfolio_ebitda_toman", "portfolio_margin_pct", "cac_toman", "cac_payback_months",
         "ltv_cac", "break_even_customers", "arpu_toman", "usd_rate_toman",
     ]
-    with (DATA / "iran-ai-saas-masterbook-200.csv").open("w", newline="", encoding="utf-8") as f:
+    with (DATA / "iran-ai-saas-masterbook-310.csv").open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(headers_en)
         for s in SERVICES:
             w.writerow([
-                s["id"], s["sector"], s["title"], s["tier"], s["verdict"], s["buyer"], s["segment"], s["engine"],
+                s["id"], s.get("origin", "audited"), s["sector"], s["title"], s["tier"], s["verdict"], s["buyer"], s["segment"], s["engine"],
                 s["active"]["accounts"] if s["active"] else 0, s["churn"], round(s["_mrr"]), round(s["_net"]),
                 round(s["_gm"], 2), round(s["_ebitda"]), round(s["standalone_margin"], 2),
                 round(s["portfolio_ebitda"]), round(s["portfolio_margin"], 2), round(s["cac"]), s["payback"],
@@ -781,19 +814,19 @@ def write_csvs():
             ])
 
     headers_fa = [
-        "شماره", "بخش", "سرویس", "سطح", "حکم", "خریدار", "بخش مشتری", "موتور",
+        "شماره", "منشأ", "بخش", "سرویس", "سطح", "حکم", "خریدار", "بخش مشتری", "موتور",
         "حساب فعال", "ریزش ماهانه ٪", "MRR ناخالص (تومان)", "MRR خالص (تومان)",
         "حاشیه ناخالص ٪", "EBITDA مستقل (تومان)", "حاشیه مستقل ٪",
         "EBITDA پورتفولیو (تومان)", "حاشیه پورتفولیو ٪", "CAC (تومان)", "بازگشت CAC (ماه)",
         "LTV:CAC", "مشتری سربه‌سر", "ARPU (تومان)", "نرخ دلار (تومان)",
     ]
-    with (DATA / "iran-ai-saas-masterbook-200-fa.csv").open("w", newline="", encoding="utf-8-sig") as f:
+    with (DATA / "iran-ai-saas-masterbook-310-fa.csv").open("w", newline="", encoding="utf-8-sig") as f:
         w = csv.writer(f)
         w.writerow(headers_fa)
         for s in SERVICES:
             fa = FA_SERVICES[str(s["id"])]
             w.writerow([
-                s["id"], SECTORS_FA.get(s["sector"], s["sector"]), fa["title"], TIERS_FA.get(s["tier"], s["tier"]),
+                s["id"], "بازنویسی‌شده" if s.get("origin") == "legacy" else "حسابرسی‌شده", SECTORS_FA.get(s["sector"], s["sector"]), fa["title"], TIERS_FA.get(s["tier"], s["tier"]),
                 VERDICTS_FA.get(s["verdict"], s["verdict"]), fa["buyer"], SEGMENTS_FA.get(s["segment"], s["segment"]),
                 ENGINES_FA.get(s["engine"], s["engine"]), s["active"]["accounts"] if s["active"] else 0, s["churn"],
                 round(s["_mrr"]), round(s["_net"]), round(s["_gm"], 2), round(s["_ebitda"]),
@@ -807,10 +840,10 @@ def main():
     (ROOT / "fa.html").write_text(dashboard_html(True), encoding="utf-8")
     (ROOT / "service.html").write_text(service_page_html(False), encoding="utf-8")
     (ROOT / "service_fa.html").write_text(service_page_html(True), encoding="utf-8")
-    (ROOT / "iran-ai-saas-report-v3.md").write_text(report_en(), encoding="utf-8")
-    (ROOT / "iran-ai-saas-report-v3-fa.md").write_text(report_fa(), encoding="utf-8")
+    (ROOT / "iran-ai-saas-report-v3.1.md").write_text(report_en(), encoding="utf-8")
+    (ROOT / "iran-ai-saas-report-v3.1-fa.md").write_text(report_fa(), encoding="utf-8")
     write_csvs()
-    for name in ["index.html", "fa.html", "service.html", "service_fa.html", "iran-ai-saas-report-v3.md", "iran-ai-saas-report-v3-fa.md"]:
+    for name in ["index.html", "fa.html", "service.html", "service_fa.html", "iran-ai-saas-report-v3.1.md", "iran-ai-saas-report-v3.1-fa.md"]:
         print(f"wrote {name} ({(ROOT / name).stat().st_size:,} bytes)")
 
 
