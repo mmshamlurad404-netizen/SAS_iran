@@ -215,3 +215,16 @@
 [dir="rtl"] .host-pill { margin-left: 0; margin-right: 6px; }
 .badge.host-local { background: #e4efe6; color: #1f6b3c; }
 .badge.host-hybrid { background: #e8eef5; color: #2f5d8a; }
+.channel-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; }
+.channel-tab { text-decoration: none; color: #d8c9a3; border: 1px solid rgba(216,201,163,0.45); padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; background: transparent; }
+.channel-tab span { font-weight: 600; opacity: 0.8; margin-inline-start: 4px; }
+.channel-tab:hover { background: rgba(216,201,163,0.12); }
+.channel-tab.active { background: #d8c9a3; color: #0b2a25; border-color: #d8c9a3; }
+.channel-pill { display: inline-block; margin-left: 6px; vertical-align: 1px; font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 999px; white-space: nowrap; }
+.channel-pill.public { background: #e8eef5; color: #2f5d8a; }
+.channel-pill.pro { background: #f7eee2; color: #8a5a12; }
+.channel-pill.corporate { background: #ece7dc; color: #5d655f; }
+[dir="rtl"] .channel-pill { margin-left: 0; margin-right: 6px; }
+.badge.channel-public { background: #e8eef5; color: #2f5d8a; }
+.badge.channel-pro { background: #f7eee2; color: #8a5a12; }
+.badge.channel-corporate { background: #ece7dc; color: #5d655f; }

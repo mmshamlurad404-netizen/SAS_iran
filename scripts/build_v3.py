@@ -13,6 +13,7 @@ from fa_v3 import (
     ENGINES_FA,
     FA_SERVICES,
     HOSTING_FA,
+    CHANNEL_FA,
     FLOW_LABELS_FA,
     MASTERBOOK,
     SECTORS_FA,
@@ -43,6 +44,35 @@ HYBRID_ENGINES = {
 LOCAL_SECTOR_PREFIXES = ("C:", "D:", "E:", "L:", "Q:")
 SENSITIVE_RE = re.compile(r"kyc|aml|sayad|moadian|مودیان", re.I)
 HOSTING_EN = {"local": "Local", "hybrid": "Hybrid"}
+CHANNEL_EN = {"public": "Public", "pro": "Small business", "corporate": "Corporate"}
+CHANNEL_PAGES = {
+    None: ("index.html", "fa.html"),
+    "public": ("public.html", "public_fa.html"),
+    "pro": ("pro.html", "pro_fa.html"),
+    "corporate": ("corporate.html", "corporate_fa.html"),
+}
+PUBLIC_RE = re.compile(
+    r"\bconsumers?\b|\bstudents?\b|\bparents?\b|\bcitizens?\b|\blearners?\b|"
+    r"job seekers?|\btravelers?\b|\bindividuals?\b|\bhouseholds?\b|"
+    r"university entrance|\bhigh school\b|medical students?|\binterns?\b|"
+    r"\bapplicants?\b|\bgraduates?\b|\bcandidates?\b|\bretail investors?\b|"
+    r"\btruckers?\b|\bphd candidates\b|faculty members|\bteachers?\b",
+    re.I,
+)
+CORPORATE_BUYER_RE = re.compile(
+    r"\bbanks?\b|\binsurers?\b|\bhospitals?\b|\buniversit|\bministr|"
+    r"\bfactories\b|\bfactory\b|\bindustrial|\benterprises?\b|"
+    r"\bmid-size\b|\bmid-market\b|\bSOC\b|\bcall centers?\b|"
+    r"\bwarehouses?\b|\bnewsrooms?\b|\btelecoms?\b|\bdefense\b|"
+    r"\bmining\b|\blarge retail|\bretail chains?\b|"
+    r"\baudit firms?\b|\bbrokerages?\b|\basset managers?\b|"
+    r"\bVOD\b|\bcorporates?\b|\bcorporate\b|large buildings|imaging centers|"
+    r"\bSaaS companies\b|enterprise AI|\bpurchasing teams\b|"
+    r"manufacturing plants|\bdev shops\b|\bIT ops\b|\bfintechs?\b|"
+    r"hospital procurement|^Marketplaces\b",
+    re.I,
+)
+PRO_FORCE = {260}
 LEGACY = json.loads((DATA / "legacy_services.json").read_text(encoding="utf-8"))
 LEGACY_FA = json.loads((DATA / "fa_legacy.json").read_text(encoding="utf-8"))
 SERVICES = MASTERBOOK["services"] + LEGACY["services"]
@@ -66,6 +96,41 @@ def hosting_mode(s: dict) -> str:
     return "local"
 
 
+def channel_mode(s: dict) -> str:
+    buyer = s.get("buyer", "")
+    if s.get("id") in PRO_FORCE:
+        return "pro"
+    if PUBLIC_RE.search(buyer):
+        return "public"
+    if re.search(r"\bmarketplaces?\b", buyer, re.I) and not re.search(r"marketplace sellers", buyer, re.I):
+        return "corporate"
+    if CORPORATE_BUYER_RE.search(buyer):
+        return "corporate"
+    if str(s.get("segment", "")).startswith("Enterprise"):
+        return "corporate"
+    return "pro"
+
+
+def channel_note(mode: str, fa: bool) -> str:
+    if mode == "public":
+        return (
+            "کانال مردم: خریدار پول‌دهنده فرد، خانوار، دانش‌آموز، کارجو یا شهروند است. فروش مستقل به عموم بدون قرارداد سازمانی."
+            if fa else
+            "Public channel: the paying buyer is an individual, household, student, job-seeker or citizen. Sold independently to the general public without an enterprise contract."
+        )
+    if mode == "pro":
+        return (
+            "کانال کسب‌وکار کوچک: خریدار مغازه، فروشنده خرد، مطب، وکیل مستقل، آژانس کوچک، فریلنسر یا کشاورز است که خودش پول می‌دهد."
+            if fa else
+            "Small-business channel: the paying buyer is a shop, micro-seller, clinic, independent lawyer, small agency, freelancer or farmer who pays themselves."
+        )
+    return (
+        "کانال شرکتی: خریدار بانک، کارخانه، بیمارستان، دانشگاه، پلتفرم یا واحد داخلی شرکت بزرگ است. معمولاً خدمات جانبی سازمانی است نه محصول عمومی."
+        if fa else
+        "Corporate channel: the paying buyer is a bank, factory, hospital, university, platform or internal unit of a large firm. Typically an enterprise add-on, not a public product."
+    )
+
+
 def hosting_note(mode: str, fa: bool) -> str:
     if mode == "hybrid":
         return (
@@ -83,6 +148,7 @@ def hosting_note(mode: str, fa: bool) -> str:
 def enrich(s: dict) -> dict:
     pl = {p["label"]: p["toman"] for p in s["pl"]}
     s["_hosting"] = hosting_mode(s)
+    s["_channel"] = channel_mode(s)
     s["_mrr"] = pl.get("GROSS BILLED REVENUE (MRR)", 0)
     s["_bad_debt"] = pl.get("Less: Bad Debt & DSO Inflation Lag", 0)
     s["_net"] = s["net_mrr"]
@@ -113,6 +179,9 @@ TOTALS = {
     "accounts": sum(s["active"]["accounts"] for s in SERVICES if s["active"]),
     "local": sum(1 for s in SERVICES if s["_hosting"] == "local"),
     "hybrid": sum(1 for s in SERVICES if s["_hosting"] == "hybrid"),
+    "public": sum(1 for s in SERVICES if s["_channel"] == "public"),
+    "pro": sum(1 for s in SERVICES if s["_channel"] == "pro"),
+    "corporate": sum(1 for s in SERVICES if s["_channel"] == "corporate"),
 }
 
 SECTOR_AGGS = []
@@ -165,6 +234,8 @@ def dash_row(s: dict, fa: bool) -> dict:
         "origin": s.get("origin", "audited"),
         "hosting": s["_hosting"],
         "hosting_label": HOSTING_FA.get(s["_hosting"], s["_hosting"]) if fa else HOSTING_EN[s["_hosting"]],
+        "channel": s["_channel"],
+        "channel_label": CHANNEL_FA.get(s["_channel"], s["_channel"]) if fa else CHANNEL_EN[s["_channel"]],
     }
 
 
@@ -236,6 +307,9 @@ def service_row(s: dict, fa: bool) -> dict:
         "hosting": s["_hosting"],
         "hosting_label": HOSTING_FA.get(s["_hosting"], s["_hosting"]) if fa else HOSTING_EN[s["_hosting"]],
         "hosting_note": hosting_note(s["_hosting"], fa),
+        "channel": s["_channel"],
+        "channel_label": CHANNEL_FA.get(s["_channel"], s["_channel"]) if fa else CHANNEL_EN[s["_channel"]],
+        "channel_note": channel_note(s["_channel"], fa),
     }
 
 
@@ -266,28 +340,100 @@ def flow_kind(label: str) -> str:
 DASH_CSS_EXTRA = """
 """
 
+CHANNEL_COPY = {
+    None: {
+        "en_title": "Iran AI SaaS Masterbook — 310 Services",
+        "fa_title": "مستربوک SaaS هوش مصنوعی ایران — ۳۱۰ سرویس",
+        "en_lede": "A combined 310-service catalogue across 20 Iranian sectors: 200 audited v3 services plus 110 legacy v1 services re-underwritten into the same nine-block canvas and Month-12 P&L model. Toman figures follow the 1405 audit assumptions; every service links to its full cost, revenue, engine and hosting detail.",
+        "fa_lede": "کاتالوگ ترکیبی ۳۱۰ سرویس در ۲۰ بخش: ۲۰۰ سرویس حسابرسی‌شده v3 به‌همراه ۱۱۰ سرویس کاتالوگ قدیمی که با همان مدل مالی و بوم ۹بخشی بازنویسی شده‌اند. همه مبالغ به تومان و بر پایه فرض‌های ۱۴۰۵ است. میزبانی هر سرویس محلی یا ترکیبی است.",
+        "en_stat": "combined services",
+        "fa_stat": "سرویس ترکیبی",
+    },
+    "public": {
+        "en_title": "Public panel — sellable to people",
+        "fa_title": "پنل مردم — قابل فروش به عموم",
+        "en_lede": "Services a person, household, student, job-seeker or citizen can buy independently. No enterprise contract required.",
+        "fa_lede": "سرویس‌هایی که فرد، خانوار، دانش‌آموز، کارجو یا شهروند می‌تواند مستقل بخرد. قرارداد سازمانی لازم نیست.",
+        "en_stat": "public services",
+        "fa_stat": "سرویس مردم",
+    },
+    "pro": {
+        "en_title": "Small-business panel — shops, clinics, agencies",
+        "fa_title": "پنل کسب‌وکار کوچک — مغازه، مطب، آژانس",
+        "en_lede": "Services a shop, micro-seller, clinic, independent lawyer, small agency, freelancer or farmer pays for themselves.",
+        "fa_lede": "سرویس‌هایی که مغازه، فروشنده خرد، مطب، وکیل مستقل، آژانس کوچک، فریلنسر یا کشاورز خودش پول می‌دهد.",
+        "en_stat": "small-business services",
+        "fa_stat": "سرویس کسب‌وکار کوچک",
+    },
+    "corporate": {
+        "en_title": "Corporate panel — enterprise add-ons",
+        "fa_title": "پنل شرکتی — خدمات جانبی سازمان‌ها",
+        "en_lede": "Services sold to banks, factories, hospitals, universities, platforms or internal units of large firms — not independently to the public.",
+        "fa_lede": "سرویس‌هایی که به بانک، کارخانه، بیمارستان، دانشگاه، پلتفرم یا واحد داخلی شرکت بزرگ فروخته می‌شوند — نه به عموم به‌صورت مستقل.",
+        "en_stat": "corporate services",
+        "fa_stat": "سرویس شرکتی",
+    },
+}
 
-def dashboard_html(fa: bool) -> str:
+
+def channel_nav(fa: bool, current: str | None) -> str:
+    items = [
+        (None, "همه" if fa else "All", TOTALS["public"] + TOTALS["pro"] + TOTALS["corporate"]),
+        ("public", "مردم" if fa else "Public", TOTALS["public"]),
+        ("pro", "کسب‌وکار کوچک" if fa else "Small business", TOTALS["pro"]),
+        ("corporate", "شرکتی" if fa else "Corporate", TOTALS["corporate"]),
+    ]
+    links = []
+    for key, label, n in items:
+        href = CHANNEL_PAGES[key][1 if fa else 0]
+        active = " active" if key == current else ""
+        count = fa_digits(n) if fa else str(n)
+        links.append(f'<a class="channel-tab{active}" href="{href}">{esc(label)} <span>{count}</span></a>')
+    return '<nav class="channel-nav" aria-label="' + ("کانال فروش" if fa else "Sales channel") + '">' + "".join(links) + "</nav>"
+
+
+def dashboard_html(fa: bool, channel: str | None = None) -> str:
     lang = "fa" if fa else "en"
     direction = "rtl" if fa else "ltr"
-    data = [dash_row(s, fa) for s in SERVICES]
-    aggs = SECTOR_AGGS
-    top = [dash_row(s, fa) for s in TOP25]
-    title = "مستربوک SaaS هوش مصنوعی ایران — ۳۱۰ سرویس" if fa else "Iran AI SaaS Masterbook — 310 Services"
-    lede = (
-        "کاتالوگ ترکیبی ۳۱۰ سرویس در ۲۰ بخش: ۲۰۰ سرویس حسابرسی‌شده v3 به‌همراه ۱۱۰ سرویس کاتالوگ قدیمی که با همان مدل مالی و بوم ۹بخشی بازنویسی شده‌اند. همه مبالغ به تومان و بر پایه فرض‌های ۱۴۰۵ است. میزبانی هر سرویس محلی یا ترکیبی است."
-        if fa else
-        "A combined 310-service catalogue across 20 Iranian sectors: 200 audited v3 services plus 110 legacy v1 services re-underwritten into the same nine-block canvas and Month-12 P&L model. Toman figures follow the 1405 audit assumptions; every service links to its full cost, revenue, engine and hosting detail."
-    )
-    t = TOTALS
+    rows = [s for s in SERVICES if channel is None or s["_channel"] == channel]
+    data = [dash_row(s, fa) for s in rows]
+    sector_seen = []
+    aggs = []
+    for sector in SECTORS:
+        subset = [s for s in rows if s["sector"] == sector]
+        if not subset:
+            continue
+        sector_seen.append(sector)
+        aggs.append({
+            "sector": sector,
+            "sector_fa": SECTORS_FA.get(sector, sector),
+            "count": len(subset),
+            "mrr": sum(s["_mrr"] for s in subset),
+            "net": sum(s["_net"] for s in subset),
+            "ebitda": sum(s["_ebitda"] for s in subset),
+            "portfolio": sum(s["portfolio_ebitda"] for s in subset),
+            "margin": sum(s["standalone_margin"] for s in subset) / len(subset),
+            "p1": sum(1 for s in subset if s["tier"] == "P1"),
+        })
+    top_src = sorted(rows, key=lambda s: s["_ebitda"], reverse=True)[:25]
+    top = [dash_row(s, fa) for s in top_src]
+    copy = CHANNEL_COPY[channel]
+    title = copy["fa_title"] if fa else copy["en_title"]
+    lede = copy["fa_lede"] if fa else copy["en_lede"]
+    t_mrr = sum(s["_mrr"] for s in rows)
+    t_ebitda = sum(s["_ebitda"] for s in rows)
+    t_portfolio = sum(s["portfolio_ebitda"] for s in rows)
+    t_avg_margin = (sum(s["standalone_margin"] for s in rows) / len(rows)) if rows else 0
+    t_p1 = sum(1 for s in rows if s["tier"] == "P1")
     stats = [
-        (f"{fa_digits(len(SERVICES))}" if fa else str(len(SERVICES)), "سرویس ترکیبی" if fa else "combined services"),
-        (f"{fa_digits(len(SECTORS))}" if fa else str(len(SECTORS)), "بخش بازار" if fa else "market sectors"),
-        (f"{fa_dec(t['mrr']/1e9,1)} میلیارد" if fa else f"{t['mrr']/1e9:.1f}B", "MRR ناخالص ماه ۱۲ (تومان)" if fa else "M12 gross MRR (Toman)"),
-        (f"{fa_dec(t['ebitda']/1e9,1)} میلیارد" if fa else f"{t['ebitda']/1e9:.1f}B", "EBITDA مستقل (تومان)" if fa else "standalone EBITDA (Toman)"),
-        (f"{fa_digits(t['p1'])}" if fa else str(t["p1"]), "سرویس اولویت ۱" if fa else "Tier P1 services"),
+        (f"{fa_digits(len(rows))}" if fa else str(len(rows)), copy["fa_stat"] if fa else copy["en_stat"]),
+        (f"{fa_digits(len(sector_seen))}" if fa else str(len(sector_seen)), "بخش بازار" if fa else "market sectors"),
+        (f"{fa_dec(t_mrr/1e9,1)} میلیارد" if fa else f"{t_mrr/1e9:.1f}B", "MRR ناخالص ماه ۱۲ (تومان)" if fa else "M12 gross MRR (Toman)"),
+        (f"{fa_dec(t_ebitda/1e9,1)} میلیارد" if fa else f"{t_ebitda/1e9:.1f}B", "EBITDA مستقل (تومان)" if fa else "standalone EBITDA (Toman)"),
+        (f"{fa_digits(t_p1)}" if fa else str(t_p1), "سرویس اولویت ۱" if fa else "Tier P1 services"),
     ]
     stat_html = "".join(f'<div class="hero-stat"><div class="num">{v}</div><div class="label">{l}</div></div>' for v, l in stats)
+    nav = channel_nav(fa, channel)
 
     sector_labels = {"fa": "بخش", "en": "Sector"}
     table_headers = (
@@ -318,7 +464,17 @@ def dashboard_html(fa: bool) -> str:
         "shown": "سرویس نمایش‌داده‌شده" if fa else "services shown",
         "top": "۲۵ سرویس برتر بر اساس EBITDA مستقل" if fa else "Top 25 by standalone EBITDA",
         "sectors": "نمای بخش‌ها" if fa else "Sector picture",
-        "catalogue": "کاتالوگ کامل" if fa else "Full catalogue",
+        "catalogue": (
+            "کاتالوگ مردم" if channel == "public" else
+            "کاتالوگ کسب‌وکار کوچک" if channel == "pro" else
+            "کاتالوگ شرکتی" if channel == "corporate" else
+            "کاتالوگ کامل"
+        ) if fa else (
+            "Public catalogue" if channel == "public" else
+            "Small-business catalogue" if channel == "pro" else
+            "Corporate catalogue" if channel == "corporate" else
+            "Full catalogue"
+        ),
         "click": "برای بوم مدل کسب‌وکار و صورت سود و زیان، روی هر ردیف کلیک کنید." if fa else "Click any row for its Business Model Canvas and audited P&L.",
         "report": "گزارش کامل" if fa else "Full report",
         "csv": "دانلود CSV" if fa else "Download CSV",
@@ -329,18 +485,21 @@ def dashboard_html(fa: bool) -> str:
         f'<option value="{esc(a["sector"])}">{esc(a["sector_fa"] if fa else a["sector"])}</option>' for a in aggs
     )
 
+    other_lang = CHANNEL_PAGES[channel][0 if fa else 1]
+    n_label = fa_digits(len(rows)) if fa else str(len(rows))
     body = f"""
 <header class="hero">
   <div class="wrap">
     <div class="hero-top">
       <div class="eyebrow"><span></span> {'نسخه ترکیبی v3.1 · ۱۴۰۵' if fa else 'COMBINED EDITION v3.1 · 1405'}</div>
-      <a class="lang-switch" href="{'index.html' if fa else 'fa.html'}" lang="{'en' if fa else 'fa'}" dir="{'ltr' if fa else 'rtl'}">{'English' if fa else 'فارسی'}</a>
+      <a class="lang-switch" href="{other_lang}" lang="{'en' if fa else 'fa'}" dir="{'ltr' if fa else 'rtl'}">{'English' if fa else 'فارسی'}</a>
     </div>
+    {nav}
     <h1>{esc(title)}</h1>
     <p class="lede">{lede}</p>
     <div class="hero-meta">
       <div><strong>{'۲۰' if fa else '20'}</strong> {'بخش' if fa else 'sectors'}</div>
-      <div><strong>{'۳۱۰' if fa else '310'}</strong> {'سرویس (۲۰۰ حسابرسی‌شده + ۱۱۰ بازنویسی‌شده)' if fa else 'services (200 audited + 110 re-underwritten)'}</div>
+      <div><strong>{n_label}</strong> {'سرویس این پنل' if fa else 'services in this panel'}</div>
       <div><strong>{'۱۴۰۵' if fa else '1405'}</strong> {'سال مالی' if fa else 'fiscal year'}</div>
       <div><strong>{'۲۷۰٬۰۰۰' if fa else '270,000'}</strong> {'تومان به ازای هر دلار (قرارداد پروژه)' if fa else 'Toman per USD (project convention)'}</div>
     </div>
@@ -351,15 +510,15 @@ def dashboard_html(fa: bool) -> str:
   <section class="grid-2">
     <div class="panel prose">
       <h2>{'خلاصه اجرایی' if fa else 'Executive read'}</h2>
-      <p>{'این نسخه، ۳۱۰ مدل کسب‌وکار (۲۰۰ حسابرسی‌شده + ۱۱۰ بازنویسی‌شده) را با معیارهای Latka Iran، حقوق کامل ۱۴۰۵ (تأمین، عیدی، سنوات)، کمیسیون کانال، ریسک چک صیادی و تورم ۷ تا ۹ درصد ماهانه بازمحاسبه می‌کند. میانگین حاشیه EBITDA مستقل ' + fa_pct(t['avg_margin']) + ' و EBITDA سبد موتور مشترک ' + fa_dec(t['portfolio']/1e9,1) + ' میلیارد تومان در ماه است.' if fa else f"This edition combines 200 audited services with 110 legacy services re-underwritten against Latka Iran benchmarks, fully loaded 1405 payroll (Tamin, Eidi, Sanavat), channel commissions, SAYAD cheque risk and 7-9% monthly inflation. Average standalone EBITDA margin is {t['avg_margin']:.1f}%; shared-engine portfolio EBITDA reaches {t['portfolio']/1e9:.1f}B Toman per month."}</p>
-      <p>{'۱۱۲ سرویس در اولویت ۱، ۱۵۵ در اولویت ۲ و ۴۳ در اولویت ۳ قرار دارند. از نظر حکم، ۱۵۷ سرویس محصول مستقل قوی، ۱۲۷ سرویس مستقل قابل‌دوام/مکمل سبد و ۲۶ سرویس فقط به‌صورت مکمل موتور مشترک توجیه اقتصادی دارند. ده سرویس EBITDA مستقل منفی دارند (دو سرویس حسابرسی‌شده و هشت سرویس بازنویسی‌شده) و باید صرفاً از طریق فروش سبدی اداره شوند؛ سایر حاشیه‌های نزدیک به صفر نیز همین رویکرد را می‌طلبند.' if fa else 'Tier distribution is 112 P1, 155 P2 and 43 P3. By verdict, 157 services are strong standalone wedges, 127 are viable standalone or strong portfolio add-ons, and 26 only work as shared-engine add-ons. Ten services post negative standalone EBITDA (two audited and eight re-underwritten) and must be managed through portfolio sales; thin-margin tools follow the same route.'}</p>
+      <p>{lede}</p>
+      <p>{'در این پنل ' + fa_digits(len(rows)) + ' سرویس با میانگین حاشیه EBITDA مستقل ' + fa_pct(t_avg_margin) + ' و EBITDA سبد ' + fa_dec(t_portfolio/1e9,1) + ' میلیارد تومان در ماه دیده می‌شود.' if fa else f"This panel holds {len(rows)} services with average standalone EBITDA margin {t_avg_margin:.1f}% and shared-engine portfolio EBITDA of {t_portfolio/1e9:.1f}B Toman per month."}</p>
       <div class="callout">{'نرخ دلار در ستون‌های انگلیسی ۲۷۰٬۰۰۰ تومان است؛ گزارش اصلی حسابرسی از نرخ ۲۰۳٬۱۰۰ تومان استفاده کرده بود. همه محاسبات مالی این پروژه بر پایه تومان است.' if fa else 'English USD columns use the project rate of 270,000 Toman; the source audit used 203,100. Toman remains the authoritative currency throughout this project.'}</div>
       <p style="margin-top:14px"><a href="{'iran-ai-saas-report-v3.1-fa.md' if fa else 'iran-ai-saas-report-v3.1.md'}">{labels['report']}</a> · <a href="{'data/iran-ai-saas-masterbook-310-fa.csv' if fa else 'data/iran-ai-saas-masterbook-310.csv'}">{labels['csv']}</a></p>
     </div>
     <div class="panel">
       <div style="padding:18px 20px 0"><h2 style="font-size:20px">{labels['sectors']}</h2></div>
       <div class="tier-bars" id="tierBars"></div>
-      <div style="padding:0 20px 18px"><div class="details-note">{'توزیع ۳۱۰ سرویس در سه سطح سرمایه‌گذاری (۲۰۰ حسابرسی‌شده + ۱۱۰ بازنویسی‌شده).' if fa else 'Distribution of the 310 services across three investment tiers (200 audited + 110 re-underwritten).'}</div></div>
+      <div style="padding:0 20px 18px"><div class="details-note">{('توزیع ' + fa_digits(len(rows)) + ' سرویس این پنل در سه سطح سرمایه‌گذاری.') if fa else f'Distribution of the {len(rows)} services in this panel across three investment tiers.'}</div></div>
     </div>
   </section>
 
@@ -412,7 +571,7 @@ function tierClass(t) { return t === 'P1' ? 'p1' : t === 'P2' ? 'p2' : 'p3'; }
 function row(s) {
   return `<tr tabindex="0" data-id="${s.id}">
     <td>${s.id}</td>
-    <td><span class="svc-name">${s.title}</span>${s.origin === 'legacy' ? `<span class="origin-pill legacy">${LANG === 'fa' ? 'بازنویسی v1→v3' : 'v1 → v3'}</span>` : ''}<span class="host-pill ${s.hosting}">${s.hosting_label}</span><span class="svc-cat">${s.buyer}</span></td>
+    <td><span class="svc-name">${s.title}</span>${s.origin === 'legacy' ? `<span class="origin-pill legacy">${LANG === 'fa' ? 'بازنویسی v1→v3' : 'v1 → v3'}</span>` : ''}<span class="channel-pill ${s.channel}">${s.channel_label}</span><span class="host-pill ${s.hosting}">${s.hosting_label}</span><span class="svc-cat">${s.buyer}</span></td>
     <td>${s.sector}</td>
     <td><span class="tier-pill ${tierClass(s.tier)}">${s.tier}</span></td>
     <td>${s.buyer}</td>
@@ -562,13 +721,15 @@ function render() {
 
   document.getElementById('serviceHead').innerHTML = `
     <div class="breadcrumbs"><a href="${PAGE === 'service_fa.html' ? 'fa.html' : 'index.html'}">${LABELS.back}</a> · ${s.sector}</div>
-    <div style="margin-top:14px"><span class="badge ${tierClass(s.tier)}">${s.tier}</span> <span class="badge">${s.engine}</span> <span class="badge host-${s.hosting}">${s.hosting_label}</span> ${s.origin === 'legacy' ? `<span class="badge origin-legacy">${LANG === 'fa' ? 'بازنویسی‌شده v1→v3' : 'Legacy v1 → v3'}</span>` : `<span class="badge origin-audited">${LANG === 'fa' ? 'حسابرسی‌شده v3' : 'Audited v3'}</span>`}</div>
+    <div style="margin-top:14px"><span class="badge ${tierClass(s.tier)}">${s.tier}</span> <span class="badge">${s.engine}</span> <span class="badge channel-${s.channel}">${s.channel_label}</span> <span class="badge host-${s.hosting}">${s.hosting_label}</span> ${s.origin === 'legacy' ? `<span class="badge origin-legacy">${LANG === 'fa' ? 'بازنویسی‌شده v1→v3' : 'Legacy v1 → v3'}</span>` : `<span class="badge origin-audited">${LANG === 'fa' ? 'حسابرسی‌شده v3' : 'Audited v3'}</span>`}</div>
     <h1>${s.title}</h1>
     <div class="hero-meta">
       <div><strong>${LANG === 'fa' ? 'خریدار:' : 'Buyer:'}</strong> ${s.buyer}</div>
       <div><strong>${LANG === 'fa' ? 'حکم:' : 'Verdict:'}</strong> ${s.verdict}</div>
+      <div><strong>${LANG === 'fa' ? 'کانال:' : 'Channel:'}</strong> ${s.channel_label}</div>
       <div><strong>${LANG === 'fa' ? 'میزبانی:' : 'Hosting:'}</strong> ${s.hosting_label}</div>
     </div>
+    <div class="provenance-note">${s.channel_note}</div>
     <div class="provenance-note">${s.hosting_note}</div>
     ${s.origin === 'legacy' ? `<div class="provenance-note">${LANG === 'fa' ? 'این سرویس از کاتالوگ قدیمی v1 آمده و با همان موتور مالی، بوم ۹بخشی و فرض‌های ۱۴۰۵ به مدل v3 بازنویسی شده است؛ بخشی از ۲۰۰ سرویس حسابرسی‌شده نیست.' : 'This service comes from the legacy v1 catalogue and has been re-underwritten into the v3 model with the same financial engine, nine-block canvas and 1405 assumptions. It is not part of the audited 200-service docx.'}</div>` : ''}`;
 
@@ -670,7 +831,7 @@ def report_en() -> str:
         for s in TOP25
     ]
     cat_rows = [
-        [s["id"], s["title"], s["sector"].split(":")[0], s["tier"], s["buyer"], "Legacy" if s.get("origin") == "legacy" else "Audited", HOSTING_EN[s["_hosting"]], f"{s['_mrr']/1e6:,.0f}", f"{s['_ebitda']/1e6:,.0f}", f"{s['standalone_margin']:.1f}%"]
+        [s["id"], s["title"], s["sector"].split(":")[0], s["tier"], s["buyer"], "Legacy" if s.get("origin") == "legacy" else "Audited", CHANNEL_EN[s["_channel"]], HOSTING_EN[s["_hosting"]], f"{s['_mrr']/1e6:,.0f}", f"{s['_ebitda']/1e6:,.0f}", f"{s['standalone_margin']:.1f}%"]
         for s in SERVICES
     ]
     p1 = [s for s in SERVICES if s["tier"] == "P1"]
@@ -697,6 +858,10 @@ The legacy cohort started at 120 services. Ten were exact product overlaps with 
 ## 2b. Hosting mode
 
 Inference is local-first on domestic GPU and the National Information Network. **{t['local']} services** stay fully local. **{t['hybrid']} services** (engines 5A generative copy and 5B studio vision, outside sensitive sectors) may overflow to ChatGPT, Claude or Gemini. Tax, Moadian, healthcare, legal and KYC workloads never leave local hosting. The dashboard, service pages and CSV expose a Hosting filter (`local` / `hybrid`). There is no pure cloud-API tier.
+
+## 2c. Sales channel
+
+Services are split by who actually pays, not by the catalogue `segment` field. **{t['public']} public** services sell to a person, household, student, job-seeker or citizen (`public.html` / `public_fa.html`). **{t['pro']} small-business** services sell to a shop, micro-seller, clinic, independent lawyer, small agency, freelancer or farmer (`pro.html` / `pro_fa.html`). **{t['corporate']} corporate** services are enterprise add-ons for banks, factories, hospitals, universities and platforms (`corporate.html` / `corporate_fa.html`). The main dashboard (`index.html` / `fa.html`) links all three panels.
 
 ## 3. What the audit corrected
 
@@ -737,7 +902,7 @@ Inference is local-first on domestic GPU and the National Information Network. *
 
 ## 8. Full 310-service catalogue
 
-{md_table(["#", "Service", "Sector", "Tier", "Buyer", "Origin", "Hosting", "MRR (M T)", "EBITDA (M T)", "Margin"], cat_rows)}
+{md_table(["#", "Service", "Sector", "Tier", "Buyer", "Origin", "Channel", "Hosting", "MRR (M T)", "EBITDA (M T)", "Margin"], cat_rows)}
 
 ## 9. Method and caveats
 
@@ -764,7 +929,7 @@ def report_fa() -> str:
         for s in TOP25
     ]
     cat_rows = [
-        [fa_digits(s["id"]), FA_SERVICES[str(s["id"])]["title"], SECTORS_FA.get(s["sector"], s["sector"]), TIERS_FA.get(s["tier"], s["tier"]), FA_SERVICES[str(s["id"])]["buyer"], "بازنویسی‌شده" if s.get("origin") == "legacy" else "حسابرسی‌شده", HOSTING_FA.get(s["_hosting"], s["_hosting"]), fa_dec(s["_mrr"] / 1e6), fa_dec(s["_ebitda"] / 1e6), fa_pct(s["standalone_margin"])]
+        [fa_digits(s["id"]), FA_SERVICES[str(s["id"])]["title"], SECTORS_FA.get(s["sector"], s["sector"]), TIERS_FA.get(s["tier"], s["tier"]), FA_SERVICES[str(s["id"])]["buyer"], "بازنویسی‌شده" if s.get("origin") == "legacy" else "حسابرسی‌شده", CHANNEL_FA.get(s["_channel"], s["_channel"]), HOSTING_FA.get(s["_hosting"], s["_hosting"]), fa_dec(s["_mrr"] / 1e6), fa_dec(s["_ebitda"] / 1e6), fa_pct(s["standalone_margin"])]
         for s in SERVICES
     ]
     p1 = [s for s in SERVICES if s["tier"] == "P1"]
@@ -791,6 +956,10 @@ def report_fa() -> str:
 ## ۲ب. حالت میزبانی
 
 استنتاج پیش‌فرض روی GPU داخلی و شبکه ملی اطلاعات است. **{fa_digits(t['local'])} سرویس** کاملاً محلی می‌مانند. **{fa_digits(t['hybrid'])} سرویس** (موتور ۵A تولید متن و ۵B بینایی استودیویی، خارج از بخش‌های حساس) می‌توانند سرریز را به ChatGPT، Claude یا Gemini بفرستند. بار مالیات، مودیان، سلامت، حقوقی و احراز هویت هرگز از میزبانی محلی خارج نمی‌شود. داشبورد، صفحه جزئیات و CSV فیلتر میزبانی (`محلی` / `ترکیبی`) دارند. سطح صرفاً ابری وجود ندارد.
+
+## ۲ج. کانال فروش
+
+سرویس‌ها بر اساس خریدار پول‌دهنده تفکیک شده‌اند، نه فیلد `segment` کاتالوگ. **{fa_digits(t['public'])} سرویس مردم** به فرد، خانوار، دانش‌آموز، کارجو یا شهروند فروخته می‌شود (`public_fa.html`). **{fa_digits(t['pro'])} سرویس کسب‌وکار کوچک** به مغازه، فروشنده خرد، مطب، وکیل مستقل، آژانس کوچک، فریلنسر یا کشاورز فروخته می‌شود (`pro_fa.html`). **{fa_digits(t['corporate'])} سرویس شرکتی** خدمات جانبی بانک، کارخانه، بیمارستان، دانشگاه و پلتفرم است (`corporate_fa.html`). داشبورد اصلی (`fa.html`) به هر سه پنل لینک دارد.
 
 ## ۳. اصلاح‌های حسابرسی
 
@@ -831,7 +1000,7 @@ def report_fa() -> str:
 
 ## ۸. کاتالوگ کامل ۳۱۰ سرویس
 
-{md_table(["#", "سرویس", "بخش", "سطح", "خریدار", "منشأ", "میزبانی", "MRR (میلیون ت)", "EBITDA (میلیون ت)", "حاشیه"], cat_rows)}
+{md_table(["#", "سرویس", "بخش", "سطح", "خریدار", "منشأ", "کانال", "میزبانی", "MRR (میلیون ت)", "EBITDA (میلیون ت)", "حاشیه"], cat_rows)}
 
 ## ۹. روش و محدودیت‌ها
 
@@ -852,7 +1021,7 @@ def report_fa() -> str:
 
 def write_csvs():
     headers_en = [
-        "id", "origin", "hosting", "sector", "service", "tier", "verdict", "buyer", "segment", "engine",
+        "id", "origin", "channel", "hosting", "sector", "service", "tier", "verdict", "buyer", "segment", "engine",
         "active_accounts", "monthly_churn_pct", "gross_mrr_toman", "net_collected_mrr_toman",
         "gross_margin_pct", "standalone_ebitda_toman", "standalone_margin_pct",
         "portfolio_ebitda_toman", "portfolio_margin_pct", "cac_toman", "cac_payback_months",
@@ -863,7 +1032,7 @@ def write_csvs():
         w.writerow(headers_en)
         for s in SERVICES:
             w.writerow([
-                s["id"], s.get("origin", "audited"), s["_hosting"], s["sector"], s["title"], s["tier"], s["verdict"], s["buyer"], s["segment"], s["engine"],
+                s["id"], s.get("origin", "audited"), s["_channel"], s["_hosting"], s["sector"], s["title"], s["tier"], s["verdict"], s["buyer"], s["segment"], s["engine"],
                 s["active"]["accounts"] if s["active"] else 0, s["churn"], round(s["_mrr"]), round(s["_net"]),
                 round(s["_gm"], 2), round(s["_ebitda"]), round(s["standalone_margin"], 2),
                 round(s["portfolio_ebitda"]), round(s["portfolio_margin"], 2), round(s["cac"]), s["payback"],
@@ -871,7 +1040,7 @@ def write_csvs():
             ])
 
     headers_fa = [
-        "شماره", "منشأ", "میزبانی", "بخش", "سرویس", "سطح", "حکم", "خریدار", "بخش مشتری", "موتور",
+        "شماره", "منشأ", "کانال", "میزبانی", "بخش", "سرویس", "سطح", "حکم", "خریدار", "بخش مشتری", "موتور",
         "حساب فعال", "ریزش ماهانه ٪", "MRR ناخالص (تومان)", "MRR خالص (تومان)",
         "حاشیه ناخالص ٪", "EBITDA مستقل (تومان)", "حاشیه مستقل ٪",
         "EBITDA سبد (تومان)", "حاشیه سبد ٪", "CAC (تومان)", "بازگشت CAC (ماه)",
@@ -883,7 +1052,7 @@ def write_csvs():
         for s in SERVICES:
             fa = FA_SERVICES[str(s["id"])]
             w.writerow([
-                s["id"], "بازنویسی‌شده" if s.get("origin") == "legacy" else "حسابرسی‌شده", HOSTING_FA.get(s["_hosting"], s["_hosting"]), SECTORS_FA.get(s["sector"], s["sector"]), fa["title"], TIERS_FA.get(s["tier"], s["tier"]),
+                s["id"], "بازنویسی‌شده" if s.get("origin") == "legacy" else "حسابرسی‌شده", CHANNEL_FA.get(s["_channel"], s["_channel"]), HOSTING_FA.get(s["_hosting"], s["_hosting"]), SECTORS_FA.get(s["sector"], s["sector"]), fa["title"], TIERS_FA.get(s["tier"], s["tier"]),
                 VERDICTS_FA.get(s["verdict"], s["verdict"]), fa["buyer"], SEGMENTS_FA.get(s["segment"], s["segment"]),
                 ENGINES_FA.get(s["engine"], s["engine"]), s["active"]["accounts"] if s["active"] else 0, s["churn"],
                 round(s["_mrr"]), round(s["_net"]), round(s["_gm"], 2), round(s["_ebitda"]),
@@ -893,14 +1062,24 @@ def write_csvs():
 
 
 def main():
-    (ROOT / "index.html").write_text(dashboard_html(False), encoding="utf-8")
-    (ROOT / "fa.html").write_text(dashboard_html(True), encoding="utf-8")
-    (ROOT / "service.html").write_text(service_page_html(False), encoding="utf-8")
-    (ROOT / "service_fa.html").write_text(service_page_html(True), encoding="utf-8")
-    (ROOT / "iran-ai-saas-report-v3.1.md").write_text(report_en(), encoding="utf-8")
-    (ROOT / "iran-ai-saas-report-v3.1-fa.md").write_text(report_fa(), encoding="utf-8")
+    pages = [
+        ("index.html", dashboard_html(False)),
+        ("fa.html", dashboard_html(True)),
+        ("public.html", dashboard_html(False, "public")),
+        ("public_fa.html", dashboard_html(True, "public")),
+        ("pro.html", dashboard_html(False, "pro")),
+        ("pro_fa.html", dashboard_html(True, "pro")),
+        ("corporate.html", dashboard_html(False, "corporate")),
+        ("corporate_fa.html", dashboard_html(True, "corporate")),
+        ("service.html", service_page_html(False)),
+        ("service_fa.html", service_page_html(True)),
+        ("iran-ai-saas-report-v3.1.md", report_en()),
+        ("iran-ai-saas-report-v3.1-fa.md", report_fa()),
+    ]
+    for name, text in pages:
+        (ROOT / name).write_text(text, encoding="utf-8")
     write_csvs()
-    for name in ["index.html", "fa.html", "service.html", "service_fa.html", "iran-ai-saas-report-v3.1.md", "iran-ai-saas-report-v3.1-fa.md"]:
+    for name, _ in pages:
         print(f"wrote {name} ({(ROOT / name).stat().st_size:,} bytes)")
 
 

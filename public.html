@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Public panel — sellable to people</title>
+<style>:root {
+    --bg: #f6f4ef;
+    --surface: #ffffff;
+    --surface-2: #fbfaf7;
+    --ink: #17201c;
+    --muted: #64706a;
+    --line: #e3ded4;
+    --accent: #0f5c4c;
+    --accent-2: #b7791f;
+    --accent-soft: #e6f0ec;
+    --danger: #a33a2b;
+    --radius: 14px;
+    --shadow: 0 10px 30px rgba(23, 32, 28, 0.07);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Vazirmatn", "IRANSans", "Segoe UI", Tahoma, sans-serif;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+  header.hero {
+    background: radial-gradient(1200px 600px at 85% -10%, #1e6b59 0%, #0f3d34 45%, #0b2a25 100%);
+    color: #f4f1e8;
+    padding: 60px 0 52px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+  .hero-top { display: flex; justify-content: space-between; align-items: start; gap: 20px; }
+  .lang-switch { color: #d8c9a3; text-decoration: none; font-size: 13px; border: 1px solid rgba(216,201,163,0.5); padding: 7px 14px; border-radius: 999px; white-space: nowrap; }
+  .lang-switch:hover { background: rgba(216,201,163,0.12); }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; letter-spacing: 0.08em;
+    color: #d8c9a3; font-weight: 700;
+  }
+  .eyebrow span { width: 26px; height: 1px; background: #d8c9a3; display: inline-block; }
+  h1 {
+    font-size: clamp(32px, 5vw, 56px);
+    line-height: 1.25; margin: 14px 0 16px; font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .lede { font-size: clamp(15px, 2vw, 18px); color: #cfe0da; max-width: 780px; margin: 0 0 24px; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 10px 22px; font-size: 13px; color: #b9cec7; }
+  .hero-meta strong { color: #f4f1e8; font-weight: 700; }
+  .hero-stats {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px; background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.14); border-radius: var(--radius);
+    overflow: hidden; margin-top: 32px;
+  }
+  .hero-stat { background: rgba(255,255,255,0.06); padding: 17px 20px; }
+  .hero-stat .num { font-size: 28px; font-weight: 800; color: #fff; line-height: 1.2; }
+  .hero-stat .label { font-size: 12px; color: #b9cec7; margin-top: 4px; }
+  main { padding: 36px 0 78px; }
+  section { margin-bottom: 44px; }
+  .section-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+  h2 { font-size: clamp(23px, 3vw, 32px); margin: 0; font-weight: 800; letter-spacing: -0.01em; }
+  .section-note { color: var(--muted); font-size: 13.5px; max-width: 680px; margin: 6px 0 0; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .grid-2 { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 22px; }
+  .prose { padding: 26px 28px; }
+  .prose p { margin: 0 0 14px; }
+  .prose p:last-child { margin-bottom: 0; }
+  .prose h2 { margin-bottom: 14px; }
+  .prose strong { color: #0d2f28; }
+  .callout { border-inline-start: 3px solid var(--accent-2); background: #fdf7ea; padding: 16px 18px; border-radius: 10px 0 0 10px; color: #5c4a25; font-size: 13.5px; }
+  .priority-list { padding: 8px 0; }
+  .priority-item { display: grid; grid-template-columns: 42px 1fr auto; gap: 14px; align-items: center; padding: 12px 22px; border-bottom: 1px solid var(--line); cursor: pointer; }
+  .priority-item:last-child { border-bottom: 0; }
+  .priority-item:hover { background: #faf8f2; }
+  .rank { font-size: 19px; color: var(--accent-2); font-weight: 800; }
+  .priority-item .name { font-weight: 700; font-size: 14px; }
+  .priority-item .cat { font-size: 11.5px; color: var(--muted); }
+  .score-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 48px; height: 28px; padding: 0 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 800; font-size: 13px; }
+  .score-pill.high { background: #e4efe6; color: #1f6b3c; }
+  .score-pill.mid { background: #f5eddc; color: #8a5a12; }
+  .score-pill.low { background: #f0e6e3; color: #8c4032; }
+  .controls { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 10px; padding: 16px; border-bottom: 1px solid var(--line); background: var(--surface-2); border-radius: var(--radius) var(--radius) 0 0; }
+  .controls label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; font-weight: 700; }
+  .controls input, .controls select { width: 100%; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 9px; padding: 10px 12px; font-size: 13.5px; font-family: inherit; outline: none; }
+  .controls input:focus, .controls select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15,92,76,0.12); }
+  .table-meta { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; font-size: 12.5px; color: var(--muted); border-bottom: 1px solid var(--line); }
+  .table-scroll { overflow: auto; max-height: 720px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { position: sticky; top: 0; background: #f1ede4; color: #45514c; text-align: right; font-size: 11px; padding: 11px 12px; border-bottom: 1px solid var(--line); z-index: 2; white-space: nowrap; }
+  tbody td { padding: 11px 12px; border-bottom: 1px solid #eee9df; vertical-align: top; }
+  tbody tr { cursor: pointer; transition: background 0.12s ease; }
+  tbody tr:hover { background: #faf8f2; }
+  tbody tr:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .svc-name { font-weight: 700; color: #122a24; }
+  .svc-cat { display: block; font-size: 11.5px; color: var(--muted); margin-top: 2px; font-weight: 400; }
+  .tag { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 999px; background: #f1ede4; color: #5d655f; white-space: nowrap; }
+  .tag.low { background: #e4efe6; color: #1f6b3c; }
+  .tag.medium { background: #f5eddc; color: #8a5a12; }
+  .tag.high { background: #f0e6e3; color: #8c4032; }
+  .tag.veryhigh { background: #ead7d3; color: #7a2d21; }
+  .empty { padding: 40px; text-align: center; color: var(--muted); }
+  .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+  .category-card { background: var(--surface); border: 1px solid var(--line); border-radius: 11px; padding: 14px 16px; }
+  .category-card .cname { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .category-card .cmeta { font-size: 11.5px; color: var(--muted); display: flex; justify-content: space-between; }
+  .bar { height: 5px; background: #ece7dc; border-radius: 99px; overflow: hidden; margin-top: 8px; }
+  .bar > i { display: block; height: 100%; background: linear-gradient(270deg, #0f5c4c, #2f8d76); border-radius: 99px; }
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(11, 36, 30, 0.55); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
+  .modal-backdrop.open { display: flex; }
+  .modal { background: var(--surface); width: min(760px, 100%); max-height: 88vh; overflow: auto; border-radius: 16px; box-shadow: 0 30px 80px rgba(0,0,0,0.3); }
+  .modal-head { padding: 24px 26px 18px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 16px; align-items: start; }
+  .modal-head h3 { font-size: 24px; margin: 0 0 4px; line-height: 1.35; font-weight: 800; }
+  .modal-head .cat { font-size: 12px; color: var(--muted); }
+  .close { border: 0; background: #f1ede4; color: #45514c; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 18px; line-height: 1; flex: 0 0 auto; font-family: inherit; }
+  .close:hover { background: #e6e0d3; }
+  .modal-body { padding: 20px 26px 26px; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; margin-bottom: 18px; }
+  .detail { font-size: 13px; }
+  .detail .k { font-size: 10.5px; color: var(--muted); font-weight: 700; margin-bottom: 3px; }
+  .detail .v { color: #1d2b26; }
+  .score-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 18px 0 8px; }
+  .score-box { background: var(--surface-2); border: 1px solid var(--line); border-radius: 9px; padding: 9px; text-align: center; }
+  .score-box .n { font-size: 18px; font-weight: 800; color: var(--accent); }
+  .score-box .l { font-size: 10px; color: var(--muted); }
+  .big-score { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
+  .big-score .value { font-size: 38px; color: var(--accent); line-height: 1; font-weight: 800; }
+  .big-score .label { font-size: 12px; color: var(--muted); max-width: 300px; }
+  footer { border-top: 1px solid var(--line); padding: 26px 0 50px; color: var(--muted); font-size: 12px; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  @media (max-width: 900px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .hero-stats { grid-template-columns: repeat(2, 1fr); }
+    .controls { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .wrap { padding: 0 16px; }
+    header.hero { padding: 40px 0 34px; }
+    .controls { grid-template-columns: 1fr; }
+    .detail-grid { grid-template-columns: 1fr; }
+    .score-row { grid-template-columns: repeat(3, 1fr); }
+    .priority-item { grid-template-columns: 34px 1fr auto; padding: 11px 14px; }
+    .hero-top { flex-direction: column-reverse; align-items: flex-end; }
+  }
+  @media print {
+    header.hero { background: #0b2a25 !important; -webkit-print-color-adjust: exact; }
+    .controls, .table-scroll { max-height: none; overflow: visible; }
+    .modal-backdrop, .lang-switch { display: none !important; }
+    tbody tr { break-inside: avoid; }
+  }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.kpi .v { font-size: 21px; font-weight: 800; color: var(--accent); line-height: 1.3; font-variant-numeric: tabular-nums; }
+.kpi .l { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+.kpi .s { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+.tier-bars { display: grid; gap: 9px; padding: 18px 20px; }
+.tier-row { display: grid; grid-template-columns: 78px 1fr 54px; gap: 10px; align-items: center; font-size: 12px; }
+.tier-row .bar { margin: 0; height: 8px; }
+.tier-row .bar > i.p1 { background: linear-gradient(270deg, #0f5c4c, #2f8d76); }
+.tier-row .bar > i.p2 { background: linear-gradient(270deg, #b7791f, #d9a441); }
+.tier-row .bar > i.p3 { background: linear-gradient(270deg, #8c4032, #b96a5a); }
+.hero-stats.five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.bmc-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-areas: "partners activities value relationships segments" "partners resources value channels segments" "costs costs costs revenue revenue"; gap: 12px; }
+.bmc-card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 15px 16px; box-shadow: var(--shadow); }
+.bmc-card h3 { margin: 0 0 8px; font-size: 12.5px; color: var(--accent); display: flex; align-items: center; gap: 7px; }
+.bmc-card h3 .n { background: var(--accent-soft); color: var(--accent); width: 21px; height: 21px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10.5px; flex: 0 0 auto; }
+.bmc-card p { margin: 0; font-size: 12.8px; line-height: 1.85; color: #26342f; }
+.bmc-card.segments { grid-area: segments; } .bmc-card.value { grid-area: value; } .bmc-card.channels { grid-area: channels; }
+.bmc-card.relationships { grid-area: relationships; } .bmc-card.revenue { grid-area: revenue; } .bmc-card.resources { grid-area: resources; }
+.bmc-card.activities { grid-area: activities; } .bmc-card.partners { grid-area: partners; } .bmc-card.costs { grid-area: costs; }
+.bmc-card.value { background: #f3f8f5; border-color: #cfe3d8; }
+.bmc-card.revenue { background: #fbf7ec; border-color: #eadfc4; }
+.bmc-card.costs { background: #fbf4f1; border-color: #ead6cf; }
+.pl-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.pl-table th { background: #f1ede4; color: #45514c; text-align: start; padding: 10px 12px; font-size: 10.5px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.pl-table td { padding: 9px 12px; border-bottom: 1px solid #eee9df; vertical-align: top; }
+.pl-table td.num { font-variant-numeric: tabular-nums; white-space: nowrap; direction: ltr; text-align: left; }
+.pl-table tr.sub td { background: #faf8f2; font-weight: 700; }
+.pl-table tr.total td { background: #eef4f0; font-weight: 800; color: #0d2f28; }
+.pl-table tr.opex td:first-child { border-inline-start: 3px solid #d9c9a8; }
+.pl-table tr.cogs td:first-child { border-inline-start: 3px solid #d7b6ab; }
+.flow-bars { display: grid; gap: 10px; }
+.flow-row { display: grid; grid-template-columns: 130px 1fr 90px; gap: 10px; align-items: center; font-size: 12px; }
+.flow-row .bar { margin: 0; height: 8px; }
+.flow-row .bar > i { background: linear-gradient(270deg, #0f5c4c, #2f8d76); }
+.flow-row.cost .bar > i { background: linear-gradient(270deg, #a33a2b, #cf7f70); }
+.flow-row .val { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 11.5px; }
+.service-hero { padding: 42px 0 30px; }
+.service-hero h1 { font-size: clamp(26px, 4vw, 42px); margin: 10px 0 12px; }
+.breadcrumbs { font-size: 12px; color: #b9cec7; }
+.breadcrumbs a { color: #d8c9a3; text-decoration: none; }
+.badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.badge.p1 { background: #e4efe6; color: #1f6b3c; } .badge.p2 { background: #f5eddc; color: #8a5a12; } .badge.p3 { background: #f0e6e3; color: #8c4032; }
+.details-note { font-size: 11.5px; color: var(--muted); }
+.raw-source { margin-top: 14px; border-top: 1px dashed var(--line); padding-top: 10px; }
+.raw-source summary { cursor: pointer; color: var(--muted); font-size: 11.5px; }
+.raw-source p { font-size: 12px; direction: ltr; text-align: left; color: #45514c; margin-top: 8px; }
+.nav-pager { display: flex; justify-content: space-between; gap: 12px; margin-top: 28px; }
+.nav-pager a { text-decoration: none; font-size: 13px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.tier-pill { font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.tier-pill.p1 { background: #e4efe6; color: #1f6b3c; } .tier-pill.p2 { background: #f5eddc; color: #8a5a12; } .tier-pill.p3 { background: #f0e6e3; color: #8c4032; }
+@media (max-width: 1080px) { .bmc-grid { grid-template-columns: repeat(3, minmax(0,1fr)); grid-template-areas: "partners activities value" "partners resources value" "relationships channels segments" "costs revenue revenue"; } .hero-stats.five { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 760px) { .bmc-grid { grid-template-columns: 1fr; grid-template-areas: "segments" "value" "channels" "relationships" "revenue" "resources" "activities" "partners" "costs"; } .hero-stats.five { grid-template-columns: repeat(2, 1fr); } .flow-row { grid-template-columns: 100px 1fr 70px; } }
+
+/* provenance */
+.origin-pill { display: inline-block; margin-left: 6px; vertical-align: 1px; font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 999px; background: #e8eef5; color: #2f5d8a; white-space: nowrap; }
+.origin-pill.legacy { background: #f7eee2; color: #8a5a12; }
+[dir="rtl"] .origin-pill { margin-left: 0; margin-right: 6px; }
+.badge.origin-audited { background: #e4efe6; color: #1f6b3c; }
+.badge.origin-legacy { background: #f7eee2; color: #8a5a12; }
+.provenance-note { margin-top: 14px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); font-size: 12.5px; color: var(--muted); }
+.host-pill { display: inline-block; margin-left: 6px; vertical-align: 1px; font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 999px; white-space: nowrap; }
+.host-pill.local { background: #e4efe6; color: #1f6b3c; }
+.host-pill.hybrid { background: #e8eef5; color: #2f5d8a; }
+[dir="rtl"] .host-pill { margin-left: 0; margin-right: 6px; }
+.badge.host-local { background: #e4efe6; color: #1f6b3c; }
+.badge.host-hybrid { background: #e8eef5; color: #2f5d8a; }
+.channel-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; }
+.channel-tab { text-decoration: none; color: #d8c9a3; border: 1px solid rgba(216,201,163,0.45); padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; background: transparent; }
+.channel-tab span { font-weight: 600; opacity: 0.8; margin-inline-start: 4px; }
+.channel-tab:hover { background: rgba(216,201,163,0.12); }
+.channel-tab.active { background: #d8c9a3; color: #0b2a25; border-color: #d8c9a3; }
+.channel-pill { display: inline-block; margin-left: 6px; vertical-align: 1px; font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 999px; white-space: nowrap; }
+.channel-pill.public { background: #e8eef5; color: #2f5d8a; }
+.channel-pill.pro { background: #f7eee2; color: #8a5a12; }
+.channel-pill.corporate { background: #ece7dc; color: #5d655f; }
+[dir="rtl"] .channel-pill { margin-left: 0; margin-right: 6px; }
+.badge.channel-public { background: #e8eef5; color: #2f5d8a; }
+.badge.channel-pro { background: #f7eee2; color: #8a5a12; }
+.badge.channel-corporate { background: #ece7dc; color: #5d655f; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-top">
+      <div class="eyebrow"><span></span> COMBINED EDITION v3.1 · 1405</div>
+      <a class="lang-switch" href="public_fa.html" lang="fa" dir="rtl">فارسی</a>
+    </div>
+    <nav class="channel-nav" aria-label="Sales channel"><a class="channel-tab" href="index.html">All <span>310</span></a><a class="channel-tab active" href="public.html">Public <span>25</span></a><a class="channel-tab" href="pro.html">Small business <span>206</span></a><a class="channel-tab" href="corporate.html">Corporate <span>79</span></a></nav>
+    <h1>Public panel — sellable to people</h1>
+    <p class="lede">Services a person, household, student, job-seeker or citizen can buy independently. No enterprise contract required.</p>
+    <div class="hero-meta">
+      <div><strong>20</strong> sectors</div>
+      <div><strong>25</strong> services in this panel</div>
+      <div><strong>1405</strong> fiscal year</div>
+      <div><strong>270,000</strong> Toman per USD (project convention)</div>
+    </div>
+    <div class="hero-stats five"><div class="hero-stat"><div class="num">25</div><div class="label">public services</div></div><div class="hero-stat"><div class="num">8</div><div class="label">market sectors</div></div><div class="hero-stat"><div class="num">11.5B</div><div class="label">M12 gross MRR (Toman)</div></div><div class="hero-stat"><div class="num">1.6B</div><div class="label">standalone EBITDA (Toman)</div></div><div class="hero-stat"><div class="num">7</div><div class="label">Tier P1 services</div></div></div>
+  </div>
+</header>
+<main class="wrap">
+  <section class="grid-2">
+    <div class="panel prose">
+      <h2>Executive read</h2>
+      <p>Services a person, household, student, job-seeker or citizen can buy independently. No enterprise contract required.</p>
+      <p>This panel holds 25 services with average standalone EBITDA margin 12.0% and shared-engine portfolio EBITDA of 3.4B Toman per month.</p>
+      <div class="callout">English USD columns use the project rate of 270,000 Toman; the source audit used 203,100. Toman remains the authoritative currency throughout this project.</div>
+      <p style="margin-top:14px"><a href="iran-ai-saas-report-v3.1.md">Full report</a> · <a href="data/iran-ai-saas-masterbook-310.csv">Download CSV</a></p>
+    </div>
+    <div class="panel">
+      <div style="padding:18px 20px 0"><h2 style="font-size:20px">Sector picture</h2></div>
+      <div class="tier-bars" id="tierBars"></div>
+      <div style="padding:0 20px 18px"><div class="details-note">Distribution of the 25 services in this panel across three investment tiers.</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><div><h2>Top 25 by standalone EBITDA</h2></div><div class="section-note">Click any row for its Business Model Canvas and audited P&L.</div></div>
+    <div class="panel"><div class="priority-list" id="topList"></div></div>
+  </section>
+
+  <section>
+    <div class="section-head"><div><h2>Sector economics</h2></div></div>
+    <div class="panel table-scroll" style="max-height:none"><table><thead><tr><th>Sector</th><th>Services</th><th>MRR (M T)</th><th>EBITDA (M T)</th><th>Avg margin</th><th>P1</th></tr></thead><tbody id="sectorRows"></tbody></table></div>
+  </section>
+
+  <section>
+    <div class="section-head"><div><h2>Public catalogue</h2></div><div class="section-note">Click any row for its Business Model Canvas and audited P&L.</div></div>
+    <div class="panel">
+      <div class="controls">
+        <div><label>Search</label><input id="q" placeholder="Search service, buyer or sector…"></div>
+        <div><label>Sector</label><select id="sector"><option value="">All sectors</option><option value="C: Finance, Accounting &amp; Tax">C: Finance, Accounting &amp; Tax</option><option value="D: Legal &amp; Government Paperwork">D: Legal &amp; Government Paperwork</option><option value="E: Healthcare">E: Healthcare</option><option value="F: Education">F: Education</option><option value="I: Real Estate, Auto, Logistics, Hospitality, Insurance &amp; Trade">I: Real Estate, Auto, Logistics, Hospitality, Insurance &amp; Trade</option><option value="Q: Healthcare, Clinics, Aesthetic Medicine &amp; Pharmacies">Q: Healthcare, Clinics, Aesthetic Medicine &amp; Pharmacies</option><option value="R: Education, Skill Migration, Konkur &amp; Professional Licensing">R: Education, Skill Migration, Konkur &amp; Professional Licensing</option><option value="S: Logistics, Cross-Border Trade, Transit &amp; Fleet Management">S: Logistics, Cross-Border Trade, Transit &amp; Fleet Management</option></select></div>
+        <div><label>Tier</label><select id="tier"><option value="">All tiers</option><option value="P1">P1</option><option value="P2">P2</option><option value="P3">P3</option></select></div>
+        <div><label>Hosting</label><select id="hosting"><option value="">All hosting</option><option value="local">Local (domestic GPU / NIN)</option><option value="hybrid">Hybrid (local + cloud API)</option></select></div>
+        <div><label>Sort</label><select id="sort"><option value="ebitda">Sort: EBITDA</option><option value="mrr">Sort: MRR</option><option value="margin">Sort: margin</option><option value="ltv">Sort: LTV:CAC</option><option value="id">Sort: number</option></select></div>
+      </div>
+      <div class="table-meta"><span id="count"></span><span>services shown</span></div>
+      <div class="table-scroll"><table><thead><tr><th>#</th><th>Service</th><th>Sector</th><th>Tier</th><th>Buyer</th><th>MRR (M T)</th><th>EBITDA (M T)</th><th>Margin</th><th>LTV:CAC</th><th>Payback</th></tr></thead><tbody id="svcRows"></tbody></table></div>
+    </div>
+  </section>
+
+  <section class="panel prose">
+    <h2>Methodology</h2>
+      <p>Models use a 12-month ramp with Latka-calibrated customer counts (22-40 enterprise, 115-205 SME, 340-480 prosumer/micro), blended ARPU and 4-11% monthly churn. Costs include domestic GPU with a 25% buffer, NIN, SMS/Shaparak, 12-18% partner commissions, fully loaded tech/sales/support payroll, Tehran office and marketing. Engines 1-4 and 6 stay local; engines 5A/5B are hybrid except in tax, Moadian, healthcare, legal and KYC sectors, which are always local.</p>
+  </section>
+</main>
+<footer><div class="wrap"><div>Combined Masterbook v3.1 · 310 services (200 audited + 110 re-underwritten) · prices in Toman</div><div><a href="fa.html">Persian edition</a></div></div></footer>
+
+<script>
+const DATA = [{"id": 28, "title": "Stock-exchange disclosure summarizer for Persian filings (Codal)", "sector": "C: Finance, Accounting & Tax", "tier": "P1", "verdict": "STRONG STANDALONE WEDGE (High B2B Margin)", "buyer": "Retail investors, analysts", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 188, "churn": 8.5, "mrr": 643770000.0, "net": 614800350.0, "ebitda": 222215432.0, "margin": 34.5, "portfolio": 300155432.0, "gm": 74.74059359270045, "cac": 3185185.0, "payback": 1.1, "ltv": 10.4, "arpu": 3424308.510638298, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 40, "title": "Complaint and petition drafter", "sector": "D: Legal & Government Paperwork", "tier": "P2", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Citizens, lawyers", "engine": "Engine #5A: Persian Generative Content & Academic/Marketing Copy", "active": 457, "churn": 13.0, "mrr": 381730000.0, "net": 372186750.0, "ebitda": 61675532.0, "margin": 16.2, "portfolio": 123145532.0, "gm": 73.18786388822278, "cac": 767441.0, "payback": 1.1, "ltv": 7.2, "arpu": 835295.4048140044, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 48, "title": "Persian-food nutrition and fitness coach", "sector": "E: Healthcare", "tier": "P2", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Consumers", "engine": "Engine #5A: Persian Generative Content & Academic/Marketing Copy", "active": 503, "churn": 13.0, "mrr": 380100000.0, "net": 370597500.0, "ebitda": 40927895.0, "margin": 10.8, "portfolio": 102997895.0, "gm": 71.83342979917565, "cac": 821052.0, "payback": 1.3, "ltv": 6.1, "arpu": 755666.0039761432, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 51, "title": "Persian AI tutor for Konkur university-entrance preparation", "sector": "F: Education", "tier": "P1", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Students, parents", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 588, "churn": 13.0, "mrr": 549605000.0, "net": 535864875.0, "ebitda": 126862588.0, "margin": 23.1, "portfolio": 203302588.0, "gm": 70.85229984518018, "cac": 729729.0, "payback": 0.9, "ltv": 8.3, "arpu": 934702.380952381, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 52, "title": "Homework helper aligned to the school curriculum", "sector": "F: Education", "tier": "P2", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Students", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 431, "churn": 13.0, "mrr": 406650000.0, "net": 396483750.0, "ebitda": 36868799.0, "margin": 9.1, "portfolio": 110308799.0, "gm": 69.53596433649551, "cac": 925925.0, "payback": 1.2, "ltv": 6.6, "arpu": 943503.4802784222, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 53, "title": "Quiz and exam generator for teachers", "sector": "F: Education", "tier": "P2", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Teachers, schools", "engine": "Engine #5A: Persian Generative Content & Academic/Marketing Copy", "active": 468, "churn": 13.0, "mrr": 441485000.0, "net": 430447875.0, "ebitda": 100993781.0, "margin": 22.9, "portfolio": 162763781.0, "gm": 75.3363647108259, "cac": 886363.0, "payback": 1.1, "ltv": 7.1, "arpu": 943344.0170940171, "origin": "audited", "hosting": "hybrid", "hosting_label": "Hybrid", "channel": "public", "channel_label": "Public"}, {"id": 55, "title": "English and IELTS speaking practice with feedback", "sector": "F: Education", "tier": "P2", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Learners", "engine": "Engine #3: Persian Speech Recognition (ASR), Voice & TTS", "active": 542, "churn": 13.0, "mrr": 549295000.0, "net": 535562625.0, "ebitda": 72107366.0, "margin": 13.1, "portfolio": 164567366.0, "gm": 62.15657151206173, "cac": 725490.0, "payback": 0.9, "ltv": 8.6, "arpu": 1013459.4095940959, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 56, "title": "Thesis and proposal writing assistant with Persian academic formatting", "sector": "F: Education", "tier": "P1", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Graduate students", "engine": "Engine #5A: Persian Generative Content & Academic/Marketing Copy", "active": 518, "churn": 13.0, "mrr": 431860000.0, "net": 421063500.0, "ebitda": 88087443.0, "margin": 20.4, "portfolio": 150457443.0, "gm": 73.84692403877325, "cac": 765306.0, "payback": 1.1, "ltv": 7.2, "arpu": 833706.5637065637, "origin": "audited", "hosting": "hybrid", "hosting_label": "Hybrid", "channel": "public", "channel_label": "Public"}, {"id": 60, "title": "Coding and Excel skills coach in Persian", "sector": "F: Education", "tier": "P2", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Learners, employees", "engine": "Engine #5A: Persian Generative Content & Academic/Marketing Copy", "active": 477, "churn": 13.0, "mrr": 409320000.0, "net": 399087000.0, "ebitda": 83645284.0, "margin": 20.4, "portfolio": 145415284.0, "gm": 74.04532946450273, "cac": 733333.0, "payback": 1.0, "ltv": 7.8, "arpu": 858113.2075471698, "origin": "audited", "hosting": "hybrid", "hosting_label": "Hybrid", "channel": "public", "channel_label": "Public"}, {"id": 87, "title": "Domestic-travel itinerary planner", "sector": "I: Real Estate, Auto, Logistics, Hospitality, Insurance & Trade", "tier": "P3", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Travelers, agencies", "engine": "Engine #5A: Persian Generative Content & Academic/Marketing Copy", "active": 399, "churn": 13.0, "mrr": 361070000.0, "net": 352043250.0, "ebitda": 47915737.0, "margin": 13.3, "portfolio": 109085737.0, "gm": 73.50964320435061, "cac": 920000.0, "payback": 1.2, "ltv": 6.5, "arpu": 904937.343358396, "origin": "audited", "hosting": "hybrid", "hosting_label": "Hybrid", "channel": "public", "channel_label": "Public"}, {"id": 171, "title": "Final-Exam (امتحانات نهایی پایه ۱۰، ۱۱، ۱۲) Descriptive Grading & Coaching Bot", "sector": "R: Education, Skill Migration, Konkur & Professional Licensing", "tier": "P1", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "High school students, private schools", "engine": "Engine #2: Persian Document Extraction, Vision & OCR", "active": 578, "churn": 13.0, "mrr": 570205000.0, "net": 555949875.0, "ebitda": 90425864.0, "margin": 15.9, "portfolio": 176495864.0, "gm": 63.07958320882795, "cac": 743119.0, "payback": 1.0, "ltv": 8.1, "arpu": 986513.8408304498, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 173, "title": "Vekalat & Ghezavat (آزمون وکالت و قضاوت) Case-Scenario Drill Bot", "sector": "R: Education, Skill Migration, Konkur & Professional Licensing", "tier": "P1", "verdict": "STRONG STANDALONE WEDGE (High B2B Margin)", "buyer": "Law graduates", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 206, "churn": 8.5, "mrr": 661315000.0, "net": 631555825.0, "ebitda": 215833838.0, "margin": 32.6, "portfolio": 294973838.0, "gm": 73.94102286998935, "cac": 3413793.0, "payback": 1.3, "ltv": 9.1, "arpu": 3210266.990291262, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 174, "title": "Medical Residency (آزمون دستیاری و پیش‌کارورزی) Flashcard & Case Tutor", "sector": "R: Education, Skill Migration, Konkur & Professional Licensing", "tier": "P2", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Medical students, interns", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 525, "churn": 13.0, "mrr": 417190000.0, "net": 406760250.0, "ebitda": 24147762.0, "margin": 5.8, "portfolio": 99387762.0, "gm": 66.5804394603455, "cac": 787878.0, "payback": 1.2, "ltv": 6.4, "arpu": 794647.619047619, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 175, "title": "Study-Abroad SOP, CV & Embassy Interview Coach", "sector": "R: Education, Skill Migration, Konkur & Professional Licensing", "tier": "P2", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "University graduates, immigration agencies", "engine": "Engine #3: Persian Speech Recognition (ASR), Voice & TTS", "active": 185, "churn": 7.5, "mrr": 638875000.0, "net": 610125625.0, "ebitda": 132466217.0, "margin": 20.7, "portfolio": 229426217.0, "gm": 64.20337074024715, "cac": 3791666.0, "payback": 1.4, "ltv": 9.5, "arpu": 3453378.378378378, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 179, "title": "Kids' Bilingual Coding & Math Game Tutor (Persian)", "sector": "R: Education, Skill Migration, Konkur & Professional Licensing", "tier": "P3", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Parents, private primary schools", "engine": "Engine #5A: Persian Generative Content & Academic/Marketing Copy", "active": 430, "churn": 13.0, "mrr": 377405000.0, "net": 367969875.0, "ebitda": 56408400.0, "margin": 14.9, "portfolio": 117578400.0, "gm": 73.83849017531666, "cac": 888888.0, "payback": 1.2, "ltv": 6.6, "arpu": 877686.0465116279, "origin": "audited", "hosting": "hybrid", "hosting_label": "Hybrid", "channel": "public", "channel_label": "Public"}, {"id": 180, "title": "University Journal Persian-to-English Academic Translator & Reviewer-Response Writer", "sector": "R: Education, Skill Migration, Konkur & Professional Licensing", "tier": "P1", "verdict": "STRONG STANDALONE WEDGE (High B2B Margin)", "buyer": "Faculty members, PhD candidates", "engine": "Engine #5A: Persian Generative Content & Academic/Marketing Copy", "active": 173, "churn": 11.0, "mrr": 491720000.0, "net": 469592600.0, "ebitda": 155447408.0, "margin": 31.6, "portfolio": 219017408.0, "gm": 77.00981829781816, "cac": 2620689.0, "payback": 1.1, "ltv": 8.3, "arpu": 2842312.138728324, "origin": "audited", "hosting": "hybrid", "hosting_label": "Hybrid", "channel": "public", "channel_label": "Public"}, {"id": 237, "title": "Visa & Immigration Doc Assistant", "sector": "D: Legal & Government Paperwork", "tier": "P3", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Individuals, immigration agencies", "engine": "Engine #2: Persian Document Extraction, Vision & OCR", "active": 438, "churn": 13.0, "mrr": 411740000, "net": 401446500.0, "ebitda": -8268307.0, "margin": -2.008137902559868, "portfolio": 73688193.0, "gm": 67.39545443788899, "cac": 1070000, "payback": 1.7, "ltv": 4.6, "arpu": 940045.6621004567, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 248, "title": "Mental Health Journal & Coach", "sector": "Q: Healthcare, Clinics, Aesthetic Medicine & Pharmacies", "tier": "P3", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Consumers", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 450, "churn": 13.0, "mrr": 362790000, "net": 353720250.0, "ebitda": -50984430.0, "margin": -14.053427602745389, "portfolio": 32195820.0, "gm": 63.56451743998258, "cac": 1000000, "payback": 2.0, "ltv": 3.9, "arpu": 806200.0, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 249, "title": "Konkur Adaptive Practice", "sector": "F: Education", "tier": "P3", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Students, parents", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 461, "churn": 13.0, "mrr": 434480000, "net": 423618000.0, "ebitda": 7774486.0, "margin": 1.789377186521819, "portfolio": 89162486.0, "gm": 67.89123361141407, "cac": 1030000, "payback": 1.7, "ltv": 4.8, "arpu": 942472.885032538, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 250, "title": "Medical & Engineering Exam Prep", "sector": "F: Education", "tier": "P3", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "University entrance candidates", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 29, "churn": 4.0, "mrr": 365420000, "net": 341667700.0, "ebitda": -11235011.0, "margin": -3.0745473701494173, "portfolio": 41512689.0, "gm": 69.21637280901882, "cac": 55450000, "payback": 6.8, "ltv": 3.9, "arpu": 12600689.655172413, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 251, "title": "AI Language Tutor", "sector": "F: Education", "tier": "P3", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Consumers, schools", "engine": "Engine #3: Persian Speech Recognition (ASR), Voice & TTS", "active": 446, "churn": 13.0, "mrr": 419670000, "net": 409178250.0, "ebitda": -2785314.0, "margin": -0.6636914718707556, "portfolio": 78972936.0, "gm": 67.46196455945544, "cac": 1050000, "payback": 1.7, "ltv": 4.7, "arpu": 940964.1255605381, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 253, "title": "Teacher Lesson & Exam Generator", "sector": "F: Education", "tier": "P1", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Teachers, schools", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 186, "churn": 8.0, "mrr": 544980000, "net": 520455900.0, "ebitda": 130671920.0, "margin": 23.97737898638482, "portfolio": 183547820.0, "gm": 77.62366033318096, "cac": 4820000, "payback": 2.2, "ltv": 5.9, "arpu": 2930000.0, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 255, "title": "CV & Interview Coach", "sector": "F: Education", "tier": "P3", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Job seekers, universities", "engine": "Engine #3: Persian Speech Recognition (ASR), Voice & TTS", "active": 469, "churn": 13.0, "mrr": 378310000, "net": 368852250.0, "ebitda": -41365216.0, "margin": -10.934211625386588, "portfolio": 41427034.0, "gm": 63.83579983584213, "cac": 970000, "payback": 1.9, "ltv": 4.1, "arpu": 806631.1300639659, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 257, "title": "Tutoring Marketplace with AI Matching", "sector": "F: Education", "tier": "P3", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Parents, tutors", "engine": "Engine #4: Inflation Indexing, Pricing & Demand Forecasting", "active": 426, "churn": 13.0, "mrr": 402150000, "net": 392096250.0, "ebitda": -14188718.0, "margin": -3.5282153425338802, "portfolio": 68007532.0, "gm": 67.23764432840152, "cac": 1080000, "payback": 1.7, "ltv": 4.5, "arpu": 944014.0845070423, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 275, "title": "Load Matching Marketplace", "sector": "S: Logistics, Cross-Border Trade, Transit & Fleet Management", "tier": "P3", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Truckers, shippers", "engine": "Engine #4: Inflation Indexing, Pricing & Demand Forecasting", "active": 399, "churn": 13.0, "mrr": 425460000, "net": 414823500.0, "ebitda": 15531977.0, "margin": 3.6506315517322427, "portfolio": 93545477.0, "gm": 70.04351899060684, "cac": 1190000, "payback": 1.6, "ltv": 4.8, "arpu": 1066315.7894736843, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}];
+const AGGS = [{"sector": "C: Finance, Accounting & Tax", "sector_fa": "مالی، حسابداری و مالیات", "count": 1, "mrr": 643770000.0, "net": 614800350.0, "ebitda": 222215432.0, "portfolio": 300155432.0, "margin": 34.5, "p1": 1}, {"sector": "D: Legal & Government Paperwork", "sector_fa": "حقوق و امور اداری دولتی", "count": 2, "mrr": 793470000.0, "net": 773633250.0, "ebitda": 53407225.0, "portfolio": 196833725.0, "margin": 7.0959310487200655, "p1": 0}, {"sector": "E: Healthcare", "sector_fa": "سلامت", "count": 1, "mrr": 380100000.0, "net": 370597500.0, "ebitda": 40927895.0, "portfolio": 102997895.0, "margin": 10.8, "p1": 0}, {"sector": "F: Education", "sector_fa": "آموزش", "count": 12, "mrr": 5333225000.0, "net": 5174377975.0, "ebitda": 577437408.0, "portfolio": 1439445758.0, "margin": 9.7138408635805, "p1": 3}, {"sector": "I: Real Estate, Auto, Logistics, Hospitality, Insurance & Trade", "sector_fa": "املاک، خودرو، لجستیک، مهمان‌نوازی، بیمه و تجارت", "count": 1, "mrr": 361070000.0, "net": 352043250.0, "ebitda": 47915737.0, "portfolio": 109085737.0, "margin": 13.3, "p1": 0}, {"sector": "Q: Healthcare, Clinics, Aesthetic Medicine & Pharmacies", "sector_fa": "سلامت، کلینیک، پزشکی زیبایی و داروخانه", "count": 1, "mrr": 362790000, "net": 353720250.0, "ebitda": -50984430.0, "portfolio": 32195820.0, "margin": -14.053427602745389, "p1": 0}, {"sector": "R: Education, Skill Migration, Konkur & Professional Licensing", "sector_fa": "آموزش، مهاجرت مهارتی، کنکور و پروانه‌های حرفه‌ای", "count": 6, "mrr": 3156710000.0, "net": 3041954050.0, "ebitda": 674729489.0, "portfolio": 1136879489.0, "margin": 20.25, "p1": 3}, {"sector": "S: Logistics, Cross-Border Trade, Transit & Fleet Management", "sector_fa": "لجستیک، تجارت فرامرزی، ترانزیت و مدیریت ناوگان", "count": 1, "mrr": 425460000, "net": 414823500.0, "ebitda": 15531977.0, "portfolio": 93545477.0, "margin": 3.6506315517322427, "p1": 0}];
+const TOP = [{"id": 28, "title": "Stock-exchange disclosure summarizer for Persian filings (Codal)", "sector": "C: Finance, Accounting & Tax", "tier": "P1", "verdict": "STRONG STANDALONE WEDGE (High B2B Margin)", "buyer": "Retail investors, analysts", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 188, "churn": 8.5, "mrr": 643770000.0, "net": 614800350.0, "ebitda": 222215432.0, "margin": 34.5, "portfolio": 300155432.0, "gm": 74.74059359270045, "cac": 3185185.0, "payback": 1.1, "ltv": 10.4, "arpu": 3424308.510638298, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 173, "title": "Vekalat & Ghezavat (آزمون وکالت و قضاوت) Case-Scenario Drill Bot", "sector": "R: Education, Skill Migration, Konkur & Professional Licensing", "tier": "P1", "verdict": "STRONG STANDALONE WEDGE (High B2B Margin)", "buyer": "Law graduates", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 206, "churn": 8.5, "mrr": 661315000.0, "net": 631555825.0, "ebitda": 215833838.0, "margin": 32.6, "portfolio": 294973838.0, "gm": 73.94102286998935, "cac": 3413793.0, "payback": 1.3, "ltv": 9.1, "arpu": 3210266.990291262, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 180, "title": "University Journal Persian-to-English Academic Translator & Reviewer-Response Writer", "sector": "R: Education, Skill Migration, Konkur & Professional Licensing", "tier": "P1", "verdict": "STRONG STANDALONE WEDGE (High B2B Margin)", "buyer": "Faculty members, PhD candidates", "engine": "Engine #5A: Persian Generative Content & Academic/Marketing Copy", "active": 173, "churn": 11.0, "mrr": 491720000.0, "net": 469592600.0, "ebitda": 155447408.0, "margin": 31.6, "portfolio": 219017408.0, "gm": 77.00981829781816, "cac": 2620689.0, "payback": 1.1, "ltv": 8.3, "arpu": 2842312.138728324, "origin": "audited", "hosting": "hybrid", "hosting_label": "Hybrid", "channel": "public", "channel_label": "Public"}, {"id": 175, "title": "Study-Abroad SOP, CV & Embassy Interview Coach", "sector": "R: Education, Skill Migration, Konkur & Professional Licensing", "tier": "P2", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "University graduates, immigration agencies", "engine": "Engine #3: Persian Speech Recognition (ASR), Voice & TTS", "active": 185, "churn": 7.5, "mrr": 638875000.0, "net": 610125625.0, "ebitda": 132466217.0, "margin": 20.7, "portfolio": 229426217.0, "gm": 64.20337074024715, "cac": 3791666.0, "payback": 1.4, "ltv": 9.5, "arpu": 3453378.378378378, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 253, "title": "Teacher Lesson & Exam Generator", "sector": "F: Education", "tier": "P1", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Teachers, schools", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 186, "churn": 8.0, "mrr": 544980000, "net": 520455900.0, "ebitda": 130671920.0, "margin": 23.97737898638482, "portfolio": 183547820.0, "gm": 77.62366033318096, "cac": 4820000, "payback": 2.2, "ltv": 5.9, "arpu": 2930000.0, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 51, "title": "Persian AI tutor for Konkur university-entrance preparation", "sector": "F: Education", "tier": "P1", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Students, parents", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 588, "churn": 13.0, "mrr": 549605000.0, "net": 535864875.0, "ebitda": 126862588.0, "margin": 23.1, "portfolio": 203302588.0, "gm": 70.85229984518018, "cac": 729729.0, "payback": 0.9, "ltv": 8.3, "arpu": 934702.380952381, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 53, "title": "Quiz and exam generator for teachers", "sector": "F: Education", "tier": "P2", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Teachers, schools", "engine": "Engine #5A: Persian Generative Content & Academic/Marketing Copy", "active": 468, "churn": 13.0, "mrr": 441485000.0, "net": 430447875.0, "ebitda": 100993781.0, "margin": 22.9, "portfolio": 162763781.0, "gm": 75.3363647108259, "cac": 886363.0, "payback": 1.1, "ltv": 7.1, "arpu": 943344.0170940171, "origin": "audited", "hosting": "hybrid", "hosting_label": "Hybrid", "channel": "public", "channel_label": "Public"}, {"id": 171, "title": "Final-Exam (امتحانات نهایی پایه ۱۰، ۱۱، ۱۲) Descriptive Grading & Coaching Bot", "sector": "R: Education, Skill Migration, Konkur & Professional Licensing", "tier": "P1", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "High school students, private schools", "engine": "Engine #2: Persian Document Extraction, Vision & OCR", "active": 578, "churn": 13.0, "mrr": 570205000.0, "net": 555949875.0, "ebitda": 90425864.0, "margin": 15.9, "portfolio": 176495864.0, "gm": 63.07958320882795, "cac": 743119.0, "payback": 1.0, "ltv": 8.1, "arpu": 986513.8408304498, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 56, "title": "Thesis and proposal writing assistant with Persian academic formatting", "sector": "F: Education", "tier": "P1", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Graduate students", "engine": "Engine #5A: Persian Generative Content & Academic/Marketing Copy", "active": 518, "churn": 13.0, "mrr": 431860000.0, "net": 421063500.0, "ebitda": 88087443.0, "margin": 20.4, "portfolio": 150457443.0, "gm": 73.84692403877325, "cac": 765306.0, "payback": 1.1, "ltv": 7.2, "arpu": 833706.5637065637, "origin": "audited", "hosting": "hybrid", "hosting_label": "Hybrid", "channel": "public", "channel_label": "Public"}, {"id": 60, "title": "Coding and Excel skills coach in Persian", "sector": "F: Education", "tier": "P2", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Learners, employees", "engine": "Engine #5A: Persian Generative Content & Academic/Marketing Copy", "active": 477, "churn": 13.0, "mrr": 409320000.0, "net": 399087000.0, "ebitda": 83645284.0, "margin": 20.4, "portfolio": 145415284.0, "gm": 74.04532946450273, "cac": 733333.0, "payback": 1.0, "ltv": 7.8, "arpu": 858113.2075471698, "origin": "audited", "hosting": "hybrid", "hosting_label": "Hybrid", "channel": "public", "channel_label": "Public"}, {"id": 55, "title": "English and IELTS speaking practice with feedback", "sector": "F: Education", "tier": "P2", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Learners", "engine": "Engine #3: Persian Speech Recognition (ASR), Voice & TTS", "active": 542, "churn": 13.0, "mrr": 549295000.0, "net": 535562625.0, "ebitda": 72107366.0, "margin": 13.1, "portfolio": 164567366.0, "gm": 62.15657151206173, "cac": 725490.0, "payback": 0.9, "ltv": 8.6, "arpu": 1013459.4095940959, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 40, "title": "Complaint and petition drafter", "sector": "D: Legal & Government Paperwork", "tier": "P2", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Citizens, lawyers", "engine": "Engine #5A: Persian Generative Content & Academic/Marketing Copy", "active": 457, "churn": 13.0, "mrr": 381730000.0, "net": 372186750.0, "ebitda": 61675532.0, "margin": 16.2, "portfolio": 123145532.0, "gm": 73.18786388822278, "cac": 767441.0, "payback": 1.1, "ltv": 7.2, "arpu": 835295.4048140044, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 179, "title": "Kids' Bilingual Coding & Math Game Tutor (Persian)", "sector": "R: Education, Skill Migration, Konkur & Professional Licensing", "tier": "P3", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Parents, private primary schools", "engine": "Engine #5A: Persian Generative Content & Academic/Marketing Copy", "active": 430, "churn": 13.0, "mrr": 377405000.0, "net": 367969875.0, "ebitda": 56408400.0, "margin": 14.9, "portfolio": 117578400.0, "gm": 73.83849017531666, "cac": 888888.0, "payback": 1.2, "ltv": 6.6, "arpu": 877686.0465116279, "origin": "audited", "hosting": "hybrid", "hosting_label": "Hybrid", "channel": "public", "channel_label": "Public"}, {"id": 87, "title": "Domestic-travel itinerary planner", "sector": "I: Real Estate, Auto, Logistics, Hospitality, Insurance & Trade", "tier": "P3", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Travelers, agencies", "engine": "Engine #5A: Persian Generative Content & Academic/Marketing Copy", "active": 399, "churn": 13.0, "mrr": 361070000.0, "net": 352043250.0, "ebitda": 47915737.0, "margin": 13.3, "portfolio": 109085737.0, "gm": 73.50964320435061, "cac": 920000.0, "payback": 1.2, "ltv": 6.5, "arpu": 904937.343358396, "origin": "audited", "hosting": "hybrid", "hosting_label": "Hybrid", "channel": "public", "channel_label": "Public"}, {"id": 48, "title": "Persian-food nutrition and fitness coach", "sector": "E: Healthcare", "tier": "P2", "verdict": "VIABLE STANDALONE / STRONG PORTFOLIO ADD-ON", "buyer": "Consumers", "engine": "Engine #5A: Persian Generative Content & Academic/Marketing Copy", "active": 503, "churn": 13.0, "mrr": 380100000.0, "net": 370597500.0, "ebitda": 40927895.0, "margin": 10.8, "portfolio": 102997895.0, "gm": 71.83342979917565, "cac": 821052.0, "payback": 1.3, "ltv": 6.1, "arpu": 755666.0039761432, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 52, "title": "Homework helper aligned to the school curriculum", "sector": "F: Education", "tier": "P2", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Students", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 431, "churn": 13.0, "mrr": 406650000.0, "net": 396483750.0, "ebitda": 36868799.0, "margin": 9.1, "portfolio": 110308799.0, "gm": 69.53596433649551, "cac": 925925.0, "payback": 1.2, "ltv": 6.6, "arpu": 943503.4802784222, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 174, "title": "Medical Residency (آزمون دستیاری و پیش‌کارورزی) Flashcard & Case Tutor", "sector": "R: Education, Skill Migration, Konkur & Professional Licensing", "tier": "P2", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Medical students, interns", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 525, "churn": 13.0, "mrr": 417190000.0, "net": 406760250.0, "ebitda": 24147762.0, "margin": 5.8, "portfolio": 99387762.0, "gm": 66.5804394603455, "cac": 787878.0, "payback": 1.2, "ltv": 6.4, "arpu": 794647.619047619, "origin": "audited", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 275, "title": "Load Matching Marketplace", "sector": "S: Logistics, Cross-Border Trade, Transit & Fleet Management", "tier": "P3", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Truckers, shippers", "engine": "Engine #4: Inflation Indexing, Pricing & Demand Forecasting", "active": 399, "churn": 13.0, "mrr": 425460000, "net": 414823500.0, "ebitda": 15531977.0, "margin": 3.6506315517322427, "portfolio": 93545477.0, "gm": 70.04351899060684, "cac": 1190000, "payback": 1.6, "ltv": 4.8, "arpu": 1066315.7894736843, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 249, "title": "Konkur Adaptive Practice", "sector": "F: Education", "tier": "P3", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Students, parents", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 461, "churn": 13.0, "mrr": 434480000, "net": 423618000.0, "ebitda": 7774486.0, "margin": 1.789377186521819, "portfolio": 89162486.0, "gm": 67.89123361141407, "cac": 1030000, "payback": 1.7, "ltv": 4.8, "arpu": 942472.885032538, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 251, "title": "AI Language Tutor", "sector": "F: Education", "tier": "P3", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Consumers, schools", "engine": "Engine #3: Persian Speech Recognition (ASR), Voice & TTS", "active": 446, "churn": 13.0, "mrr": 419670000, "net": 409178250.0, "ebitda": -2785314.0, "margin": -0.6636914718707556, "portfolio": 78972936.0, "gm": 67.46196455945544, "cac": 1050000, "payback": 1.7, "ltv": 4.7, "arpu": 940964.1255605381, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 237, "title": "Visa & Immigration Doc Assistant", "sector": "D: Legal & Government Paperwork", "tier": "P3", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Individuals, immigration agencies", "engine": "Engine #2: Persian Document Extraction, Vision & OCR", "active": 438, "churn": 13.0, "mrr": 411740000, "net": 401446500.0, "ebitda": -8268307.0, "margin": -2.008137902559868, "portfolio": 73688193.0, "gm": 67.39545443788899, "cac": 1070000, "payback": 1.7, "ltv": 4.6, "arpu": 940045.6621004567, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 250, "title": "Medical & Engineering Exam Prep", "sector": "F: Education", "tier": "P3", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "University entrance candidates", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 29, "churn": 4.0, "mrr": 365420000, "net": 341667700.0, "ebitda": -11235011.0, "margin": -3.0745473701494173, "portfolio": 41512689.0, "gm": 69.21637280901882, "cac": 55450000, "payback": 6.8, "ltv": 3.9, "arpu": 12600689.655172413, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 257, "title": "Tutoring Marketplace with AI Matching", "sector": "F: Education", "tier": "P3", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Parents, tutors", "engine": "Engine #4: Inflation Indexing, Pricing & Demand Forecasting", "active": 426, "churn": 13.0, "mrr": 402150000, "net": 392096250.0, "ebitda": -14188718.0, "margin": -3.5282153425338802, "portfolio": 68007532.0, "gm": 67.23764432840152, "cac": 1080000, "payback": 1.7, "ltv": 4.5, "arpu": 944014.0845070423, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 255, "title": "CV & Interview Coach", "sector": "F: Education", "tier": "P3", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Job seekers, universities", "engine": "Engine #3: Persian Speech Recognition (ASR), Voice & TTS", "active": 469, "churn": 13.0, "mrr": 378310000, "net": 368852250.0, "ebitda": -41365216.0, "margin": -10.934211625386588, "portfolio": 41427034.0, "gm": 63.83579983584213, "cac": 970000, "payback": 1.9, "ltv": 4.1, "arpu": 806631.1300639659, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}, {"id": 248, "title": "Mental Health Journal & Coach", "sector": "Q: Healthcare, Clinics, Aesthetic Medicine & Pharmacies", "tier": "P3", "verdict": "SHARED-ENGINE ADD-ON ONLY (High Standalone Overhead)", "buyer": "Consumers", "engine": "Engine #1: Persian Conversation & Hybrid Retrieval (RAG)", "active": 450, "churn": 13.0, "mrr": 362790000, "net": 353720250.0, "ebitda": -50984430.0, "margin": -14.053427602745389, "portfolio": 32195820.0, "gm": 63.56451743998258, "cac": 1000000, "payback": 2.0, "ltv": 3.9, "arpu": 806200.0, "origin": "legacy", "hosting": "local", "hosting_label": "Local", "channel": "public", "channel_label": "Public"}];
+const LANG = 'en';
+const PAGE = 'service.html';
+const LABELS = {"search": "Search service, buyer or sector…", "all_sectors": "All sectors", "all_tiers": "All tiers", "all_hosting": "All hosting", "host_local": "Local (domestic GPU / NIN)", "host_hybrid": "Hybrid (local + cloud API)", "sort_mrr": "Sort: MRR", "sort_ebitda": "Sort: EBITDA", "sort_margin": "Sort: margin", "sort_ltv": "Sort: LTV:CAC", "sort_id": "Sort: number", "shown": "services shown", "top": "Top 25 by standalone EBITDA", "sectors": "Sector picture", "catalogue": "Public catalogue", "click": "Click any row for its Business Model Canvas and audited P&L.", "report": "Full report", "csv": "Download CSV", "method": "Methodology"};
+const intl = new Intl.NumberFormat(LANG === 'fa' ? 'fa-IR' : 'en-US', { maximumFractionDigits: 0 });
+const intl1 = new Intl.NumberFormat(LANG === 'fa' ? 'fa-IR' : 'en-US', { maximumFractionDigits: 1 });
+const num = v => intl.format(Math.round(v));
+const dec = v => intl1.format(v);
+const m = v => dec(v / 1e6);
+function tierClass(t) { return t === 'P1' ? 'p1' : t === 'P2' ? 'p2' : 'p3'; }
+function row(s) {
+  return `<tr tabindex="0" data-id="${s.id}">
+    <td>${s.id}</td>
+    <td><span class="svc-name">${s.title}</span>${s.origin === 'legacy' ? `<span class="origin-pill legacy">${LANG === 'fa' ? 'بازنویسی v1→v3' : 'v1 → v3'}</span>` : ''}<span class="channel-pill ${s.channel}">${s.channel_label}</span><span class="host-pill ${s.hosting}">${s.hosting_label}</span><span class="svc-cat">${s.buyer}</span></td>
+    <td>${s.sector}</td>
+    <td><span class="tier-pill ${tierClass(s.tier)}">${s.tier}</span></td>
+    <td>${s.buyer}</td>
+    <td class="num">${m(s.mrr)}</td>
+    <td class="num">${m(s.ebitda)}</td>
+    <td class="num">${dec(s.margin)}%</td>
+    <td class="num">${dec(s.ltv)}x</td>
+    <td class="num">${dec(s.payback)}</td>
+  </tr>`;
+}
+function go(id) { location.href = PAGE + '?id=' + id; }
+function renderTop() {
+  const el = document.getElementById('topList');
+  el.innerHTML = TOP.map((s, i) => `<div class="priority-item" data-id="${s.id}" tabindex="0">
+    <div class="rank">${num(i + 1)}</div>
+    <div><div class="name">${s.title}</div><div class="cat">${s.sector} · ${s.buyer}</div></div>
+    <div class="score-pill ${s.tier === 'P1' ? 'high' : s.tier === 'P2' ? 'mid' : 'low'}">${m(s.ebitda)}${LANG === 'fa' ? ' م' : ' M'}</div>
+  </div>`).join('');
+  el.querySelectorAll('.priority-item').forEach(x => {
+    x.addEventListener('click', () => go(x.dataset.id));
+    x.addEventListener('keydown', e => { if (e.key === 'Enter') go(x.dataset.id); });
+  });
+}
+function renderTiers() {
+  const counts = { P1: 0, P2: 0, P3: 0 };
+  DATA.forEach(s => counts[s.tier]++);
+  const total = DATA.length;
+  const el = document.getElementById('tierBars');
+  const names = LANG === 'fa' ? { P1: 'اولویت ۱', P2: 'اولویت ۲', P3: 'اولویت ۳' } : { P1: 'Tier P1', P2: 'Tier P2', P3: 'Tier P3' };
+  el.innerHTML = ['P1', 'P2', 'P3'].map(t => `<div class="tier-row"><div>${names[t]}</div><div class="bar"><i class="${t.toLowerCase()}" style="width:${counts[t] / total * 100}%"></i></div><div>${num(counts[t])}</div></div>`).join('');
+}
+function renderSectors() {
+  document.getElementById('sectorRows').innerHTML = AGGS.map(a => `<tr style="cursor:default">
+    <td><strong>${LANG === 'fa' ? a.sector_fa : a.sector}</strong></td>
+    <td class="num">${num(a.count)}</td>
+    <td class="num">${m(a.mrr)}</td>
+    <td class="num">${m(a.ebitda)}</td>
+    <td class="num">${dec(a.margin)}%</td>
+    <td class="num">${num(a.p1)}</td>
+  </tr>`).join('');
+}
+function render() {
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const sector = document.getElementById('sector').value;
+  const tier = document.getElementById('tier').value;
+  const hosting = document.getElementById('hosting').value;
+  const sort = document.getElementById('sort').value;
+  let rows = DATA.filter(s => {
+    const hay = (s.title + ' ' + s.buyer + ' ' + s.sector + ' ' + (s.hosting_label || '')).toLowerCase();
+    return (!q || hay.includes(q)) && (!sector || s.sector === sector) && (!tier || s.tier === tier) && (!hosting || s.hosting === hosting);
+  });
+  rows.sort((a, b) => sort === 'id' ? a.id - b.id : (b[sort] - a[sort]));
+  document.getElementById('svcRows').innerHTML = rows.map(row).join('') || `<tr><td colspan="10" class="empty">${LANG === 'fa' ? 'نتیجه‌ای یافت نشد.' : 'No results.'}</td></tr>`;
+  document.getElementById('count').textContent = num(rows.length) + ' / ' + num(DATA.length);
+  document.querySelectorAll('#svcRows tr[data-id]').forEach(x => {
+    x.addEventListener('click', () => go(x.dataset.id));
+    x.addEventListener('keydown', e => { if (e.key === 'Enter') go(x.dataset.id); });
+  });
+}
+['q', 'sector', 'tier', 'hosting', 'sort'].forEach(id => document.getElementById(id).addEventListener('input', render));
+renderTop(); renderTiers(); renderSectors(); render();
+</script>
+</body>
+</html>
