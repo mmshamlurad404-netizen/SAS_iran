@@ -12,6 +12,7 @@ from fa_v3 import (
     BILLING_FA,
     ENGINES_FA,
     FA_SERVICES,
+    HOSTING_FA,
     FLOW_LABELS_FA,
     MASTERBOOK,
     SECTORS_FA,
@@ -35,6 +36,13 @@ TEMPLATES = ROOT / "templates"
 CSS = (TEMPLATES / "masterbook.css").read_text(encoding="utf-8")
 USD_TOMAN = 270_000
 USD_SOURCE = 203_100
+HYBRID_ENGINES = {
+    "Engine #5A: Persian Generative Content & Academic/Marketing Copy",
+    "Engine #5B: Generative Studio Vision, Restyling & Persian Typography",
+}
+LOCAL_SECTOR_PREFIXES = ("C:", "D:", "E:", "L:", "Q:")
+SENSITIVE_RE = re.compile(r"kyc|aml|sayad|moadian|مودیان", re.I)
+HOSTING_EN = {"local": "Local", "hybrid": "Hybrid"}
 LEGACY = json.loads((DATA / "legacy_services.json").read_text(encoding="utf-8"))
 LEGACY_FA = json.loads((DATA / "fa_legacy.json").read_text(encoding="utf-8"))
 SERVICES = MASTERBOOK["services"] + LEGACY["services"]
@@ -48,8 +56,33 @@ SECTORS = list(MASTERBOOK["sectors"].keys())
 SERVICE_PAGE_FA = "service_fa.html"
 
 
+def hosting_mode(s: dict) -> str:
+    sector = s.get("sector", "")
+    blob = f"{s.get('title', '')} {s.get('buyer', '')} {sector}"
+    if sector.startswith(LOCAL_SECTOR_PREFIXES) or SENSITIVE_RE.search(blob):
+        return "local"
+    if s.get("engine") in HYBRID_ENGINES:
+        return "hybrid"
+    return "local"
+
+
+def hosting_note(mode: str, fa: bool) -> str:
+    if mode == "hybrid":
+        return (
+            "میزبانی ترکیبی: استنتاج پیش‌فرض روی GPU داخلی و شبکه ملی اطلاعات است؛ ChatGPT، Claude یا Gemini فقط برای سرریز تولید متن یا تصویر استودیویی استفاده می‌شوند. داده مالیات، مودیان، پزشکی، حقوقی و احراز هویت هرگز از میزبانی داخلی خارج نمی‌شود."
+            if fa else
+            "Hybrid hosting: inference defaults to domestic GPU and NIN; ChatGPT, Claude or Gemini may be used only as overflow for generative copy or studio vision. Tax, Moadian, medical, legal and KYC data never leave local hosting."
+        )
+    return (
+        "میزبانی محلی: استنتاج و داده روی گره‌های GPU داخلی و شبکه ملی اطلاعات می‌ماند. بدون پشتیبان API ابری."
+        if fa else
+        "Local hosting: inference and data stay on domestic GPU nodes and the National Information Network. No cloud-API fallback."
+    )
+
+
 def enrich(s: dict) -> dict:
     pl = {p["label"]: p["toman"] for p in s["pl"]}
+    s["_hosting"] = hosting_mode(s)
     s["_mrr"] = pl.get("GROSS BILLED REVENUE (MRR)", 0)
     s["_bad_debt"] = pl.get("Less: Bad Debt & DSO Inflation Lag", 0)
     s["_net"] = s["net_mrr"]
@@ -78,6 +111,8 @@ TOTALS = {
     "avg_margin": sum(s["standalone_margin"] for s in SERVICES) / len(SERVICES),
     "p1": sum(1 for s in SERVICES if s["tier"] == "P1"),
     "accounts": sum(s["active"]["accounts"] for s in SERVICES if s["active"]),
+    "local": sum(1 for s in SERVICES if s["_hosting"] == "local"),
+    "hybrid": sum(1 for s in SERVICES if s["_hosting"] == "hybrid"),
 }
 
 SECTOR_AGGS = []
@@ -128,6 +163,8 @@ def dash_row(s: dict, fa: bool) -> dict:
         "ltv": s["ltv_cac"],
         "arpu": s["_arpu"],
         "origin": s.get("origin", "audited"),
+        "hosting": s["_hosting"],
+        "hosting_label": HOSTING_FA.get(s["_hosting"], s["_hosting"]) if fa else HOSTING_EN[s["_hosting"]],
     }
 
 
@@ -196,6 +233,9 @@ def service_row(s: dict, fa: bool) -> dict:
         "origin": s.get("origin", "audited"),
         "origin_note": s.get("origin_note", ""),
         "legacy_id": s.get("legacy_id"),
+        "hosting": s["_hosting"],
+        "hosting_label": HOSTING_FA.get(s["_hosting"], s["_hosting"]) if fa else HOSTING_EN[s["_hosting"]],
+        "hosting_note": hosting_note(s["_hosting"], fa),
     }
 
 
@@ -235,9 +275,9 @@ def dashboard_html(fa: bool) -> str:
     top = [dash_row(s, fa) for s in TOP25]
     title = "مستربوک SaaS هوش مصنوعی ایران — ۳۱۰ سرویس" if fa else "Iran AI SaaS Masterbook — 310 Services"
     lede = (
-        "کاتالوگ ترکیبی ۳۱۰ سرویس در ۲۰ بخش: ۲۰۰ سرویس حسابرسی‌شده v3 به‌همراه ۱۱۰ سرویس کاتالوگ قدیمی که با همان مدل مالی و بوم ۹بخشی بازنویسی شده‌اند. همه مبالغ به تومان و بر پایه فرض‌های ۱۴۰۵ است."
+        "کاتالوگ ترکیبی ۳۱۰ سرویس در ۲۰ بخش: ۲۰۰ سرویس حسابرسی‌شده v3 به‌همراه ۱۱۰ سرویس کاتالوگ قدیمی که با همان مدل مالی و بوم ۹بخشی بازنویسی شده‌اند. همه مبالغ به تومان و بر پایه فرض‌های ۱۴۰۵ است. میزبانی هر سرویس محلی یا ترکیبی است."
         if fa else
-        "A combined 310-service catalogue across 20 Iranian sectors: 200 audited v3 services plus 110 legacy v1 services re-underwritten into the same nine-block canvas and Month-12 P&L model. Toman figures follow the 1405 audit assumptions; every service links to its full cost, revenue and engine detail."
+        "A combined 310-service catalogue across 20 Iranian sectors: 200 audited v3 services plus 110 legacy v1 services re-underwritten into the same nine-block canvas and Month-12 P&L model. Toman figures follow the 1405 audit assumptions; every service links to its full cost, revenue, engine and hosting detail."
     )
     t = TOTALS
     stats = [
@@ -267,6 +307,9 @@ def dashboard_html(fa: bool) -> str:
         "search": "جست‌وجوی سرویس، خریدار یا بخش…" if fa else "Search service, buyer or sector…",
         "all_sectors": "همه بخش‌ها" if fa else "All sectors",
         "all_tiers": "همه سطوح" if fa else "All tiers",
+        "all_hosting": "همه میزبانی‌ها" if fa else "All hosting",
+        "host_local": "محلی (GPU داخلی / NIN)" if fa else "Local (domestic GPU / NIN)",
+        "host_hybrid": "ترکیبی (محلی + API ابری)" if fa else "Hybrid (local + cloud API)",
         "sort_mrr": "مرتب‌سازی: MRR" if fa else "Sort: MRR",
         "sort_ebitda": "مرتب‌سازی: EBITDA" if fa else "Sort: EBITDA",
         "sort_margin": "مرتب‌سازی: حاشیه" if fa else "Sort: margin",
@@ -337,6 +380,7 @@ def dashboard_html(fa: bool) -> str:
         <div><label>{'جست‌وجو' if fa else 'Search'}</label><input id="q" placeholder="{labels['search']}"></div>
         <div><label>{'بخش' if fa else 'Sector'}</label><select id="sector"><option value="">{labels['all_sectors']}</option>{sector_options}</select></div>
         <div><label>{'سطح' if fa else 'Tier'}</label><select id="tier"><option value="">{labels['all_tiers']}</option><option value="P1">{'اولویت ۱' if fa else 'P1'}</option><option value="P2">{'اولویت ۲' if fa else 'P2'}</option><option value="P3">{'اولویت ۳' if fa else 'P3'}</option></select></div>
+        <div><label>{'میزبانی' if fa else 'Hosting'}</label><select id="hosting"><option value="">{labels['all_hosting']}</option><option value="local">{labels['host_local']}</option><option value="hybrid">{labels['host_hybrid']}</option></select></div>
         <div><label>{'مرتب‌سازی' if fa else 'Sort'}</label><select id="sort"><option value="ebitda">{labels['sort_ebitda']}</option><option value="mrr">{labels['sort_mrr']}</option><option value="margin">{labels['sort_margin']}</option><option value="ltv">{labels['sort_ltv']}</option><option value="id">{labels['sort_id']}</option></select></div>
       </div>
       <div class="table-meta"><span id="count"></span><span>{labels['shown']}</span></div>
@@ -346,7 +390,7 @@ def dashboard_html(fa: bool) -> str:
 
   <section class="panel prose">
     <h2>{labels['method']}</h2>
-    <p>{'مدل‌ها بر پایه ۱۲ ماه فعالیت، با تعداد مشتری کالیبره‌شده Latka (۲۲ تا ۴۰ سازمانی، ۱۱۵ تا ۲۰۵ کسب‌وکار کوچک و متوسط و ۳۴۰ تا ۴۸۰ حرفه‌ای/خرد)، ARPU ترکیبی و ریزش ماهانه ۴ تا ۱۱ درصد ساخته شده‌اند. هزینه‌ها شامل GPU داخلی با ۲۵ درصد بافر، شبکه ملی اطلاعات، پیامک/شپارک، کمیسیون ۱۲ تا ۱۸ درصدی شرکا، حقوق کامل فنی/فروش/پشتیبانی، دفتر تهران و بازاریابی است.' if fa else 'Models use a 12-month ramp with Latka-calibrated customer counts (22-40 enterprise, 115-205 SME, 340-480 prosumer/micro), blended ARPU and 4-11% monthly churn. Costs include domestic GPU with a 25% buffer, NIN, SMS/Shaparak, 12-18% partner commissions, fully loaded tech/sales/support payroll, Tehran office and marketing.'}</p>
+      <p>{'مدل‌ها بر پایه ۱۲ ماه فعالیت، با تعداد مشتری کالیبره‌شده Latka (۲۲ تا ۴۰ سازمانی، ۱۱۵ تا ۲۰۵ کسب‌وکار کوچک و متوسط و ۳۴۰ تا ۴۸۰ حرفه‌ای/خرد)، ARPU ترکیبی و ریزش ماهانه ۴ تا ۱۱ درصد ساخته شده‌اند. هزینه‌ها شامل GPU داخلی با ۲۵ درصد بافر، شبکه ملی اطلاعات، پیامک/شپارک، کمیسیون ۱۲ تا ۱۸ درصدی شرکا، حقوق کامل فنی/فروش/پشتیبانی، دفتر تهران و بازاریابی است. موتورهای ۱ تا ۴ و ۶ محلی هستند؛ موتور ۵A/۵B ترکیبی است مگر در بخش‌های مالیات، مودیان، سلامت، حقوقی و احراز هویت که همیشه محلی می‌مانند.' if fa else 'Models use a 12-month ramp with Latka-calibrated customer counts (22-40 enterprise, 115-205 SME, 340-480 prosumer/micro), blended ARPU and 4-11% monthly churn. Costs include domestic GPU with a 25% buffer, NIN, SMS/Shaparak, 12-18% partner commissions, fully loaded tech/sales/support payroll, Tehran office and marketing. Engines 1-4 and 6 stay local; engines 5A/5B are hybrid except in tax, Moadian, healthcare, legal and KYC sectors, which are always local.'}</p>
   </section>
 </main>
 <footer><div class="wrap"><div>{'مستربوک ترکیبی v3.1 · ۳۱۰ سرویس (۲۰۰ حسابرسی‌شده + ۱۱۰ بازنویسی‌شده) · قیمت‌ها به تومان' if fa else 'Combined Masterbook v3.1 · 310 services (200 audited + 110 re-underwritten) · prices in Toman'}</div><div><a href="{'index.html' if fa else 'fa.html'}">{'English edition' if fa else 'Persian edition'}</a></div></div></footer>
@@ -368,7 +412,7 @@ function tierClass(t) { return t === 'P1' ? 'p1' : t === 'P2' ? 'p2' : 'p3'; }
 function row(s) {
   return `<tr tabindex="0" data-id="${s.id}">
     <td>${s.id}</td>
-    <td><span class="svc-name">${s.title}</span>${s.origin === 'legacy' ? `<span class="origin-pill legacy">${LANG === 'fa' ? 'بازنویسی v1→v3' : 'v1 → v3'}</span>` : ''}<span class="svc-cat">${s.buyer}</span></td>
+    <td><span class="svc-name">${s.title}</span>${s.origin === 'legacy' ? `<span class="origin-pill legacy">${LANG === 'fa' ? 'بازنویسی v1→v3' : 'v1 → v3'}</span>` : ''}<span class="host-pill ${s.hosting}">${s.hosting_label}</span><span class="svc-cat">${s.buyer}</span></td>
     <td>${s.sector}</td>
     <td><span class="tier-pill ${tierClass(s.tier)}">${s.tier}</span></td>
     <td>${s.buyer}</td>
@@ -414,10 +458,11 @@ function render() {
   const q = document.getElementById('q').value.trim().toLowerCase();
   const sector = document.getElementById('sector').value;
   const tier = document.getElementById('tier').value;
+  const hosting = document.getElementById('hosting').value;
   const sort = document.getElementById('sort').value;
   let rows = DATA.filter(s => {
-    const hay = (s.title + ' ' + s.buyer + ' ' + s.sector).toLowerCase();
-    return (!q || hay.includes(q)) && (!sector || s.sector === sector) && (!tier || s.tier === tier);
+    const hay = (s.title + ' ' + s.buyer + ' ' + s.sector + ' ' + (s.hosting_label || '')).toLowerCase();
+    return (!q || hay.includes(q)) && (!sector || s.sector === sector) && (!tier || s.tier === tier) && (!hosting || s.hosting === hosting);
   });
   rows.sort((a, b) => sort === 'id' ? a.id - b.id : (b[sort] - a[sort]));
   document.getElementById('svcRows').innerHTML = rows.map(row).join('') || `<tr><td colspan="10" class="empty">${LANG === 'fa' ? 'نتیجه‌ای یافت نشد.' : 'No results.'}</td></tr>`;
@@ -427,7 +472,7 @@ function render() {
     x.addEventListener('keydown', e => { if (e.key === 'Enter') go(x.dataset.id); });
   });
 }
-['q', 'sector', 'tier', 'sort'].forEach(id => document.getElementById(id).addEventListener('input', render));
+['q', 'sector', 'tier', 'hosting', 'sort'].forEach(id => document.getElementById(id).addEventListener('input', render));
 renderTop(); renderTiers(); renderSectors(); render();
 """
     script = (
@@ -517,12 +562,14 @@ function render() {
 
   document.getElementById('serviceHead').innerHTML = `
     <div class="breadcrumbs"><a href="${PAGE === 'service_fa.html' ? 'fa.html' : 'index.html'}">${LABELS.back}</a> · ${s.sector}</div>
-    <div style="margin-top:14px"><span class="badge ${tierClass(s.tier)}">${s.tier}</span> <span class="badge">${s.engine}</span> ${s.origin === 'legacy' ? `<span class="badge origin-legacy">${LANG === 'fa' ? 'بازنویسی‌شده v1→v3' : 'Legacy v1 → v3'}</span>` : `<span class="badge origin-audited">${LANG === 'fa' ? 'حسابرسی‌شده v3' : 'Audited v3'}</span>`}</div>
+    <div style="margin-top:14px"><span class="badge ${tierClass(s.tier)}">${s.tier}</span> <span class="badge">${s.engine}</span> <span class="badge host-${s.hosting}">${s.hosting_label}</span> ${s.origin === 'legacy' ? `<span class="badge origin-legacy">${LANG === 'fa' ? 'بازنویسی‌شده v1→v3' : 'Legacy v1 → v3'}</span>` : `<span class="badge origin-audited">${LANG === 'fa' ? 'حسابرسی‌شده v3' : 'Audited v3'}</span>`}</div>
     <h1>${s.title}</h1>
     <div class="hero-meta">
       <div><strong>${LANG === 'fa' ? 'خریدار:' : 'Buyer:'}</strong> ${s.buyer}</div>
       <div><strong>${LANG === 'fa' ? 'حکم:' : 'Verdict:'}</strong> ${s.verdict}</div>
+      <div><strong>${LANG === 'fa' ? 'میزبانی:' : 'Hosting:'}</strong> ${s.hosting_label}</div>
     </div>
+    <div class="provenance-note">${s.hosting_note}</div>
     ${s.origin === 'legacy' ? `<div class="provenance-note">${LANG === 'fa' ? 'این سرویس از کاتالوگ قدیمی v1 آمده و با همان موتور مالی، بوم ۹بخشی و فرض‌های ۱۴۰۵ به مدل v3 بازنویسی شده است؛ بخشی از ۲۰۰ سرویس حسابرسی‌شده نیست.' : 'This service comes from the legacy v1 catalogue and has been re-underwritten into the v3 model with the same financial engine, nine-block canvas and 1405 assumptions. It is not part of the audited 200-service docx.'}</div>` : ''}`;
 
   document.getElementById('canvas').innerHTML = s.bmc.map(b => `<div class="bmc-card ${b.key}">
@@ -623,7 +670,7 @@ def report_en() -> str:
         for s in TOP25
     ]
     cat_rows = [
-        [s["id"], s["title"], s["sector"].split(":")[0], s["tier"], s["buyer"], "Legacy" if s.get("origin") == "legacy" else "Audited", f"{s['_mrr']/1e6:,.0f}", f"{s['_ebitda']/1e6:,.0f}", f"{s['standalone_margin']:.1f}%"]
+        [s["id"], s["title"], s["sector"].split(":")[0], s["tier"], s["buyer"], "Legacy" if s.get("origin") == "legacy" else "Audited", HOSTING_EN[s["_hosting"]], f"{s['_mrr']/1e6:,.0f}", f"{s['_ebitda']/1e6:,.0f}", f"{s['standalone_margin']:.1f}%"]
         for s in SERVICES
     ]
     p1 = [s for s in SERVICES if s["tier"] == "P1"]
@@ -646,6 +693,10 @@ Tier distribution is 112 P1, 155 P2 and 43 P3. By verdict, 157 models are strong
 | Legacy v1 → v3 | 110 | Earlier 120-service catalogue | Re-underwritten with the v3 financial engine, 1405 unit costs and same 9-block canvas |
 
 The legacy cohort started at 120 services. Ten were exact product overlaps with audited services and were removed in favour of the audited version: old #27→#26 (SME credit scoring), #50→#46 (lab-report explainer), #59→#57 (plagiarism detection), #63→#82 (property valuation), #71→#84 (route optimisation), #81→#71 (predictive maintenance), #82→#72 (visual quality inspection), #86→#77 (crop disease detection), #94→#67 (employee surveys) and #116→#100 (data labelling). The remaining 110 retain their original concept, buyer and Persian source canvas, but their prices, active base, churn, GPU/NIN cost, payroll, partner commission, bad debt and shared-engine economics are rebuilt with the v3 model. They are labelled "Legacy" in the dashboard, service pages and CSV; they are not part of the audited docx.
+
+## 2b. Hosting mode
+
+Inference is local-first on domestic GPU and the National Information Network. **{t['local']} services** stay fully local. **{t['hybrid']} services** (engines 5A generative copy and 5B studio vision, outside sensitive sectors) may overflow to ChatGPT, Claude or Gemini. Tax, Moadian, healthcare, legal and KYC workloads never leave local hosting. The dashboard, service pages and CSV expose a Hosting filter (`local` / `hybrid`). There is no pure cloud-API tier.
 
 ## 3. What the audit corrected
 
@@ -686,7 +737,7 @@ The legacy cohort started at 120 services. Ten were exact product overlaps with 
 
 ## 8. Full 310-service catalogue
 
-{md_table(["#", "Service", "Sector", "Tier", "Buyer", "Origin", "MRR (M T)", "EBITDA (M T)", "Margin"], cat_rows)}
+{md_table(["#", "Service", "Sector", "Tier", "Buyer", "Origin", "Hosting", "MRR (M T)", "EBITDA (M T)", "Margin"], cat_rows)}
 
 ## 9. Method and caveats
 
@@ -696,6 +747,7 @@ The legacy cohort started at 120 services. Ten were exact product overlaps with 
 - Customer counts and churn are calibrated from Latka Iran benchmarks and sector interviews, not from a bottom-up sales pipeline.
 - The portfolio case assumes shared engineering, office and compliance costs across three sibling tools. It is not additive across all 310 services.
 - The 110 legacy services are re-underwritten estimates, not audited docx outputs. Their provenance flag is carried through the dashboard, service pages and CSV.
+- Hosting is derived from the engine split: engines 1-4 and 6 are local; 5A/5B are hybrid except in tax, Moadian, healthcare, legal and KYC sectors.
 
 Source: `data/masterbook.json` + `data/legacy_services.json` · Persian edition: `fa.html` · Service detail: `service.html?id=N`
 """
@@ -712,7 +764,7 @@ def report_fa() -> str:
         for s in TOP25
     ]
     cat_rows = [
-        [fa_digits(s["id"]), FA_SERVICES[str(s["id"])]["title"], SECTORS_FA.get(s["sector"], s["sector"]), TIERS_FA.get(s["tier"], s["tier"]), FA_SERVICES[str(s["id"])]["buyer"], "بازنویسی‌شده" if s.get("origin") == "legacy" else "حسابرسی‌شده", fa_dec(s["_mrr"] / 1e6), fa_dec(s["_ebitda"] / 1e6), fa_pct(s["standalone_margin"])]
+        [fa_digits(s["id"]), FA_SERVICES[str(s["id"])]["title"], SECTORS_FA.get(s["sector"], s["sector"]), TIERS_FA.get(s["tier"], s["tier"]), FA_SERVICES[str(s["id"])]["buyer"], "بازنویسی‌شده" if s.get("origin") == "legacy" else "حسابرسی‌شده", HOSTING_FA.get(s["_hosting"], s["_hosting"]), fa_dec(s["_mrr"] / 1e6), fa_dec(s["_ebitda"] / 1e6), fa_pct(s["standalone_margin"])]
         for s in SERVICES
     ]
     p1 = [s for s in SERVICES if s["tier"] == "P1"]
@@ -735,6 +787,10 @@ def report_fa() -> str:
 | قدیمی v1 → v3 | ۱۱۰ | کاتالوگ ۱۲۰ سرویسی قبلی | بازنویسی با موتور مالی v3، هزینه‌های واحد ۱۴۰۵ و همان بوم ۹بخشی |
 
 کاتالوگ قدیمی ۱۲۰ سرویس داشت. ده سرویس هم‌پوشانی کامل محصولی با نسخه حسابرسی‌شده داشتند و به نفع نسخه حسابرسی‌شده حذف شدند: #۲۷→#۲۶ (اعتبارسنجی SME)، #۵۰→#۴۶ (توضیح آزمایش)، #۵۹→#۵۷ (تشخیص سرقت علمی)، #۶۳→#۸۲ (ارزش‌گذاری ملک)، #۷۱→#۸۴ (مسیریابی)، #۸۱→#۷۱ (نگهداری پیش‌بین)، #۸۲→#۷۲ (بازرسی بصری)، #۸۶→#۷۷ (تشخیص بیماری گیاه)، #۹۴→#۶۷ (نظرسنجی کارکنان) و #۱۱۶→#۱۰۰ (برچسب‌گذاری داده). ۱۱۰ سرویس باقی‌مانده مفهوم، خریدار و بوم فارسی اصلی خود را حفظ کرده‌اند، اما قیمت، پایه فعال، ریزش، هزینه GPU/NIN، حقوق، کمیسیون شریک، بدهی بد و اقتصاد موتور مشترک آن‌ها با مدل v3 بازسازی شده است. این سرویس‌ها در داشبورد، صفحه جزئیات و CSV با برچسب «بازنویسی‌شده» مشخص می‌شوند و بخشی از سند حسابرسی‌شده نیستند.
+
+## ۲ب. حالت میزبانی
+
+استنتاج پیش‌فرض روی GPU داخلی و شبکه ملی اطلاعات است. **{fa_digits(t['local'])} سرویس** کاملاً محلی می‌مانند. **{fa_digits(t['hybrid'])} سرویس** (موتور ۵A تولید متن و ۵B بینایی استودیویی، خارج از بخش‌های حساس) می‌توانند سرریز را به ChatGPT، Claude یا Gemini بفرستند. بار مالیات، مودیان، سلامت، حقوقی و احراز هویت هرگز از میزبانی محلی خارج نمی‌شود. داشبورد، صفحه جزئیات و CSV فیلتر میزبانی (`محلی` / `ترکیبی`) دارند. سطح صرفاً ابری وجود ندارد.
 
 ## ۳. اصلاح‌های حسابرسی
 
@@ -775,7 +831,7 @@ def report_fa() -> str:
 
 ## ۸. کاتالوگ کامل ۳۱۰ سرویس
 
-{md_table(["#", "سرویس", "بخش", "سطح", "خریدار", "منشأ", "MRR (میلیون ت)", "EBITDA (میلیون ت)", "حاشیه"], cat_rows)}
+{md_table(["#", "سرویس", "بخش", "سطح", "خریدار", "منشأ", "میزبانی", "MRR (میلیون ت)", "EBITDA (میلیون ت)", "حاشیه"], cat_rows)}
 
 ## ۹. روش و محدودیت‌ها
 
@@ -785,6 +841,7 @@ def report_fa() -> str:
 - تعداد مشتری و ریزش از معیارهای Latka Iran و مصاحبه‌های بخشی کالیبره شده‌اند، نه از قیف فروش پایین‌به‌بالا.
 - سناریوی سبد فرض می‌کند هزینه مهندسی، دفتر و انطباق بین سه ابزار هم‌خانواده تقسیم شود. این عدد برای ۳۱۰ سرویس جمع‌شدنی نیست.
 - ۱۱۰ سرویس بازنویسی‌شده برآورد مدل‌محور هستند، نه خروجی سند حسابرسی‌شده. برچسب منشأ آن‌ها در داشبورد، صفحه جزئیات و CSV حفظ می‌شود.
+- میزبانی از تفکیک موتورها به‌دست می‌آید: موتورهای ۱ تا ۴ و ۶ محلی هستند؛ ۵A/۵B ترکیبی‌اند مگر در بخش‌های مالیات، مودیان، سلامت، حقوقی و احراز هویت.
 
 منبع: `data/masterbook.json` + `data/legacy_services.json` · نسخه انگلیسی: `index.html` · جزئیات سرویس: `service_fa.html?id=N`
 """
@@ -795,7 +852,7 @@ def report_fa() -> str:
 
 def write_csvs():
     headers_en = [
-        "id", "origin", "sector", "service", "tier", "verdict", "buyer", "segment", "engine",
+        "id", "origin", "hosting", "sector", "service", "tier", "verdict", "buyer", "segment", "engine",
         "active_accounts", "monthly_churn_pct", "gross_mrr_toman", "net_collected_mrr_toman",
         "gross_margin_pct", "standalone_ebitda_toman", "standalone_margin_pct",
         "portfolio_ebitda_toman", "portfolio_margin_pct", "cac_toman", "cac_payback_months",
@@ -806,7 +863,7 @@ def write_csvs():
         w.writerow(headers_en)
         for s in SERVICES:
             w.writerow([
-                s["id"], s.get("origin", "audited"), s["sector"], s["title"], s["tier"], s["verdict"], s["buyer"], s["segment"], s["engine"],
+                s["id"], s.get("origin", "audited"), s["_hosting"], s["sector"], s["title"], s["tier"], s["verdict"], s["buyer"], s["segment"], s["engine"],
                 s["active"]["accounts"] if s["active"] else 0, s["churn"], round(s["_mrr"]), round(s["_net"]),
                 round(s["_gm"], 2), round(s["_ebitda"]), round(s["standalone_margin"], 2),
                 round(s["portfolio_ebitda"]), round(s["portfolio_margin"], 2), round(s["cac"]), s["payback"],
@@ -814,7 +871,7 @@ def write_csvs():
             ])
 
     headers_fa = [
-        "شماره", "منشأ", "بخش", "سرویس", "سطح", "حکم", "خریدار", "بخش مشتری", "موتور",
+        "شماره", "منشأ", "میزبانی", "بخش", "سرویس", "سطح", "حکم", "خریدار", "بخش مشتری", "موتور",
         "حساب فعال", "ریزش ماهانه ٪", "MRR ناخالص (تومان)", "MRR خالص (تومان)",
         "حاشیه ناخالص ٪", "EBITDA مستقل (تومان)", "حاشیه مستقل ٪",
         "EBITDA سبد (تومان)", "حاشیه سبد ٪", "CAC (تومان)", "بازگشت CAC (ماه)",
@@ -826,7 +883,7 @@ def write_csvs():
         for s in SERVICES:
             fa = FA_SERVICES[str(s["id"])]
             w.writerow([
-                s["id"], "بازنویسی‌شده" if s.get("origin") == "legacy" else "حسابرسی‌شده", SECTORS_FA.get(s["sector"], s["sector"]), fa["title"], TIERS_FA.get(s["tier"], s["tier"]),
+                s["id"], "بازنویسی‌شده" if s.get("origin") == "legacy" else "حسابرسی‌شده", HOSTING_FA.get(s["_hosting"], s["_hosting"]), SECTORS_FA.get(s["sector"], s["sector"]), fa["title"], TIERS_FA.get(s["tier"], s["tier"]),
                 VERDICTS_FA.get(s["verdict"], s["verdict"]), fa["buyer"], SEGMENTS_FA.get(s["segment"], s["segment"]),
                 ENGINES_FA.get(s["engine"], s["engine"]), s["active"]["accounts"] if s["active"] else 0, s["churn"],
                 round(s["_mrr"]), round(s["_net"]), round(s["_gm"], 2), round(s["_ebitda"]),

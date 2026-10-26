@@ -56,6 +56,11 @@ ENGINES_FA = {
     "Engine #6: Cross-Platform Workflow Agents & Compliance Automators": "موتور ۶: عامل‌های گردش‌کار چندپلتفرمی و خودکارساز انطباق",
 }
 
+HOSTING_FA = {
+    "local": "محلی",
+    "hybrid": "ترکیبی",
+}
+
 STACKS_FA = {
     "LightGBM / Prophet Jalali Seasonality + OR-Tools Constraint Solver + Qwen3-8B Explainer on CPU/Shared GPU": "LightGBM / Prophet با فصلیت جلالی + حل‌کننده قید OR-Tools + توضیح‌دهنده Qwen3-8B روی CPU/GPU مشترک",
     "Quantized Qwen3-14B/32B (AWQ, Apache 2.0) via vLLM + BGE-M3 Persian Embeddings + Qdrant CPU Vector DB": "Qwen3-14B/32B کوانتیزه (AWQ، مجوز Apache 2.0) با vLLM + امبدینگ فارسی BGE-M3 + پایگاه برداری Qdrant روی CPU",

@@ -80,7 +80,7 @@
   .score-pill.high { background: #e4efe6; color: #1f6b3c; }
   .score-pill.mid { background: #f5eddc; color: #8a5a12; }
   .score-pill.low { background: #f0e6e3; color: #8c4032; }
-  .controls { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; padding: 16px; border-bottom: 1px solid var(--line); background: var(--surface-2); border-radius: var(--radius) var(--radius) 0 0; }
+  .controls { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 10px; padding: 16px; border-bottom: 1px solid var(--line); background: var(--surface-2); border-radius: var(--radius) var(--radius) 0 0; }
   .controls label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; font-weight: 700; }
   .controls input, .controls select { width: 100%; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 9px; padding: 10px 12px; font-size: 13.5px; font-family: inherit; outline: none; }
   .controls input:focus, .controls select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15,92,76,0.12); }
@@ -209,3 +209,9 @@
 .badge.origin-audited { background: #e4efe6; color: #1f6b3c; }
 .badge.origin-legacy { background: #f7eee2; color: #8a5a12; }
 .provenance-note { margin-top: 14px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); font-size: 12.5px; color: var(--muted); }
+.host-pill { display: inline-block; margin-left: 6px; vertical-align: 1px; font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 999px; white-space: nowrap; }
+.host-pill.local { background: #e4efe6; color: #1f6b3c; }
+.host-pill.hybrid { background: #e8eef5; color: #2f5d8a; }
+[dir="rtl"] .host-pill { margin-left: 0; margin-right: 6px; }
+.badge.host-local { background: #e4efe6; color: #1f6b3c; }
+.badge.host-hybrid { background: #e8eef5; color: #2f5d8a; }
