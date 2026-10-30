@@ -23,6 +23,7 @@ from fa_v3 import (
     VERDICTS_FA,
     bmc_en,
     bmc_fa,
+    billing_fa,
     fa_dec,
     fa_digits,
     fa_int,
@@ -310,6 +311,25 @@ def service_row(s: dict, fa: bool) -> dict:
         "channel": s["_channel"],
         "channel_label": CHANNEL_FA.get(s["_channel"], s["_channel"]) if fa else CHANNEL_EN[s["_channel"]],
         "channel_note": channel_note(s["_channel"], fa),
+        "billing_model": billing_fa(s.get("billing_model", "")) if fa else s.get("billing_model", ""),
+        "replaces": FA_SERVICES[str(s["id"])].get("replaces", s.get("replaces", "")) if fa else s.get("replaces", ""),
+        "gtm": FA_SERVICES[str(s["id"])].get("gtm", s.get("gtm", "")) if fa else s.get("gtm", ""),
+        "driver": FA_SERVICES[str(s["id"])].get("driver", s.get("driver", "")) if fa else s.get("driver", ""),
+        "dataset": s.get("dataset", ""),
+        "stack": STACKS_FA.get(s.get("stack", ""), s.get("stack", "")) if fa else s.get("stack", ""),
+        "infrastructure": s.get("infrastructure", ""),
+        "dist_partners": s.get("dist_partners", ""),
+        "prices": s.get("prices") or {},
+        "usage_price": s.get("usage_price"),
+        "gpu_cost": s.get("gpu_cost"),
+        "nin_cost": s.get("nin_cost"),
+        "partner_cogs": s.get("partner_cogs"),
+        "partner_share": s.get("partner_share"),
+        "sales_fte": s.get("sales_fte"),
+        "support_fte": s.get("support_fte"),
+        "support_scope": s.get("support_scope", ""),
+        "standalone_cost": s.get("standalone_cost"),
+        "portfolio_cost": s.get("portfolio_cost"),
     }
 
 
@@ -443,11 +463,14 @@ def dashboard_html(fa: bool, channel: str | None = None) -> str:
     )
     th = "".join(f"<th>{x}</th>" for x in table_headers)
     svc_headers = (
-        ["#", "سرویس", "بخش", "سطح", "خریدار", "MRR (م.ت)", "EBITDA (م.ت)", "حاشیه", "LTV:CAC", "بازگشت"]
+        ["", "#", "سرویس", "بخش", "سطح", "خریدار", "MRR (م.ت)", "EBITDA (م.ت)", "حاشیه", "LTV:CAC", "بازگشت"]
         if fa else
-        ["#", "Service", "Sector", "Tier", "Buyer", "MRR (M T)", "EBITDA (M T)", "Margin", "LTV:CAC", "Payback"]
+        ["", "#", "Service", "Sector", "Tier", "Buyer", "MRR (M T)", "EBITDA (M T)", "Margin", "LTV:CAC", "Payback"]
     )
-    svc_th = "".join(f"<th>{x}</th>" for x in svc_headers)
+    svc_th = "".join(
+        (f'<th class="check-col"><input type="checkbox" id="checkAll" title="{esc("انتخاب نمایش‌داده‌شده" if fa else "Select visible")}"></th>' if i == 0 else f"<th>{x}</th>")
+        for i, x in enumerate(svc_headers)
+    )
 
     labels = {
         "search": "جست‌وجوی سرویس، خریدار یا بخش…" if fa else "Search service, buyer or sector…",
@@ -479,6 +502,15 @@ def dashboard_html(fa: bool, channel: str | None = None) -> str:
         "report": "گزارش کامل" if fa else "Full report",
         "csv": "دانلود CSV" if fa else "Download CSV",
         "method": "روش‌شناسی" if fa else "Methodology",
+        "export": "خروجی Word" if fa else "Export Word",
+        "exporting": "در حال ساخت فایل…" if fa else "Building file…",
+        "select_visible": "انتخاب نمایش‌داده‌شده" if fa else "Select visible",
+        "clear_sel": "پاک کردن انتخاب" if fa else "Clear selection",
+        "sel_count": "انتخاب‌شده" if fa else "selected",
+        "export_empty": "سرویسی برای خروجی نیست." if fa else "Nothing to export.",
+        "export_title": title,
+        "export_data": "data/export-fa.json" if fa else "data/export-en.json",
+        "export_file": ("mostarbook" if fa else "masterbook"),
     }
     labels_json = json_for_script(labels)
     sector_options = "".join(
@@ -542,7 +574,15 @@ def dashboard_html(fa: bool, channel: str | None = None) -> str:
         <div><label>{'میزبانی' if fa else 'Hosting'}</label><select id="hosting"><option value="">{labels['all_hosting']}</option><option value="local">{labels['host_local']}</option><option value="hybrid">{labels['host_hybrid']}</option></select></div>
         <div><label>{'مرتب‌سازی' if fa else 'Sort'}</label><select id="sort"><option value="ebitda">{labels['sort_ebitda']}</option><option value="mrr">{labels['sort_mrr']}</option><option value="margin">{labels['sort_margin']}</option><option value="ltv">{labels['sort_ltv']}</option><option value="id">{labels['sort_id']}</option></select></div>
       </div>
-      <div class="table-meta"><span id="count"></span><span>{labels['shown']}</span></div>
+      <div class="table-meta">
+        <span id="count"></span>
+        <span class="export-bar">
+          <span id="selCount"></span>
+          <button type="button" class="export-btn ghost" id="selectVisible">{labels['select_visible']}</button>
+          <button type="button" class="export-btn ghost" id="clearSel">{labels['clear_sel']}</button>
+          <button type="button" class="export-btn" id="exportDocx">{labels['export']}</button>
+        </span>
+      </div>
       <div class="table-scroll"><table><thead><tr>{svc_th}</tr></thead><tbody id="svcRows"></tbody></table></div>
     </div>
   </section>
@@ -568,8 +608,13 @@ const num = v => intl.format(Math.round(v));
 const dec = v => intl1.format(v);
 const m = v => dec(v / 1e6);
 function tierClass(t) { return t === 'P1' ? 'p1' : t === 'P2' ? 'p2' : 'p3'; }
+const selected = new Set();
+let visibleRows = [];
+let FULL = null;
 function row(s) {
+  const checked = selected.has(String(s.id)) ? ' checked' : '';
   return `<tr tabindex="0" data-id="${s.id}">
+    <td class="check-col"><input type="checkbox" class="row-check" data-id="${s.id}"${checked}></td>
     <td>${s.id}</td>
     <td><span class="svc-name">${s.title}</span>${s.origin === 'legacy' ? `<span class="origin-pill legacy">${LANG === 'fa' ? 'بازنویسی v1→v3' : 'v1 → v3'}</span>` : ''}<span class="channel-pill ${s.channel}">${s.channel_label}</span><span class="host-pill ${s.hosting}">${s.hosting_label}</span><span class="svc-cat">${s.buyer}</span></td>
     <td>${s.sector}</td>
@@ -624,13 +669,72 @@ function render() {
     return (!q || hay.includes(q)) && (!sector || s.sector === sector) && (!tier || s.tier === tier) && (!hosting || s.hosting === hosting);
   });
   rows.sort((a, b) => sort === 'id' ? a.id - b.id : (b[sort] - a[sort]));
-  document.getElementById('svcRows').innerHTML = rows.map(row).join('') || `<tr><td colspan="10" class="empty">${LANG === 'fa' ? 'نتیجه‌ای یافت نشد.' : 'No results.'}</td></tr>`;
+  visibleRows = rows;
+  document.getElementById('svcRows').innerHTML = rows.map(row).join('') || `<tr><td colspan="11" class="empty">${LANG === 'fa' ? 'نتیجه‌ای یافت نشد.' : 'No results.'}</td></tr>`;
   document.getElementById('count').textContent = num(rows.length) + ' / ' + num(DATA.length);
+  updateSel();
+  const all = document.getElementById('checkAll');
+  if (all) all.checked = rows.length > 0 && rows.every(s => selected.has(String(s.id)));
   document.querySelectorAll('#svcRows tr[data-id]').forEach(x => {
-    x.addEventListener('click', () => go(x.dataset.id));
+    x.addEventListener('click', e => {
+      if (e.target.closest('input')) return;
+      go(x.dataset.id);
+    });
     x.addEventListener('keydown', e => { if (e.key === 'Enter') go(x.dataset.id); });
   });
+  document.querySelectorAll('#svcRows .row-check').forEach(box => {
+    box.addEventListener('click', e => e.stopPropagation());
+    box.addEventListener('change', () => {
+      if (box.checked) selected.add(String(box.dataset.id));
+      else selected.delete(String(box.dataset.id));
+      updateSel();
+    });
+  });
 }
+function updateSel() {
+  const n = selected.size;
+  document.getElementById('selCount').textContent = n ? (num(n) + ' ' + LABELS.sel_count) : '';
+}
+async function loadFull() {
+  if (FULL) return FULL;
+  const res = await fetch(LABELS.export_data);
+  FULL = await res.json();
+  return FULL;
+}
+async function exportDocx() {
+  const btn = document.getElementById('exportDocx');
+  const ids = selected.size ? [...selected] : visibleRows.map(s => String(s.id));
+  if (!ids.length) { alert(LABELS.export_empty); return; }
+  btn.disabled = true;
+  const prev = btn.textContent;
+  btn.textContent = LABELS.exporting;
+  try {
+    const full = await loadFull();
+    const byId = Object.fromEntries(full.map(s => [String(s.id), s]));
+    const services = ids.map(id => byId[id]).filter(Boolean);
+    if (!services.length) { alert(LABELS.export_empty); return; }
+    const stamp = new Date().toISOString().slice(0, 10);
+    exportServicesDocx(services, {
+      lang: LANG,
+      title: LABELS.export_title,
+      filename: LABELS.export_file + '-' + services.length + '-' + stamp + '.docx'
+    });
+  } finally {
+    btn.disabled = false;
+    btn.textContent = prev;
+  }
+}
+document.getElementById('selectVisible').addEventListener('click', () => {
+  visibleRows.forEach(s => selected.add(String(s.id)));
+  render();
+});
+document.getElementById('clearSel').addEventListener('click', () => { selected.clear(); render(); });
+document.getElementById('checkAll').addEventListener('change', e => {
+  if (e.target.checked) visibleRows.forEach(s => selected.add(String(s.id)));
+  else visibleRows.forEach(s => selected.delete(String(s.id)));
+  render();
+});
+document.getElementById('exportDocx').addEventListener('click', exportDocx);
 ['q', 'sector', 'tier', 'hosting', 'sort'].forEach(id => document.getElementById(id).addEventListener('input', render));
 renderTop(); renderTiers(); renderSectors(); render();
 """
@@ -642,10 +746,11 @@ renderTop(); renderTiers(); renderSectors(); render();
         .replace("__PAGE__", "service_fa.html" if fa else "service.html")
         .replace("__LABELS__", labels_json)
     )
-    return page(title, lang, direction, body, script)
+    return page(title, lang, direction, body, script, extra_js="scripts/docx_export.js")
 
 
-def page(title: str, lang: str, direction: str, body: str, script: str = "") -> str:
+def page(title: str, lang: str, direction: str, body: str, script: str = "", extra_js: str = "") -> str:
+    extra = f'<script src="{extra_js}"></script>\n' if extra_js else ""
     return f"""<!DOCTYPE html>
 <html lang="{lang}" dir="{direction}">
 <head>
@@ -656,7 +761,7 @@ def page(title: str, lang: str, direction: str, body: str, script: str = "") -> 
 </head>
 <body>
 {body}
-<script>{script}</script>
+{extra}<script>{script}</script>
 </body>
 </html>
 """
@@ -1019,6 +1124,17 @@ def report_fa() -> str:
 # ---------------------------------------------------------------- CSV
 
 
+def write_export_json():
+    (DATA / "export-en.json").write_text(
+        json.dumps([service_row(s, False) for s in SERVICES], ensure_ascii=False),
+        encoding="utf-8",
+    )
+    (DATA / "export-fa.json").write_text(
+        json.dumps([service_row(s, True) for s in SERVICES], ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+
 def write_csvs():
     headers_en = [
         "id", "origin", "channel", "hosting", "sector", "service", "tier", "verdict", "buyer", "segment", "engine",
@@ -1079,6 +1195,7 @@ def main():
     for name, text in pages:
         (ROOT / name).write_text(text, encoding="utf-8")
     write_csvs()
+    write_export_json()
     for name, _ in pages:
         print(f"wrote {name} ({(ROOT / name).stat().st_size:,} bytes)")
 
