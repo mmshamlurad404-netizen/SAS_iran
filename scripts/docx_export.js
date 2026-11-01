@@ -237,6 +237,23 @@
       });
       parts.push(tbl(headers, rows, fa));
     }
+
+    if (s.sourced) {
+      const sd = s.sourced;
+      const order = [["canvas", "1. The canvas"], ["cost_model", "2. Cost model"], ["revenue", "3. Revenue and break-even"], ["sensitivities", "4. Sensitivities"], ["risks", "5. Risks that change the numbers"], ["unverified", "6. Could not verify"]];
+      const blk = (b) => {
+        if (b.t === "table") return tbl(b.h, b.r, false);
+        if (b.t === "li") return p("\u2022 " + b.x, false, { size: 20, spaceAfter: 80 });
+        return p(b.x, false, { size: 20, spaceAfter: 120 });
+      };
+      parts.push(heading(fa ? "مدل منبع‌دار v4 (متن انگلیسی)" : "Sourced model (v4)", false, 2));
+      parts.push(p("Tags: [S] sourced, [D] derived and recomputed by code, [A] assumption. The v3.1 figures above are unchanged; this model adds to them and in places contradicts them.", false, { size: 18, color: "64706A", spaceAfter: 160 }));
+      (sd.verdict_blocks || []).forEach(b => parts.push(blk(b)));
+      order.forEach(([k, t]) => {
+        parts.push(heading(t, false, 3));
+        (sd.sections_blocks[k] || []).forEach(b => parts.push(blk(b)));
+      });
+    }
     return parts.join("");
   }
 

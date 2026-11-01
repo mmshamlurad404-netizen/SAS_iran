@@ -548,4 +548,111 @@
 - ۱۱۰ سرویس بازنویسی‌شده برآورد مدل‌محور هستند، نه خروجی سند حسابرسی‌شده. برچسب منشأ آن‌ها در داشبورد، صفحه جزئیات و CSV حفظ می‌شود.
 - میزبانی از تفکیک موتورها به‌دست می‌آید: موتورهای ۱ تا ۴ و ۶ محلی هستند؛ ۵A/۵B ترکیبی‌اند مگر در بخش‌های مالیات، مودیان، سلامت، حقوقی و احراز هویت.
 
-منبع: `data/masterbook.json` + `data/legacy_services.json` · نسخه انگلیسی: `index.html` · جزئیات سرویس: `service_fa.html?id=N`
+## 10. Sourced-model reconciliation, services 1-100
+
+Services 1-100 carry a second, sourced model (`data/sourced-canvases-100.md`, `data/sourced_canvases.json`, `data/iran-ai-saas-sourced-100.csv`). Every figure there is tagged [S] sourced, [D] derived or [A] assumption; customer counts are assumptions unless a sourced population is named. It uses a month-by-month ramp, a 265,295 T/USD rate (open market, 17 Oct 2026), and its own team, GPU and price assumptions, which differ from v3.1. In the sourced base case 12 of 100 services do not break even within 24 months and 12 have a negative month-24 monthly profit, while the v3.1 month-12 run rate shows 100 of the same 100 services with positive standalone EBITDA. The two views are shown side by side; neither overwrites the other. Months differ (v3.1: month 12; sourced: month 24), so compare direction and break-even, not single cells.
+
+| # | Service | v3.1 accounts (m12) | v3.1 EBITDA (M T, m12) | v3.1 break-even customers | Sourced base customers (m12 / m24) | Sourced break-even month | Sourced peak cash (M T) | Sourced m24 profit (M T) |
+|---|---|---|---|---|---|---|---|---|
+| 1 | AI sales assistant for Instagram, Telegram, Eitaa and Bale DMs | 169 | 118 | 123 | 150 / 500 | 14 | 2,691 | +305 |
+| 2 | Product title, description and SEO writer for Digikala, Basalam and To | 196 | 262 | 100 | 130 / 450 | 15 | 2,838 | +414 |
+| 3 | Product photo cleaner and studio-background generator | 188 | 108 | 144 | 120 / 400 | 17 | 3,381 | +227 |
+| 4 | CRM follow-up agent: drafts follow-ups, schedules calls, scores leads | 188 | 139 | 133 | 30 / 100 | 21 | 5,427 | +112 |
+| 5 | Persian ad copy and campaign generator for SMS, Telegram and native ad | 158 | 212 | 88 | 100 / 350 | 16 | 3,110 | +308 |
+| 6 | Competitor price monitor with repricing suggestions | 184 | 211 | 109 | 110 / 380 | 17 | 2,292 | +127 |
+| 7 | Inflation-aware price list: reprices catalogs from exchange rate and c | 213 | 315 | 105 | 90 / 300 | 14 | 1,821 | +261 |
+| 8 | Customer review summarizer and sentiment dashboard | 153 | 153 | 98 | 60 / 200 | 23 | 4,343 | +44 |
+| 9 | Store builder that creates a catalog from photos or voice notes | 470 | 5 | 464 | 500 / 1,800 | 21 | 4,189 | +52 |
+| 10 | Personalized SMS and push campaign engine | 173 | 171 | 111 | 80 / 300 | none | 4,900 | -169 |
+| 11 | Website and app chatbot trained on the company's own documents | 218 | 276 | 119 | 120 / 450 | 14 | 2,675 | +439 |
+| 12 | Persian voice bot that replaces call-center menus | 33 | 137 | 24 | 8 / 25 | 19 | 4,171 | +220 |
+| 13 | Call transcription and quality scoring | 169 | 71 | 142 | 20 / 70 | 7 | 1,328 | +1,631 |
+| 14 | Helpdesk ticket triage and draft replies | 178 | 191 | 110 | 20 / 80 | 11 | 1,892 | +1,323 |
+| 15 | Meeting recorder: Persian minutes and action items | 207 | 136 | 153 | 30 / 120 | 14 | 2,373 | +468 |
+| 16 | Formal letter and administrative correspondence drafter | 171 | 165 | 107 | 30 / 120 | 14 | 2,631 | +615 |
+| 17 | Persian speech-to-text API | 158 | 111 | 121 | 20 / 80 | 9 | 1,537 | +1,716 |
+| 18 | Persian text-to-speech with custom brand voices | 146 | 63 | 124 | 20 / 80 | 8 | 1,733 | +2,904 |
+| 19 | No-code AI bot builder for Bale, Eitaa and Telegram | 193 | 239 | 113 | 80 / 400 | 13 | 2,460 | +769 |
+| 20 | Chat translator for Persian, Arabic, Turkish and English trade | 176 | 217 | 98 | 60 / 300 | 19 | 4,465 | +243 |
+| 21 | Invoice and receipt OCR to accounting entries (Persian digits, Jalali  | 204 | 126 | 150 | 100 / 450 | none | 6,301 | -77 |
+| 22 | E-invoicing and tax filing assistant for the national tax system | 191 | 155 | 133 | 150 / 700 | none | 6,864 | -135 |
+| 23 | Chat-based bookkeeping copilot | 171 | 192 | 106 | 250 / 1,200 | none | 6,798 | -133 |
+| 24 | Bank statement categorizer and cash-flow forecast | 166 | 80 | 132 | 120 / 500 | none | 7,391 | -212 |
+| 25 | Cheque tracker with bounce-risk alerts | 191 | 203 | 115 | 120 / 450 | none | 8,099 | -276 |
+| 26 | SME credit scoring for B2B trade credit | 155 | 149 | 105 | 30 / 120 | none | 8,548 | -196 |
+| 27 | Payment and order fraud detection API | 146 | 102 | 109 | 80 / 350 | none | 7,125 | -14 |
+| 28 | Stock-exchange disclosure summarizer for Persian filings (Codal) | 188 | 222 | 110 | 1,000 / 5,000 | 15 | 3,548 | +569 |
+| 29 | Contract and budget indexation calculator for inflation clauses | 196 | 262 | 108 | 500 / 2,500 | 20 | 4,845 | +167 |
+| 30 | Payroll and social-insurance calculation assistant | 168 | 97 | 130 | 300 / 1,500 | 18 | 4,595 | +318 |
+| 31 | Contract drafting and review in Persian | 166 | 139 | 115 | 200 / 900 | 16 | 4,573 | +353 |
+| 32 | Iranian-law Q&A with article citations | 193 | 187 | 120 | 800 / 4,000 | none | 7,744 | -200 |
+| 33 | Court ruling summarizer and precedent search | 162 | 108 | 121 | 150 / 700 | 24 | 6,657 | +43 |
+| 34 | Rental and sale agreement generator | 173 | 258 | 89 | 80 / 300 | none | 8,565 | -302 |
+| 35 | Company registration and license guidance assistant | 156 | 181 | 98 | 100 / 400 | none | 6,742 | -31 |
+| 36 | Tender document analyzer and proposal writer | 183 | 176 | 116 | 100 / 350 | 15 | 3,897 | +617 |
+| 37 | Knowledge-based company application and grant writer | 191 | 259 | 99 | 80 / 300 | 19 | 5,157 | +211 |
+| 38 | E-commerce compliance checker (trust seal, consumer rules) | 155 | 151 | 105 | 500 / 2,000 | 21 | 4,776 | +110 |
+| 39 | Document classification and archive search for offices | 36 | 154 | 25 | 40 / 150 | 11 | 2,542 | +1,161 |
+| 40 | Complaint and petition drafter | 457 | 62 | 372 | 1,000 / 4,000 | 13 | 3,290 | +1,116 |
+| 41 | Clinic appointment bot with AI intake questions | 215 | 241 | 124 | 250 / 800 | 18 | 4,231 | +64 |
+| 42 | Doctor dictation to structured visit notes | 164 | 23 | 154 | 150 / 600 | 13 | 2,711 | +691 |
+| 43 | X-ray and dental image triage assistant | 131 | 33 | 119 | 120 / 450 | 13 | 3,921 | +1,186 |
+| 44 | Pharmacy stock and expiry forecasting with shortage-substitution hints | 193 | 253 | 107 | 150 / 600 | 18 | 4,394 | +227 |
+| 45 | Drug-interaction checker using Iranian brand names | 186 | 195 | 115 | 100 / 400 | 17 | 4,488 | +290 |
+| 46 | Lab-result explainer for patients | 147 | 163 | 90 | 40 / 150 | 14 | 3,225 | +813 |
+| 47 | Insurance claim pre-check | 28 | 98 | 22 | 60 / 250 | 7 | 1,836 | +2,584 |
+| 48 | Persian-food nutrition and fitness coach | 503 | 41 | 440 | 3,000 / 12,000 | 7 | 2,289 | +5,595 |
+| 49 | Therapist scheduling and session-note assistant | 191 | 150 | 136 | 90 / 300 | 19 | 4,369 | +170 |
+| 50 | Hospital supply and bed-demand forecasting | 26 | 36 | 24 | 15 / 60 | 9 | 2,237 | +2,353 |
+| 51 | Persian AI tutor for Konkur university-entrance preparation | 588 | 127 | 426 | 2,500 / 10,000 | 11 | 3,106 | +2,337 |
+| 52 | Homework helper aligned to the school curriculum | 431 | 37 | 385 | 2,000 / 8,000 | 15 | 4,492 | +895 |
+| 53 | Quiz and exam generator for teachers | 468 | 101 | 345 | 2,000 / 6,000 | 15 | 3,513 | +534 |
+| 54 | Essay and short-answer grading assistant | 26 | 59 | 22 | 15 / 60 | 14 | 3,274 | +900 |
+| 55 | English and IELTS speaking practice with feedback | 542 | 72 | 454 | 2,000 / 8,000 | 12 | 3,428 | +1,439 |
+| 56 | Thesis and proposal writing assistant with Persian academic formatting | 518 | 88 | 396 | 2,000 / 6,000 | 7 | 1,573 | +3,509 |
+| 57 | Plagiarism and AI-text detection for Persian | 35 | 234 | 21 | 1,000 / 3,000 | 5 | 1,202 | +4,884 |
+| 58 | Corporate training content generator | 148 | 176 | 90 | 400 / 1,200 | 5 | 1,157 | +6,640 |
+| 59 | Recorded-lecture summarizer and Q&A | 194 | 186 | 130 | 250 / 750 | 5 | 873 | +4,988 |
+| 60 | Coding and Excel skills coach in Persian | 477 | 84 | 364 | 3,000 / 9,000 | 9 | 1,582 | +1,679 |
+| 61 | Persian résumé parser and candidate ranking | 191 | 115 | 143 | 150 / 450 | 17 | 3,401 | +224 |
+| 62 | Screening-interview bot and scheduler | 174 | 56 | 152 | 120 / 360 | 14 | 2,694 | +443 |
+| 63 | Job-description and ad generator | 160 | 138 | 106 | 1,000 / 3,000 | 13 | 1,807 | +443 |
+| 64 | Employee onboarding Q&A bot | 171 | 142 | 117 | 120 / 360 | 9 | 1,559 | +1,188 |
+| 65 | Shift and attendance scheduling optimizer | 29 | 58 | 25 | 400 / 1,200 | 9 | 1,324 | +849 |
+| 66 | Inflation-adjusted salary benchmarking and raise planner | 164 | 141 | 113 | 100 / 300 | 22 | 4,665 | +73 |
+| 67 | Employee survey analysis in Persian | 165 | 212 | 92 | 100 / 300 | 17 | 3,145 | +243 |
+| 68 | Freelancer-to-project matcher with proposal help | 415 | 90 | 313 | 900 / 3,000 | 9 | 1,568 | +1,438 |
+| 69 | Skills-gap and training recommender | 125 | 62 | 104 | 60 / 180 | 19 | 3,678 | +113 |
+| 70 | Performance review writer | 148 | 140 | 97 | 120 / 360 | none | 5,231 | -69 |
+| 71 | Predictive maintenance from vibration and sensor data | 31 | 130 | 22 | 40 / 120 | 23 | 5,527 | +11 |
+| 72 | Camera-based quality inspection | 32 | 81 | 26 | 30 / 90 | 14 | 3,442 | +339 |
+| 73 | Standards and technical manual Q&A (ISIRI, ISO, internal manuals) | 32 | 179 | 21 | 1,000 / 3,000 | 5 | 1,350 | +6,542 |
+| 74 | Engineering report generator from test and simulation data | 174 | 219 | 96 | 50 / 150 | 9 | 2,279 | +1,529 |
+| 75 | Energy-use optimizer for plants, greenhouses and buildings | 29 | 85 | 23 | 25 / 75 | 12 | 2,392 | +828 |
+| 76 | Spare-parts demand forecasting and alternative-sourcing assistant | 189 | 248 | 106 | 30 / 90 | 14 | 2,947 | +418 |
+| 77 | Crop disease detection from phone photos | 154 | 102 | 118 | 3,000 / 12,000 | 8 | 1,989 | +3,926 |
+| 78 | Irrigation and water-use advisor | 164 | 168 | 106 | 300 / 900 | 7 | 1,594 | +2,339 |
+| 79 | Construction cost estimator with inflation-indexed unit prices | 208 | 315 | 103 | 100 / 300 | 8 | 1,904 | +2,128 |
+| 80 | Procurement quote comparison assistant | 214 | 120 | 161 | 120 / 360 | 9 | 1,822 | +1,393 |
+| 81 | Used-car price estimator and listing-fraud checker | 144 | 89 | 111 | 120 / 360 | 7 | 1,658 | +2,780 |
+| 82 | Property valuation and listing-copy generator | 169 | 175 | 107 | 1,000 / 3,500 | 7 | 1,809 | +3,342 |
+| 83 | Classifieds moderation and spam detection API | 194 | 171 | 131 | 40 / 120 | 6 | 1,333 | +2,193 |
+| 84 | Delivery route optimizer for small fleets | 162 | 90 | 126 | 400 / 1,500 | 5 | 1,020 | +4,681 |
+| 85 | Retail demand and stock forecasting | 149 | 117 | 107 | 2,000 / 8,000 | 6 | 1,114 | +3,796 |
+| 86 | Insurance risk scoring and quote assistant | 37 | 230 | 22 | 120 / 500 | 8 | 1,864 | +3,395 |
+| 87 | Domestic-travel itinerary planner | 399 | 48 | 338 | 500 / 2,000 | 12 | 3,014 | +1,382 |
+| 88 | Guesthouse and hotel dynamic pricing with review replies | 167 | 117 | 121 | 500 / 1,800 | 10 | 2,000 | +1,603 |
+| 89 | Restaurant demand forecasting and menu repricing | 154 | 191 | 94 | 500 / 1,800 | 8 | 1,486 | +1,490 |
+| 90 | Import-export documentation and tariff-code assistant | 164 | 114 | 119 | 300 / 1,200 | 8 | 1,971 | +2,540 |
+| 91 | Persian blog and social content writer with brand voice | 189 | 237 | 102 | 1,000 / 3,500 | 7 | 1,570 | +3,484 |
+| 92 | Video subtitling and dubbing pipeline | 172 | 83 | 140 | 1,000 / 3,500 | 13 | 2,600 | +762 |
+| 93 | Poster and banner generator with correct Persian typography | 144 | 62 | 122 | 1,200 / 4,500 | 7 | 1,592 | +3,012 |
+| 94 | Short-video script and reel planner | 169 | 233 | 92 | 1,500 / 6,000 | 9 | 1,894 | +1,746 |
+| 95 | Persian news and brand-mention monitoring with summaries | 194 | 267 | 106 | 300 / 1,200 | 8 | 1,910 | +3,546 |
+| 96 | Persian OCR API (printed, handwritten, ID and card images) | 178 | 44 | 158 | 150 / 600 | 7 | 1,695 | +4,564 |
+| 97 | Domestically hosted LLM API billed in rials | 187 | 191 | 115 | 150 / 600 | 8 | 1,828 | +2,763 |
+| 98 | No-code workflow builder for AI agents | 174 | 178 | 113 | 150 / 600 | 13 | 2,758 | +1,046 |
+| 99 | On-premises document Q&A ('chat with your files') | 30 | 133 | 21 | 8 / 30 | 8 | 2,882 | +3,755 |
+| 100 | Persian dataset labeling and model-evaluation service | 146 | 118 | 100 | 30 / 120 | 6 | 1,571 | +6,413 |
+
+منبع: `data/masterbook.json` + `data/legacy_services.json` + `data/sourced-canvases-100.md` · نسخه انگلیسی: `index.html` · جزئیات سرویس: `service_fa.html?id=N`
