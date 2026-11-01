@@ -75,6 +75,8 @@ CORPORATE_BUYER_RE = re.compile(
 )
 PRO_FORCE = {260}
 LEGACY = json.loads((DATA / "legacy_services.json").read_text(encoding="utf-8"))
+import sourced_v4 as _sourced_v4
+SOURCED = _sourced_v4.write_all()  # services 1-100: sourced canvases (data/sourced-canvases-100.md)
 LEGACY_FA = json.loads((DATA / "fa_legacy.json").read_text(encoding="utf-8"))
 SERVICES = MASTERBOOK["services"] + LEGACY["services"]
 N_AUDITED = len(MASTERBOOK["services"])
@@ -240,6 +242,25 @@ def dash_row(s: dict, fa: bool) -> dict:
     }
 
 
+def sourced_payload(s: dict):
+    """Sourced canvas (v4) for audited services 1-100, merged onto the v3.1 record."""
+    sc = SOURCED.get(s["id"])
+    if not sc:
+        return None
+    base = sc["scenarios"].get("base", {})
+    return {
+        "verdict_blocks": sc["verdict_blocks"],
+        "sections_blocks": sc["sections_blocks"],
+        "scenarios": sc["scenarios"],
+        "base": base,
+        "archive": {
+            "accounts": s["active"]["accounts"],
+            "ebitda": s["_ebitda"],
+            "be_customers": s["be_customers"],
+        },
+    }
+
+
 def service_row(s: dict, fa: bool) -> dict:
     if fa:
         bmc = bmc_fa(s)
@@ -330,6 +351,7 @@ def service_row(s: dict, fa: bool) -> dict:
         "support_scope": s.get("support_scope", ""),
         "standalone_cost": s.get("standalone_cost"),
         "portfolio_cost": s.get("portfolio_cost"),
+        "sourced": sourced_payload(s),
     }
 
 
@@ -786,6 +808,10 @@ def service_page_html(fa: bool) -> str:
         "prev": "سرویس قبلی" if fa else "Previous service",
         "next": "سرویس بعدی" if fa else "Next service",
         "cf": "جریان نقد", "source": "متن اصلی انگلیسی بوم" if fa else "Source text",
+        "sourced": "مدل منبع‌دار v4 (متن انگلیسی)" if fa else "Sourced model (v4)",
+        "sourced_note": ("این بخش به انگلیسی است. هر عدد با [S] منبع‌دار، [D] محاسبه‌شده یا [A] فرض برچسب خورده است. اعداد v3.1 بالا دست‌نخورده‌اند و این مدل آن‌ها را تکمیل و در برخی موارد به چالش می‌کشد."
+                          if fa else
+                          "Every number below is tagged [S] sourced, [D] derived (recomputed by code) or [A] assumption. The v3.1 figures above are unchanged; this model adds to them and in places contradicts them (see the comparison)."),
     }
     labels_json = json_for_script(labels)
     script = """
@@ -866,6 +892,30 @@ function render() {
       <div>${p.label}</div><div class="bar"><i style="width:${Math.abs(p.toman) / costTotal * 100}%"></i></div><div class="val">${million(Math.abs(p.toman))}${LANG === 'fa' ? ' م' : ' M'}</div>
     </div>`).join('');
 
+  const sec = document.getElementById('sourcedSection');
+  if (s.sourced) {
+    const sd = s.sourced, b = sd.base || {}, a = sd.archive;
+    const names = { conservative: 'Conservative', base: 'Base', optimistic: 'Optimistic' };
+    const beTxt = v => v == null ? 'not within 24 months' : 'month ' + v;
+    const sgn = v => (v >= 0 ? '+' : '\u2212') + num(Math.abs(v)) + 'M';
+    const cmp = `<table class="src-compare"><thead><tr><th></th><th>v3.1 audited (month-12 run rate)</th><th>Sourced model v4 (base case)</th></tr></thead><tbody>
+      <tr><td>Paying accounts</td><td>${num(a.accounts)} at month 12</td><td>${num(b.customers_m12)} at month 12, ${num(b.customers_m24)} at month 24 [A]</td></tr>
+      <tr><td>Monthly profit</td><td>${sgn(a.ebitda / 1e6)} standalone EBITDA at month 12</td><td>${sgn(b.profit_m24_m)} at month 24</td></tr>
+      <tr><td>Break-even</td><td>${num(a.be_customers)} customers</td><td>${beTxt(b.break_even_month)}; peak cash need ${num(b.peak_cash_m)}M toman</td></tr>
+      <tr><td>Scenarios</td><td>one run rate</td><td>${Object.keys(sd.scenarios).map(k => names[k] + ': ' + beTxt(sd.scenarios[k].break_even_month)).join(' · ')}</td></tr></tbody></table>`;
+    const order = [['canvas', '1. The canvas'], ['cost_model', '2. Cost model'], ['revenue', '3. Revenue and break-even'], ['sensitivities', '4. Sensitivities'], ['risks', '5. Risks that change the numbers'], ['unverified', '6. Could not verify']];
+    sec.hidden = false;
+    const esc = x => String(x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const blocks = bl => { let out = '', ul = false; (bl || []).forEach(b => { if (b.t !== 'li' && ul) { out += '</ul>'; ul = false; }
+      if (b.t === 'table') out += '<table><thead><tr>' + b.h.map(c => '<th>' + esc(c) + '</th>').join('') + '</tr></thead><tbody>' + b.r.map(r => '<tr>' + r.map(c => '<td>' + esc(c) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+      else if (b.t === 'li') { if (!ul) { out += '<ul>'; ul = true; } out += '<li>' + esc(b.x) + '</li>'; }
+      else out += '<p>' + esc(b.x) + '</p>'; }); return out + (ul ? '</ul>' : ''); };
+    sec.innerHTML = `<h2>${LABELS.sourced}</h2><p class="src-note">${LABELS.sourced_note}</p><div class="src-body" dir="ltr">${blocks(sd.verdict_blocks)}${cmp}` +
+      order.map(([k, t], i) => `<details class="src-sec" ${i === 0 ? 'open' : ''}><summary>${t}</summary>${blocks(sd.sections_blocks[k])}</details>`).join('') + `</div>`;
+  } else {
+    sec.hidden = true;
+  }
+
   const prev = DATA.find(x => x.id === s.id - 1) || DATA[DATA.length - 1];
   const next = DATA.find(x => x.id === s.id + 1) || DATA[0];
   document.getElementById('pager').innerHTML = `<a href="${PAGE}?id=${prev.id}">← ${LABELS.prev}: ${prev.title}</a><a href="${PAGE}?id=${next.id}">${LABELS.next}: ${next.title} →</a>`;
@@ -904,6 +954,7 @@ render();
       <div class="flow-bars" id="flows"></div>
     </div>
   </section>
+  <section class="panel prose" id="sourcedSection" hidden></section>
   <section class="panel prose">
     <h2>{labels['method']}</h2>
     <p>{'اعداد این صفحه از مدل ماه ۱۲ نسخه v3.1 است: فعال‌سازی کالیبره‌شده با Latka Iran، حقوق کامل ۱۴۰۵، کمیسیون کانال، ریسک چک صیادی و تورم ماهانه ۷ تا ۹ درصد. ستون‌های دلاری انگلیسی با نرخ ۲۷۰٬۰۰۰ تومان محاسبه شده‌اند؛ نرخ گزارش اصلی ۲۰۳٬۱۰۰ تومان بود.' if fa else 'Figures come from the v3.1 Month-12 run rate: Latka-calibrated activation, fully loaded 1405 payroll, channel commissions, SAYAD cheque risk and 7-9% monthly inflation. English USD columns use 270,000 Toman; the source audit used 203,100.'}</p>
@@ -923,6 +974,39 @@ def md_table(headers, rows) -> str:
     for r in rows:
         out.append("| " + " | ".join(str(c).replace("|", "\\|") for c in r) + " |")
     return "\n".join(out)
+
+
+def sourced_reconciliation(fa: bool) -> str:
+    """Section comparing v3.1 audited month-12 figures with the sourced model for services 1-100."""
+    rows = []
+    for s in MASTERBOOK["services"]:
+        sc = SOURCED.get(s["id"])
+        if not sc:
+            continue
+        b = sc["scenarios"].get("base", {})
+        be = b.get("break_even_month")
+        rows.append([
+            s["id"], s["title"][:70],
+            f'{s["active"]["accounts"]:,}', f'{s["_ebitda"] / 1e6:,.0f}', f'{s["be_customers"]:,}',
+            f'{b.get("customers_m12", 0):,.0f} / {b.get("customers_m24", 0):,.0f}',
+            "none" if be is None else f"{be:.0f}",
+            f'{b.get("peak_cash_m", 0):,.0f}', f'{b.get("profit_m24_m", 0):+,.0f}',
+        ])
+    neg = sum(1 for r in rows if r[8].startswith("-"))
+    nobe = sum(1 for r in rows if r[6] == "none")
+    pos_v31 = sum(1 for s_ in MASTERBOOK["services"] if s_["id"] <= 100 and s_["_ebitda"] > 0)
+    head = ["#", "Service", "v3.1 accounts (m12)", "v3.1 EBITDA (M T, m12)", "v3.1 break-even customers",
+            "Sourced base customers (m12 / m24)", "Sourced break-even month", "Sourced peak cash (M T)", "Sourced m24 profit (M T)"]
+    intro = (
+        "Services 1-100 carry a second, sourced model (`data/sourced-canvases-100.md`, `data/sourced_canvases.json`, "
+        "`data/iran-ai-saas-sourced-100.csv`). Every figure there is tagged [S] sourced, [D] derived or [A] assumption; "
+        "customer counts are assumptions unless a sourced population is named. It uses a month-by-month ramp, a 265,295 T/USD rate "
+        "(open market, 17 Oct 2026), and its own team, GPU and price assumptions, which differ from v3.1. "
+        f"In the sourced base case {nobe} of 100 services do not break even within 24 months and {neg} have a negative month-24 monthly profit, "
+        f"while the v3.1 month-12 run rate shows {pos_v31} of the same 100 services with positive standalone EBITDA. The two views are shown side by side; "
+        "neither overwrites the other. Months differ (v3.1: month 12; sourced: month 24), so compare direction and break-even, not single cells."
+    )
+    return "## 10. Sourced-model reconciliation, services 1-100\n\n" + intro + "\n\n" + md_table(head, rows) + "\n\n"
 
 
 def report_en() -> str:
@@ -1019,7 +1103,7 @@ Services are split by who actually pays, not by the catalogue `segment` field. *
 - The 110 legacy services are re-underwritten estimates, not audited docx outputs. Their provenance flag is carried through the dashboard, service pages and CSV.
 - Hosting is derived from the engine split: engines 1-4 and 6 are local; 5A/5B are hybrid except in tax, Moadian, healthcare, legal and KYC sectors.
 
-Source: `data/masterbook.json` + `data/legacy_services.json` · Persian edition: `fa.html` · Service detail: `service.html?id=N`
+{sourced_reconciliation(False)}Source: `data/masterbook.json` + `data/legacy_services.json` + `data/sourced-canvases-100.md` · Persian edition: `fa.html` · Service detail: `service.html?id=N`
 """
 
 
@@ -1117,7 +1201,7 @@ def report_fa() -> str:
 - ۱۱۰ سرویس بازنویسی‌شده برآورد مدل‌محور هستند، نه خروجی سند حسابرسی‌شده. برچسب منشأ آن‌ها در داشبورد، صفحه جزئیات و CSV حفظ می‌شود.
 - میزبانی از تفکیک موتورها به‌دست می‌آید: موتورهای ۱ تا ۴ و ۶ محلی هستند؛ ۵A/۵B ترکیبی‌اند مگر در بخش‌های مالیات، مودیان، سلامت، حقوقی و احراز هویت.
 
-منبع: `data/masterbook.json` + `data/legacy_services.json` · نسخه انگلیسی: `index.html` · جزئیات سرویس: `service_fa.html?id=N`
+{sourced_reconciliation(True)}منبع: `data/masterbook.json` + `data/legacy_services.json` + `data/sourced-canvases-100.md` · نسخه انگلیسی: `index.html` · جزئیات سرویس: `service_fa.html?id=N`
 """
 
 

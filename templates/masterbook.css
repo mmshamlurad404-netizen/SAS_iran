@@ -235,3 +235,13 @@
 .badge.channel-public { background: #e8eef5; color: #2f5d8a; }
 .badge.channel-pro { background: #f7eee2; color: #8a5a12; }
 .badge.channel-corporate { background: #ece7dc; color: #5d655f; }
+
+  /* sourced model (v4) block on service pages */
+  #sourcedSection[hidden] { display: none; }
+  .src-note { color: #5a6b66; font-size: 13px; margin-bottom: 14px; }
+  .src-body table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 13px; }
+  .src-body th, .src-body td { border: 1px solid #d9dfdc; padding: 6px 9px; text-align: left; vertical-align: top; }
+  .src-body th { background: #eef2f0; }
+  .src-body details.src-sec { border-top: 1px solid #d9dfdc; padding: 8px 0; }
+  .src-body details.src-sec > summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
+  .src-body .src-compare { margin-top: 14px; }

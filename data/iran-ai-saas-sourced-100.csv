@@ -1,0 +1,101 @@
+id,service,base_customers_m12,base_customers_m24,base_break_even_month,base_peak_cash_m_toman,base_mrr_m24_m_toman,base_profit_m24_m_toman,conservative_break_even_month,conservative_profit_m24_m_toman,optimistic_break_even_month,optimistic_profit_m24_m_toman
+1,"DM sales assistant (Instagram, Telegram-alternatives, Bale, Eitaa)",150.0,500.0,14.0,2691.0,843.0,305.0,,-42.0,9.0,1063.0
+2,"Product title, description and SEO writer for Digikala, Basalam and Torob listings",130.0,450.0,15.0,2838.0,802.0,414.0,,-78.0,9.0,1311.0
+3,Product photo cleaner and studio-background generator,120.0,400.0,17.0,3381.0,623.0,227.0,,-168.0,11.0,774.0
+4,"CRM follow-up agent (drafts follow-ups, schedules calls, scores leads)",30.0,100.0,21.0,5427.0,612.0,112.0,,-215.0,13.0,766.0
+5,"Persian ad copy and campaign generator for SMS, Telegram and native ads",100.0,350.0,16.0,3110.0,695.0,308.0,,-107.0,10.0,1156.0
+6,Competitor price monitor with repricing suggestions,110.0,380.0,17.0,2292.0,410.0,127.0,,-86.0,11.0,558.0
+7,Inflation-aware price list (reprices catalogs from the exchange rate and cost index),90.0,300.0,14.0,1821.0,535.0,261.0,,-38.0,8.0,896.0
+8,Customer review summarizer and sentiment dashboard,60.0,200.0,23.0,4343.0,391.0,44.0,,-227.0,13.0,438.0
+9,Store builder from photos or voice notes,500.0,1800.0,21.0,4189.0,636.0,52.0,,-218.0,13.0,660.0
+10,Personalized SMS and push campaign engine,80.0,300.0,,4900.0,834.0,-169.0,,-233.0,17.0,133.0
+11,Website and app chatbot trained on the company's own documents,120.0,450.0,14.0,2675.0,984.0,439.0,,-23.0,8.0,1501.0
+12,Persian voice bot that replaces call-center menus,8.0,25.0,19.0,4171.0,1698.0,220.0,,-139.0,11.0,876.0
+13,Call transcription and quality scoring,20.0,70.0,7.0,1328.0,3176.0,1631.0,12.0,433.0,6.0,4551.0
+14,Helpdesk ticket triage and draft replies,20.0,80.0,11.0,1892.0,1762.0,1323.0,17.0,269.0,6.0,3792.0
+15,Meeting recorder with Persian minutes and action items,30.0,120.0,14.0,2373.0,1617.0,468.0,,-14.0,8.0,1542.0
+16,Formal letter and administrative correspondence drafter,30.0,120.0,14.0,2631.0,1122.0,615.0,,-15.0,8.0,2060.0
+17,Persian speech-to-text API,20.0,80.0,9.0,1537.0,2462.0,1716.0,14.0,529.0,6.0,4775.0
+18,Persian text-to-speech with custom brand voices,20.0,80.0,8.0,1733.0,3424.0,2904.0,13.0,822.0,5.0,7691.0
+19,"No-code AI bot builder for Bale, Eitaa and Telegram",80.0,400.0,13.0,2460.0,1814.0,769.0,21.0,70.0,8.0,2459.0
+20,"Chat translator for Persian, Arabic, Turkish and English trade",60.0,300.0,19.0,4465.0,906.0,243.0,,-171.0,13.0,1108.0
+21,"Invoice and receipt OCR to accounting entries (Persian digits, Jalali dates)",100.0,450.0,,6301.0,596.0,-77.0,,-277.0,17.0,255.0
+22,E-invoicing and tax filing assistant for the national tax system,150.0,700.0,,6864.0,562.0,-135.0,,-308.0,18.0,270.0
+23,Chat-based bookkeeping copilot,250.0,1200.0,,6798.0,414.0,-133.0,,-312.0,18.0,284.0
+24,Bank statement categorizer and cash-flow forecast,120.0,500.0,,7391.0,415.0,-212.0,,-343.0,20.0,122.0
+25,Cheque tracker with bounce-risk alerts,120.0,450.0,,8099.0,394.0,-276.0,,-351.0,,-106.0
+26,SME credit scoring for B2B trade credit,30.0,120.0,,8548.0,586.0,-196.0,,-389.0,17.0,388.0
+27,Payment and order fraud detection API,80.0,350.0,,7125.0,662.0,-14.0,,-334.0,18.0,346.0
+28,"Stock-exchange disclosure summarizer for Persian filings (information only, not investment advice)",1000.0,5000.0,15.0,3548.0,1520.0,569.0,,-76.0,9.0,2540.0
+29,Contract and budget indexation calculator for inflation clauses,500.0,2500.0,20.0,4845.0,809.0,167.0,,-225.0,13.0,1262.0
+30,Payroll and social-insurance calculation assistant,300.0,1500.0,18.0,4595.0,1128.0,318.0,,-168.0,13.0,1589.0
+31,Contract drafting and review in Persian,200.0,900.0,16.0,4573.0,1208.0,353.0,,-176.0,11.0,1661.0
+32,Iranian-law Q&A with article citations,800.0,4000.0,,7744.0,1062.0,-200.0,,-319.0,17.0,157.0
+33,Court ruling summarizer and precedent search,150.0,700.0,24.0,6657.0,668.0,43.0,,-319.0,14.0,790.0
+34,Rental and sale agreement generator,80.0,300.0,,8565.0,158.0,-302.0,,-359.0,,-167.0
+35,Company registration and licence guidance assistant,100.0,400.0,,6742.0,519.0,-31.0,,-279.0,15.0,629.0
+36,Tender document analyzer and proposal writer,100.0,350.0,15.0,3897.0,1211.0,617.0,,-97.0,9.0,1674.0
+37,Knowledge-based company application and grant writer,80.0,300.0,19.0,5157.0,764.0,211.0,,-219.0,13.0,1145.0
+38,E-commerce compliance checker (trust seal and consumer rules),500.0,2000.0,21.0,4776.0,900.0,110.0,,-256.0,13.0,743.0
+39,Document classification and archive search for offices,40.0,150.0,11.0,2542.0,2944.0,1161.0,17.0,165.0,6.0,3186.0
+40,Complaint and petition drafter,1000.0,4000.0,13.0,3290.0,2124.0,1116.0,,-24.0,7.0,4325.0
+41,Clinic appointment bot with AI intake questions,250.0,800.0,18.0,4231.0,1156.0,64.0,,-185.0,10.0,940.0
+42,Doctor dictation to structured visit notes,150.0,600.0,13.0,2711.0,1794.0,691.0,22.0,71.0,7.0,2189.0
+43,X-ray and dental image triage assistant,120.0,450.0,13.0,3921.0,2498.0,1186.0,23.0,67.0,8.0,3815.0
+44,Pharmacy stock and expiry forecasting with shortage-substitution hints,150.0,600.0,18.0,4394.0,902.0,227.0,,-183.0,13.0,825.0
+45,Drug-interaction checker using Iranian brand names,100.0,400.0,17.0,4488.0,924.0,290.0,,-129.0,12.0,1240.0
+46,Lab-result explainer for patients,40.0,150.0,14.0,3225.0,1890.0,813.0,22.0,73.0,8.0,2513.0
+47,Insurance claim pre-check,60.0,250.0,7.0,1836.0,5580.0,2584.0,12.0,752.0,6.0,6598.0
+48,Persian-food nutrition and fitness coach,3000.0,12000.0,7.0,2289.0,7680.0,5595.0,14.0,1477.0,5.0,14786.0
+49,Therapist scheduling and session-note assistant,90.0,300.0,19.0,4369.0,788.0,170.0,,-197.0,13.0,606.0
+50,Hospital supply and bed-demand forecasting,15.0,60.0,9.0,2237.0,3165.0,2353.0,15.0,486.0,5.0,6555.0
+51,Persian AI tutor for Konkur university-entrance preparation,2500.0,10000.0,11.0,3106.0,4975.0,2337.0,19.0,262.0,7.0,6788.0
+52,Homework helper aligned to the school curriculum,2000.0,8000.0,15.0,4492.0,1728.0,895.0,,-198.0,8.0,3684.0
+53,Quiz and exam generator for teachers,2000.0,6000.0,15.0,3513.0,1440.0,534.0,,-167.0,9.0,2313.0
+54,Essay and short-answer grading assistant,15.0,60.0,14.0,3274.0,1383.0,900.0,,-90.0,8.0,3655.0
+55,English and IELTS speaking practice with feedback,2000.0,8000.0,12.0,3428.0,2940.0,1439.0,24.0,7.0,7.0,4454.0
+56,Thesis and proposal writing assistant with Persian academic formatting,2000.0,6000.0,7.0,1573.0,4485.0,3509.0,15.0,585.0,5.0,9569.0
+57,Plagiarism and AI-text detection for Persian,1000.0,3000.0,5.0,1202.0,5550.0,4884.0,10.0,1211.0,4.0,12659.0
+58,Corporate training content generator,400.0,1200.0,5.0,1157.0,7290.0,6640.0,10.0,1337.0,4.0,17245.0
+59,Recorded-lecture summarizer and Q&A,250.0,750.0,5.0,873.0,7931.0,4988.0,9.0,1027.0,4.0,12441.0
+60,Coding and Excel skills coach in Persian,3000.0,9000.0,9.0,1582.0,2475.0,1679.0,19.0,197.0,5.0,4981.0
+61,Persian résumé parser and candidate ranking,150.0,450.0,17.0,3401.0,634.0,224.0,,-163.0,10.0,1175.0
+62,Screening-interview bot and scheduler,120.0,360.0,14.0,2694.0,886.0,443.0,,-83.0,8.0,1336.0
+63,Job-description and ad generator,1000.0,3000.0,13.0,1807.0,837.0,443.0,,-42.0,7.0,1911.0
+64,Employee onboarding Q&A bot,120.0,360.0,9.0,1559.0,1908.0,1188.0,17.0,265.0,6.0,3466.0
+65,Shift and attendance scheduling optimizer,400.0,1200.0,9.0,1324.0,1248.0,849.0,22.0,15.0,6.0,2517.0
+66,Inflation-adjusted salary benchmarking and raise planner,100.0,300.0,22.0,4665.0,510.0,73.0,,-250.0,13.0,769.0
+67,Employee survey analysis in Persian,100.0,300.0,17.0,3145.0,632.0,243.0,,-164.0,10.0,1119.0
+68,Freelancer-to-project matcher with proposal help,900.0,3000.0,9.0,1568.0,2160.0,1438.0,17.0,288.0,6.0,4538.0
+69,Skills-gap and training recommender,60.0,180.0,19.0,3678.0,500.0,113.0,,-187.0,11.0,794.0
+70,Performance review writer,120.0,360.0,,5231.0,317.0,-69.0,,-247.0,15.0,340.0
+71,Predictive maintenance from vibration and sensor data,40.0,120.0,23.0,5527.0,660.0,11.0,,-266.0,13.0,565.0
+72,Camera-based quality inspection,30.0,90.0,14.0,3442.0,2902.0,339.0,,-105.0,8.0,1747.0
+73,Standards and technical manual Q&A,1000.0,3000.0,5.0,1350.0,8325.0,6542.0,9.0,1661.0,4.0,20275.0
+74,Engineering report generator from test and simulation data,50.0,150.0,9.0,2279.0,2138.0,1529.0,20.0,137.0,6.0,4240.0
+75,"Energy-use optimizer for plants, greenhouses and buildings",25.0,75.0,12.0,2392.0,1388.0,828.0,24.0,23.0,7.0,2470.0
+76,Spare-parts demand forecasting and alternative-sourcing assistant,30.0,90.0,14.0,2947.0,963.0,418.0,,-88.0,8.0,1724.0
+77,Crop disease detection from phone photos,3000.0,12000.0,8.0,1989.0,6840.0,3926.0,15.0,647.0,5.0,10482.0
+78,Irrigation and water-use advisor,300.0,900.0,7.0,1594.0,3105.0,2339.0,13.0,555.0,5.0,6900.0
+79,Construction cost estimator with inflation-indexed unit prices,100.0,300.0,8.0,1904.0,2850.0,2128.0,16.0,408.0,5.0,7139.0
+80,Procurement quote comparison assistant,120.0,360.0,9.0,1822.0,2088.0,1393.0,18.0,203.0,6.0,3772.0
+81,Used-car price estimator and listing-fraud checker,120.0,360.0,7.0,1658.0,4104.0,2780.0,13.0,636.0,5.0,7687.0
+82,Property valuation and listing-copy generator,1000.0,3500.0,7.0,1809.0,4935.0,3342.0,14.0,720.0,5.0,10395.0
+83,Classifieds moderation and spam detection API,40.0,120.0,6.0,1333.0,3930.0,2193.0,11.0,538.0,5.0,5830.0
+84,Delivery route optimizer for small fleets,400.0,1500.0,5.0,1020.0,6488.0,4681.0,8.0,1392.0,4.0,12954.0
+85,Retail demand and stock forecasting,2000.0,8000.0,6.0,1114.0,5880.0,3796.0,13.0,754.0,4.0,12397.0
+86,Insurance risk scoring and quote assistant,120.0,500.0,8.0,1864.0,4350.0,3395.0,14.0,759.0,5.0,7252.0
+87,Domestic-travel itinerary planner,500.0,2000.0,12.0,3014.0,2147.0,1382.0,24.0,3.0,6.0,5037.0
+88,Guesthouse and hotel dynamic pricing with review replies,500.0,1800.0,10.0,2000.0,2585.0,1603.0,19.0,167.0,6.0,5032.0
+89,Restaurant demand forecasting and menu repricing,500.0,1800.0,8.0,1486.0,2277.0,1490.0,17.0,207.0,5.0,4639.0
+90,Import-export documentation and tariff-code assistant (sanctions-sensitive),300.0,1200.0,8.0,1971.0,3444.0,2540.0,15.0,602.0,5.0,8410.0
+91,Persian blog and social content writer with brand voice,1000.0,3500.0,7.0,1570.0,5145.0,3484.0,13.0,643.0,5.0,10452.0
+92,"Video subtitling and dubbing pipeline (speech-to-text, translation, speech synthesis)",1000.0,3500.0,13.0,2600.0,3342.0,762.0,23.0,-99.0,7.0,2849.0
+93,Poster and banner generator with correct Persian typography,1200.0,4500.0,7.0,1592.0,5400.0,3012.0,13.0,674.0,5.0,8888.0
+94,Short-video script and reel planner,1500.0,6000.0,9.0,1894.0,3300.0,1746.0,16.0,438.0,5.0,6043.0
+95,Persian news and brand-mention monitoring with summaries,300.0,1200.0,8.0,1910.0,4524.0,3546.0,14.0,871.0,5.0,9264.0
+96,"Persian OCR API (printed, handwritten, ID and card images)",150.0,600.0,7.0,1695.0,12180.0,4564.0,11.0,1323.0,4.0,12108.0
+97,Domestically hosted LLM API billed in rials,150.0,600.0,8.0,1828.0,5115.0,2763.0,14.0,722.0,5.0,7531.0
+98,No-code workflow builder for AI agents,150.0,600.0,13.0,2758.0,3240.0,1046.0,19.0,162.0,7.0,3334.0
+99,"On-premises document Q&A (""chat with your files"")",8.0,30.0,8.0,2882.0,4680.0,3755.0,14.0,1134.0,5.0,10946.0
+100,Persian dataset labeling and model-evaluation service,30.0,120.0,6.0,1571.0,21984.0,6413.0,10.0,1951.0,4.0,16450.0
